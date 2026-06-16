@@ -1,3 +1,4 @@
+ && git add . && git commit -m "update" && git push
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1305,10 +1306,11 @@
       </div>
 
       <div class="btn-row" style="margin-top:14px">
-        <button class="btn btn-primary" onclick="simCalc()">Recalcular</button>
+        <button class="btn btn-primary" onclick="simNueva()">&#10010; Nueva</button>
         <button class="btn btn-primary" id="btnGuardarSim" onclick="simGuardar()" style="background:var(--verde-medio)">Guardar simulaci&#243;n</button>
         <button class="btn btn-gold" onclick="simPDF()">&#8595; PDF</button>
         <button class="btn btn-outline" onclick="simGenerarCotizacion()" style="border-color:#1565C0;color:#1565C0;font-weight:600">&#128196; Generar Cotizaci&#243;n</button>
+        <button class="btn btn-outline" onclick="simNueva()" style="border-color:#888;color:#555;font-weight:600">&#10010; Nueva simulaci&#243;n</button>
       </div>
       <div id="simGuardadoBadge" style="display:none;margin-top:8px">
         <span style="background:#E8F5E9;color:#1B5E20;border:1px solid #C8E6C9;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600">&#10003; Simulaci&#243;n guardada</span>
@@ -1438,7 +1440,7 @@
       </div>
 
       <div class="btn-row" style="margin-top:14px">
-        <button class="btn btn-primary" onclick="simMandCalc()">Recalcular</button>
+        <button class="btn btn-primary" onclick="simMandCalc()">&#10010; Nueva</button>
         <button class="btn btn-primary" id="btnGuardarSimMand" onclick="simMandGuardar()" style="background:var(--verde-medio)">Guardar simulaci&#243;n</button>
         <button class="btn btn-gold" onclick="simMandPDF()">Descargar PDF</button>
       </div>
@@ -1636,7 +1638,7 @@
       </div>
 
       <div class="btn-row" style="margin-top:14px">
-        <button class="btn btn-primary" onclick="costeoCalc()">Recalcular</button>
+        <button class="btn btn-primary" onclick="costeoCalc()">&#10010; Nueva</button>
         <button class="btn btn-primary" id="btnGuardarCosteo" onclick="costeoGuardar()" style="background:var(--verde-medio)">Guardar costeo real</button>
         <button class="btn btn-gold" onclick="costeoPDF()">Descargar PDF</button>
       </div>
@@ -1737,7 +1739,7 @@
       </div>
 
       <div class="btn-row" style="margin-top:14px">
-        <button class="btn btn-primary" onclick="costeoMandCalc()">Recalcular</button>
+        <button class="btn btn-primary" onclick="costeoMandCalc()">&#10010; Nueva</button>
         <button class="btn btn-primary" onclick="costeoMandGuardar()" style="background:var(--verde-medio)">Guardar costeo</button>
         <button class="btn btn-gold" onclick="costeoMandPDF()">Descargar PDF</button>
       </div>
@@ -4165,26 +4167,34 @@ function calcRiesgo(mrg, pago1_pct, tc, tp, dc, pvt, ct, cf_real) {
   else                     score2 = 40;  // ya en pérdida
 
   // ── Factor 3: Cobertura de costos fijos con utilidad bruta ──
-  // ¿La UB cubre OPL + estructura + financiero?
+  // Si adelanto >= 100%: ya cobraste todo contra documentos → F3 = 0
+  // Si adelanto >= 80%: riesgo reducido al 40%
   var cob_cf = cf > 0 ? (ub / cf * 100) : (ub >= 0 ? 200 : 0);
-  var score3 = 0;
-  if      (cob_cf >= 150) score3 = 0;
-  else if (cob_cf >= 100) score3 = 10;
-  else if (cob_cf >= 50)  score3 = 20;
-  else if (cob_cf >= 0)   score3 = 30;
-  else                    score3 = 40;
+  var score3_base = 0;
+  if      (cob_cf >= 150) score3_base = 0;
+  else if (cob_cf >= 100) score3_base = 10;
+  else if (cob_cf >= 50)  score3_base = 20;
+  else if (cob_cf >= 0)   score3_base = 30;
+  else                    score3_base = 40;
+  // Reducir F3 según % adelanto
+  var score3 = pago1_pct >= 100 ? 0 :
+               pago1_pct >= 80  ? Math.round(score3_base * 0.40) :
+               pago1_pct >= 60  ? Math.round(score3_base * 0.70) :
+               score3_base;
 
   // ── Factor 4: Exposición financiera ──
-  // Dinero pendiente de cobrar × días × coste del dinero (8% anual)
+  // Si adelanto >= 100%: no hay 2do pago → F4 = 0
   var coste_dinero = 0.08 / 365;
   var exposicion_fin = pend_usd * dc * coste_dinero;
   var exp_pct = pvt > 0 ? (exposicion_fin / pvt * 100) : 0;
   var score4 = 0;
-  if      (exp_pct < 1)   score4 = 0;
-  else if (exp_pct < 2.5) score4 = 5;
-  else if (exp_pct < 5)   score4 = 10;
-  else if (exp_pct < 8)   score4 = 15;
-  else                    score4 = 20;
+  if (pago1_pct >= 100) {
+    score4 = 0; // cobrado al 100%, sin exposición
+  } else if (exp_pct < 1)   { score4 = 0;  }
+  else if   (exp_pct < 2.5) { score4 = 5;  }
+  else if   (exp_pct < 5)   { score4 = 10; }
+  else if   (exp_pct < 8)   { score4 = 15; }
+  else                      { score4 = 20; }
 
   var score = Math.min(100, score1 + score2 + score3 + score4);
 
@@ -4287,7 +4297,7 @@ function simCalc() {
   var mrg = pvt > 0 ? (un / pvt * 100) : 0;
 
   // Pagos
-  var pago1_pct = _gv('s_pago1_pct') || 80;
+  var pago1_pct = (function(){ var el=document.getElementById('s_pago1_pct'); return el&&el.value!==''?parseFloat(el.value)||0:80; })();
   var pago2_pct = 100 - pago1_pct;
   var pago2_el = document.getElementById('s_pago2_pct');
   if (pago2_el) pago2_el.value = pago2_pct.toFixed(0);
@@ -4501,7 +4511,7 @@ function simPDF() {
   var maquila=_gv('s_maquila'),caja_c=_gv('s_caja'),plu=_gv('s_plu');
   var db_pct=_gv('s_db')/100,rebate=_gv('s_rebate');
   var sp_pct=(function(){var el=document.getElementById('s_sobrepeso');return el&&el.value!==''?parseFloat(el.value)||0:4;})(),sp_f=1+sp_pct/100;
-  var pago1_pct=_gv('s_pago1_pct')||80,pago2_pct=100-pago1_pct;
+  var pago1_pct=(function(){var el=document.getElementById('s_pago1_pct');return el&&el.value!==''?parseFloat(el.value)||0:80;})(),pago2_pct=100-pago1_pct;
   var dc=_gv('s_dias_cobro'),tp=(document.getElementById('s_tipo_precio')||{}).value||'fijo';
   var ref=(document.getElementById('s_ref')||{}).value||'Simulacion';
   var cliente=(document.getElementById('s_cliente')||{}).value||'-';
@@ -4877,7 +4887,7 @@ function costeoCalc() {
   ].join('') + '</div>';
 
   // ── SCORING costeo ──
-  var _pago1_pct = _gv('c_pago1_pct') || 80;
+  var _pago1_pct = (function(){var el=document.getElementById('c_pago1_pct');return el&&el.value!==''?parseFloat(el.value)||0:80;})();
   var _adv = _pago1_pct / 100;
   var _tp = (document.getElementById('c_tipo_precio')||{value:'fijo'}).value || 'fijo';
   var _dc = _gv('c_dias_cobro') || 60;
@@ -5009,7 +5019,7 @@ function simGuardar() {
   var ir=uir>0?uir*0.295:0,un=uir-ir,mrg=pvt>0?(un/pvt*100):0;
 
   // Pagos y riesgo — usando la misma lógica que simCalc
-  var pago1_pct=_gv('s_pago1_pct')||80;
+  var pago1_pct=(function(){var el=document.getElementById('s_pago1_pct');return el&&el.value!==''?parseFloat(el.value)||0:80;})();
   var dc=_gv('s_dias_cobro');
   var tp=(document.getElementById('s_tipo_precio')||{}).value||'fijo';
   var pmge=_gv('s_pmg_esperado')||100;
@@ -5451,6 +5461,7 @@ function anModificar(id) {
     state._editingAnId = id;
     // Ensure palta panel is showing (not mandarina)
     setSimProducto('palta');
+    window._simLoadingRecord = true;
     setTimeout(function(){
       function sv(elId,val){var el=document.getElementById(elId);if(el&&val!==undefined&&val!==null)el.value=val;}
       sv('s_ref',r.ref);sv('s_cliente',r.cliente);
@@ -5483,7 +5494,8 @@ function anModificar(id) {
       sv('s_pago1_pct',r.adelanto_pct||80);sv('s_dias_cobro',r.dias_cobro||60);sv('s_pmg_esperado',r.pmg_esperado||100);
       if(r.rangos_compra)r.rangos_compra.forEach(function(rg,i){sv('s_c'+i+'_n',rg.n);sv('s_c'+i+'_p',rg.p);sv('s_c'+i+'_v',rg.v);});
       if(r.rangos_venta)r.rangos_venta.forEach(function(rv,i){sv('s_r'+i+'_n',rv.n);sv('s_r'+i+'_p',rv.p);sv('s_r'+i+'_v',rv.v);});
-      simCalc();
+      // Final recalc after ALL data loaded
+      setTimeout(function(){ window._simLoadingRecord=false; simCalc(); }, 500);
       // Show editing banner
       var badge=document.getElementById('simGuardadoBadge');
       if(badge){badge.style.display='block';badge.querySelector('span').textContent='Editando simulacion #'+id+' &mdash; modifica y pulsa Guardar';}
@@ -5548,7 +5560,7 @@ function _simPDFDirect(r) {
   var maquila=r.maquila_kg||0,caja_c=r.caja_kg||0,plu=r.plu_kg||0;
   var sp_pct=(r.sobrepeso_pct!=null?r.sobrepeso_pct:4),sp_f=1+sp_pct/100;
   var db_pct=(r.db_pct||3)/100,rebate=r.rebate||0;
-  var pago1_pct=r.adelanto_pct||80,pago2_pct=100-pago1_pct;
+  var pago1_pct=(r.adelanto_pct!=null?r.adelanto_pct:80),pago2_pct=100-pago1_pct;
   var dc=r.dias_cobro||60,tp=r.tipo_precio||'fijo';
 
   // PMP compra
@@ -6129,7 +6141,7 @@ function anVer(id) {
     var tc = r.tc || 3.75;
     var sp_f = 1 + (((r.sobrepeso_pct!=null?r.sobrepeso_pct:4))/100);
     var kg = r.kg || 0;
-    var pago1_pct = r.adelanto_pct || 80;
+    var pago1_pct = (r.adelanto_pct!=null?r.adelanto_pct:80);
     var pago2_pct = 100 - pago1_pct;
     var tp = r.tipo_precio || 'fijo';
     var dc = r.dias_cobro || 60;
@@ -6334,7 +6346,7 @@ function _simPDFDirect(r) {
   var maquila=r.maquila_kg||0,caja_c=r.caja_kg||0,plu=r.plu_kg||0;
   var sp_pct=(r.sobrepeso_pct!=null?r.sobrepeso_pct:4),sp_f=1+sp_pct/100;
   var db_pct=(r.db_pct||3)/100,rebate=r.rebate||0;
-  var pago1_pct=r.adelanto_pct||80,pago2_pct=100-pago1_pct;
+  var pago1_pct=(r.adelanto_pct!=null?r.adelanto_pct:80),pago2_pct=100-pago1_pct;
   var dc=r.dias_cobro||60,tp=r.tipo_precio||'fijo';
 
   // PMP compra
@@ -6766,7 +6778,7 @@ function simGuardar() {
   var ir=uir>0?uir*0.295:0,un=uir-ir,mrg=pvt>0?(un/pvt*100):0;
 
   // Pagos y riesgo — usando la misma lógica que simCalc
-  var pago1_pct=_gv('s_pago1_pct')||80;
+  var pago1_pct=(function(){var el=document.getElementById('s_pago1_pct');return el&&el.value!==''?parseFloat(el.value)||0:80;})();
   var dc=_gv('s_dias_cobro');
   var tp=(document.getElementById('s_tipo_precio')||{}).value||'fijo';
   var pmge=_gv('s_pmg_esperado')||100;
@@ -7277,7 +7289,7 @@ function simMandGuardar() {
   var cv2=(mp_usd+maquila+caja_c+plu)*kg,cf=opl+qi+ft+fin+analisis+estr+otros;
   var ct=cv2+cf,cu=ct/kg,pvu=pvt/kg,ub=pvt-ct,db=pvt*db_pct;
   var uir=ub+db+rebate,ir=uir>0?uir*0.295:0,un=uir-ir,mrg=pvt>0?(un/pvt*100):0;
-  var pago1_pct=_gv('sm_pago1_pct')||80,dc=_gv('sm_dias_cobro');
+  var pago1_pct=(function(){var el=document.getElementById('sm_pago1_pct');return el&&el.value!==''?parseFloat(el.value)||0:80;})(),dc=_gv('sm_dias_cobro');
   var tp=(document.getElementById('sm_tipo_precio')||{}).value||'fijo';
   var _risk=calcRiesgo(mrg,pago1_pct,tc,tp,dc,pvt,ct);
   if(pvt===0){showStatus('Calcula primero',true);return;}
@@ -7482,7 +7494,7 @@ function simMandPDF(){
   var analisis=_gv('sm_analisis'),estr=_gv('sm_estructura'),otros=_gv('sm_otros');
   var maquila=_gv('sm_maquila'),caja_c=_gv('sm_caja'),plu=_gv('sm_plu');
   var db_pct=_gv('sm_db')/100,rebate=_gv('sm_rebate');
-  var pago1_pct=_gv('sm_pago1_pct')||80,dc=_gv('sm_dias_cobro');
+  var pago1_pct=(function(){var el=document.getElementById('sm_pago1_pct');return el&&el.value!==''?parseFloat(el.value)||0:80;})(),dc=_gv('sm_dias_cobro');
   var tp=(document.getElementById('sm_tipo_precio')||{}).value||'fijo';
   var rangos_compra=[],rangos_venta=[];
   for(var j=0;j<8;j++){
@@ -7558,7 +7570,7 @@ function _mandPDFDirect(r) {
   var cv=(mp+maquila+caja_c+plu)*kg,cf=opl+qi+ft+fin+analisis+estr+otros;
   var ct=cv+cf,cu=ct/kg,ub=pvt-ct,db=pvt*db_pct;
   var uir=ub+db+rebate,ir=uir>0?uir*0.295:0,un=uir-ir,mrg=pvt>0?(un/pvt*100):0;
-  var pago1_pct=r.adelanto_pct||80,pago2_pct=100-pago1_pct;
+  var pago1_pct=(r.adelanto_pct!=null?r.adelanto_pct:80),pago2_pct=100-pago1_pct;
   var pago1_usd=pvt*pago1_pct/100,pago2_usd=pvt*pago2_pct/100;
   var tp=r.tipo_precio||'fijo',dc=r.dias_cobro||60;
 
@@ -10326,7 +10338,7 @@ function simSetModoCompra(modo) {
   var spMain = document.getElementById('s_sobrepeso');
   var spCampo = document.getElementById('s_sobrepeso_campo');
   if (spMain && spCampo) spCampo.value = spMain.value;
-  simCalc();
+  if (!window._simLoadingRecord) simCalc();
 }
 
 function simCampoCalcMP(kg) {
@@ -10419,6 +10431,65 @@ function simSyncSobrepeso(source, val) {
   if (source === 'campo' && main)  main.value  = val;
   if (source === 'main'  && campo) campo.value = val;
   simCalc();
+}
+
+function simNueva() {
+  if (!confirm('\u00bfLimpiar el simulador para una nueva simulaci\u00f3n?')) return;
+
+  // Reset editing state
+  state._editingAnId = null;
+  var btn = document.getElementById('btnGuardarSim');
+  if (btn) { btn.textContent = 'Guardar simulaci\u00f3n'; btn.style.background = ''; }
+  var badge = document.getElementById('simGuardadoBadge');
+  if (badge) badge.style.display = 'none';
+
+  // Reset identification fields
+  ['s_ref','s_destino','s_semana','s_puerto_descarga'].forEach(function(id){
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  var clienteEl = document.getElementById('s_cliente');
+  if (clienteEl) clienteEl.value = '';
+  var contEl = document.getElementById('s_continente');
+  if (contEl) { contEl.value = ''; }
+  var paisEl = document.getElementById('s_pais');
+  if (paisEl) { paisEl.value = ''; }
+
+  // Reset planta
+  simSelectPlanta('manual');
+
+  // Reset modo compra to faja
+  simSetModoCompra('faja');
+
+  // Reset key numeric fields to defaults
+  var defaults = {
+    's_kg':'24000','s_cajas':'2400','s_tc':'3.75',
+    's_sobrepeso':'4','s_maquila':'0.14','s_caja':'0.07',
+    's_plu':'0','s_opl':'2300','s_qi':'180',
+    's_ft':'0.85','s_fin':'200','s_analisis':'300',
+    's_estructura':'3000','s_flete':'0','s_otros':'0',
+    's_db':'3','s_rebate':'0',
+    's_pago1_pct':'80','s_dias_cobro':'60',
+  };
+  Object.keys(defaults).forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.value = defaults[id];
+  });
+
+  // Reset calibre ranges
+  for (var i=0; i<4; i++) {
+    ['s_r'+i+'_n','s_r'+i+'_p','s_r'+i+'_v',
+     's_c'+i+'_n','s_c'+i+'_p','s_c'+i+'_v'].forEach(function(id){
+      var el = document.getElementById(id); if (el) el.value = '';
+    });
+  }
+
+  // Reset variedad
+  var varEl = document.getElementById('s_variedad');
+  if (varEl) varEl.value = 'Palta Hass';
+
+  // Recalc
+  setTimeout(simCalc, 100);
+  showStatus('Simulador listo para nueva simulaci\u00f3n');
 }
 </script>
 
