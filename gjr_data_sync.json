@@ -1,0 +1,5599 @@
+{
+  "version": 2,
+  "timestamp": "2026-06-16T18:22:06.199Z",
+  "device": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Ap",
+  "jr_liq_v5": [
+    {
+      "id": 1775517838745,
+      "fechaEmision": "6/4/2026, 6:23:58 p. m.",
+      "semana": "14",
+      "fuc": "PHJ-000086",
+      "productor": "LEON BENDEZU TRINI JUSTINA",
+      "guia": "N°EG07-00001230",
+      "fecha": "29/03/2026",
+      "jabas": 533,
+      "kgIngresados": 10240.6,
+      "sobrepeso": 229.60000000000036,
+      "kgExportableCat1": 9754,
+      "kgExportableCat2": 20,
+      "kgMercadoNacional": 237,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 12,
+          "sp": 0.28189073050951546,
+          "totalKg": 12.281890730509515,
+          "precio": 5.8,
+          "total": 71.23496623695519,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 112,
+          "sp": 2.6309801514221443,
+          "totalKg": 114.63098015142215,
+          "precio": 5.8,
+          "total": 664.8596848782485,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 428,
+          "sp": 10.054102721506053,
+          "totalKg": 438.05410272150607,
+          "precio": 5.8,
+          "total": 2540.7137957847353,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 1072,
+          "sp": 25.182238592183385,
+          "totalKg": 1097.1822385921835,
+          "precio": 5.8,
+          "total": 6363.656983834664,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 1500,
+          "sp": 35.23634131368944,
+          "totalKg": 1535.2363413136895,
+          "precio": 4.1,
+          "total": 6294.468999386127,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 1790,
+          "sp": 42.048700634336065,
+          "totalKg": 1832.048700634336,
+          "precio": 4.1,
+          "total": 7511.399672600777,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 2050,
+          "sp": 48.1563331287089,
+          "totalKg": 2098.156333128709,
+          "precio": 4.1,
+          "total": 8602.440965827705,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 1120,
+          "sp": 26.309801514221448,
+          "totalKg": 1146.3098015142214,
+          "precio": 2.5,
+          "total": 2865.7745037855534,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 870,
+          "sp": 20.43707796193987,
+          "totalKg": 890.4370779619398,
+          "precio": 2.5,
+          "total": 2226.09269490485,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 590,
+          "sp": 13.859627583384512,
+          "totalKg": 603.8596275833845,
+          "precio": 2.5,
+          "total": 1509.6490689584612,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "32",
+          "kgExp": 210,
+          "sp": 4.9330877839165215,
+          "totalKg": 214.93308778391653,
+          "precio": 1.2,
+          "total": 257.9197053406998,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [
+        {
+          "cal": "SC",
+          "kgExp": 20,
+          "sp": 0.46981788418252585,
+          "totalKg": 20.469817884182525,
+          "precio": 1,
+          "total": 20.469817884182525,
+          "categoria": "CAT2"
+        }
+      ],
+      "kgDescarte": 237,
+      "precioDesc": 0,
+      "totalLiq": 38928.68085942296,
+      "adelanto": 0,
+      "descuento": 0,
+      "porPagar": 38928.68085942296,
+      "totalKgPagar": 10003.6,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1775517910164,
+      "fechaEmision": "6/4/2026, 6:25:10 p. m.",
+      "semana": "14",
+      "fuc": "PHJ-000097",
+      "productor": "GARCIA MENDOZA GUIDO",
+      "guia": "N°EG07-00001243",
+      "fecha": "01/04/2026",
+      "jabas": 505,
+      "kgIngresados": 7521,
+      "sobrepeso": 172,
+      "kgExportableCat1": 4440,
+      "kgExportableCat2": 460,
+      "kgMercadoNacional": 2449,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 280,
+          "sp": 9.828571428571427,
+          "totalKg": 289.8285714285714,
+          "precio": 5.8,
+          "total": 1681.0057142857142,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 1124,
+          "sp": 39.45469387755102,
+          "totalKg": 1163.454693877551,
+          "precio": 5.8,
+          "total": 6748.037224489796,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 216,
+          "sp": 7.582040816326531,
+          "totalKg": 223.58204081632653,
+          "precio": 5.8,
+          "total": 1296.7758367346937,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 1860,
+          "sp": 65.28979591836735,
+          "totalKg": 1925.2897959183674,
+          "precio": 4.1,
+          "total": 7893.688163265306,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 480,
+          "sp": 16.848979591836734,
+          "totalKg": 496.8489795918367,
+          "precio": 2.5,
+          "total": 1242.1224489795918,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "35",
+          "kgExp": 400,
+          "sp": 14.040816326530612,
+          "totalKg": 414.0408163265306,
+          "precio": 0,
+          "total": 0,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "84",
+          "kgExp": 80,
+          "sp": 2.808163265306123,
+          "totalKg": 82.80816326530612,
+          "precio": 0,
+          "total": 0,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [
+        {
+          "cal": "SC",
+          "kgExp": 460,
+          "sp": 16.146938775510204,
+          "totalKg": 476.1469387755102,
+          "precio": 1,
+          "total": 476.1469387755102,
+          "categoria": "CAT2"
+        }
+      ],
+      "kgDescarte": 2449,
+      "precioDesc": 0,
+      "totalLiq": 19337.776326530613,
+      "adelanto": 0,
+      "descuento": 0,
+      "porPagar": 19337.776326530613,
+      "totalKgPagar": 5072.000000000001,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1775517917242,
+      "fechaEmision": "6/4/2026, 6:25:17 p. m.",
+      "semana": "14",
+      "fuc": "PHJ-000098",
+      "productor": "RAMOS RAVELO EUSEBIO",
+      "guia": "N°EG07-00001244",
+      "fecha": "01/04/2026",
+      "jabas": 700,
+      "kgIngresados": 11930,
+      "sobrepeso": 286,
+      "kgExportableCat1": 9662,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 1982,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 856,
+          "sp": 25.33802525357069,
+          "totalKg": 881.3380252535707,
+          "precio": 5.8,
+          "total": 5111.760546470709,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 2220,
+          "sp": 65.71310287725109,
+          "totalKg": 2285.713102877251,
+          "precio": 5.8,
+          "total": 13257.135996688055,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 356,
+          "sp": 10.537776857793418,
+          "totalKg": 366.5377768577934,
+          "precio": 5.8,
+          "total": 2125.919105775202,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 3020,
+          "sp": 89.39350031049472,
+          "totalKg": 3109.393500310495,
+          "precio": 4.1,
+          "total": 12748.513351273028,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 2040,
+          "sp": 60.38501345477127,
+          "totalKg": 2100.385013454771,
+          "precio": 2.5,
+          "total": 5250.962533636928,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "35",
+          "kgExp": 1030,
+          "sp": 30.48851169530118,
+          "totalKg": 1060.4885116953012,
+          "precio": 0,
+          "total": 0,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "84",
+          "kgExp": 140,
+          "sp": 4.144069550817636,
+          "totalKg": 144.14406955081765,
+          "precio": 0,
+          "total": 0,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 1982,
+      "precioDesc": 0,
+      "totalLiq": 38494.29153384393,
+      "adelanto": 0,
+      "descuento": 0,
+      "porPagar": 38494.29153384393,
+      "totalKgPagar": 9948,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1775601811806,
+      "fechaEmision": "7/4/2026, 5:43:31 p. m.",
+      "semana": "15",
+      "fuc": "PHJ-000101",
+      "productor": "PALOMINO OLIVARES ALEXANDER OMAR",
+      "guia": "N°EG07-00001250",
+      "fecha": "05/04/2026",
+      "jabas": 250,
+      "kgIngresados": 4630,
+      "sobrepeso": 187,
+      "kgExportableCat1": 4098,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 345,
+      "filasCat1": [
+        {
+          "cal": "14",
+          "kgExp": 112,
+          "sp": 5.110785749145925,
+          "totalKg": 117.11078574914592,
+          "precio": 5.6,
+          "total": 655.8204001952171,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 248,
+          "sp": 11.316739873108833,
+          "totalKg": 259.3167398731088,
+          "precio": 5.6,
+          "total": 1452.1737432894092,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 320,
+          "sp": 14.602244997559787,
+          "totalKg": 334.6022449975598,
+          "precio": 5.6,
+          "total": 1873.7725719863347,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 448,
+          "sp": 20.4431429965837,
+          "totalKg": 468.4431429965837,
+          "precio": 3.4,
+          "total": 1592.7066861883845,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 380,
+          "sp": 17.340165934602247,
+          "totalKg": 397.3401659346022,
+          "precio": 3.4,
+          "total": 1350.9565641776476,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 730,
+          "sp": 33.311371400683264,
+          "totalKg": 763.3113714006832,
+          "precio": 3.4,
+          "total": 2595.258662762323,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 580,
+          "sp": 26.466569058077113,
+          "totalKg": 606.4665690580771,
+          "precio": 2,
+          "total": 1212.9331381161542,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 490,
+          "sp": 22.359687652513422,
+          "totalKg": 512.3596876525135,
+          "precio": 2,
+          "total": 1024.719375305027,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 460,
+          "sp": 20.990727183992192,
+          "totalKg": 480.9907271839922,
+          "precio": 2,
+          "total": 961.9814543679844,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "32",
+          "kgExp": 330,
+          "sp": 15.058565153733529,
+          "totalKg": 345.0585651537335,
+          "precio": 1,
+          "total": 345.0585651537335,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 345,
+      "precioDesc": 0,
+      "totalLiq": 13065.381161542215,
+      "adelanto": 0,
+      "descuento": 0,
+      "porPagar": 13065.381161542215,
+      "totalKgPagar": 4285,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1775668055417,
+      "fechaEmision": "8/4/2026, 12:07:35 p. m.",
+      "semana": "14",
+      "fuc": "PHJ-000099",
+      "productor": "RAMOS RAVELO EUSEBIO",
+      "guia": "EG07-00001246",
+      "fecha": "03/04/2026",
+      "jabas": 697,
+      "kgIngresados": 11085.4,
+      "sobrepeso": 79.39999999999964,
+      "kgExportableCat1": 0,
+      "kgExportableCat2": 840,
+      "kgMercadoNacional": 10166,
+      "filasCat1": [],
+      "filasCat2": [
+        {
+          "cal": "SC",
+          "kgExp": 840,
+          "sp": 79.39999999999964,
+          "totalKg": 919.3999999999996,
+          "precio": 1,
+          "total": 919.3999999999996,
+          "categoria": "CAT2"
+        }
+      ],
+      "kgDescarte": 10166,
+      "precioDesc": 0,
+      "totalLiq": 919.3999999999996,
+      "adelanto": 0,
+      "descuento": 0,
+      "porPagar": 919.3999999999996,
+      "totalKgPagar": 919.3999999999996,
+      "estado": "ANULADA"
+    },
+    {
+      "id": 1775668354498,
+      "fechaEmision": "8/4/2026, 12:12:34 p. m.",
+      "semana": "15",
+      "fuc": "PHJ-000103",
+      "productor": "GUTIERREZ VERA PEDRO EFRAIN",
+      "guia": "N°EG07-00001253",
+      "fecha": "06/04/2026",
+      "jabas": 383,
+      "kgIngresados": 5850.6,
+      "sobrepeso": 142.60000000000036,
+      "kgExportableCat1": 5376,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 332,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 524,
+          "sp": 13.899255952380988,
+          "totalKg": 537.8992559523809,
+          "precio": 5.6,
+          "total": 3012.235833333333,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 1284,
+          "sp": 34.05848214285723,
+          "totalKg": 1318.0584821428572,
+          "precio": 5.6,
+          "total": 7381.1275,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 1272,
+          "sp": 33.74017857142866,
+          "totalKg": 1305.7401785714287,
+          "precio": 5.6,
+          "total": 7312.145,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 1004,
+          "sp": 26.631398809523876,
+          "totalKg": 1030.631398809524,
+          "precio": 5.6,
+          "total": 5771.535833333333,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 484,
+          "sp": 12.83824404761908,
+          "totalKg": 496.83824404761907,
+          "precio": 3.4,
+          "total": 1689.250029761905,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 348,
+          "sp": 9.230803571428595,
+          "totalKg": 357.2308035714286,
+          "precio": 3.4,
+          "total": 1214.5847321428573,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 270,
+          "sp": 7.161830357142875,
+          "totalKg": 277.1618303571429,
+          "precio": 3.4,
+          "total": 942.3502232142858,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 30,
+          "sp": 0.7957589285714306,
+          "totalKg": 30.79575892857143,
+          "precio": 2,
+          "total": 61.59151785714286,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 70,
+          "sp": 1.8567708333333381,
+          "totalKg": 71.85677083333334,
+          "precio": 2,
+          "total": 143.71354166666669,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 70,
+          "sp": 1.8567708333333381,
+          "totalKg": 71.85677083333334,
+          "precio": 2,
+          "total": 143.71354166666669,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "32",
+          "kgExp": 20,
+          "sp": 0.5305059523809537,
+          "totalKg": 20.530505952380953,
+          "precio": 1,
+          "total": 20.530505952380953,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 332,
+      "precioDesc": 0,
+      "totalLiq": 27692.778258928574,
+      "adelanto": 0,
+      "descuento": 0,
+      "porPagar": 27692.778258928574,
+      "totalKgPagar": 5518.599999999999,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1775674679073,
+      "fechaEmision": "8/4/2026, 1:57:59 p. m.",
+      "semana": "15",
+      "fuc": "PHJ-000104",
+      "productor": "QUISPE DE LA CRUZ GUILLERMO",
+      "guia": "N°EG07-00001254",
+      "fecha": "06/04/2026",
+      "jabas": 500,
+      "kgIngresados": 7830,
+      "sobrepeso": 291,
+      "kgExportableCat1": 6104,
+      "kgExportableCat2": 750,
+      "kgMercadoNacional": 685,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 52,
+          "sp": 2.207761890866647,
+          "totalKg": 54.20776189086665,
+          "precio": 5.6,
+          "total": 303.5634665888532,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 300,
+          "sp": 12.737087831922965,
+          "totalKg": 312.73708783192296,
+          "precio": 5.6,
+          "total": 1751.3276918587685,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 608,
+          "sp": 25.813831339363876,
+          "totalKg": 633.8138313393639,
+          "precio": 5.6,
+          "total": 3549.3574555004375,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 792,
+          "sp": 33.625911876276625,
+          "totalKg": 825.6259118762766,
+          "precio": 5.6,
+          "total": 4623.505106507148,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 924,
+          "sp": 39.230230522322735,
+          "totalKg": 963.2302305223227,
+          "precio": 3.4,
+          "total": 3274.982783775897,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 848,
+          "sp": 36.00350160490225,
+          "totalKg": 884.0035016049022,
+          "precio": 3.4,
+          "total": 3005.6119054566675,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 790,
+          "sp": 33.54099795739714,
+          "totalKg": 823.5409979573972,
+          "precio": 3.4,
+          "total": 2800.0393930551504,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 600,
+          "sp": 25.47417566384593,
+          "totalKg": 625.4741756638459,
+          "precio": 2,
+          "total": 1250.9483513276919,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 500,
+          "sp": 21.228479719871608,
+          "totalKg": 521.2284797198716,
+          "precio": 2,
+          "total": 1042.4569594397433,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 390,
+          "sp": 16.558214181499853,
+          "totalKg": 406.55821418149986,
+          "precio": 2,
+          "total": 813.1164283629997,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "32",
+          "kgExp": 300,
+          "sp": 12.737087831922965,
+          "totalKg": 312.73708783192296,
+          "precio": 1,
+          "total": 312.73708783192296,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [
+        {
+          "cal": "SC",
+          "kgExp": 750,
+          "sp": 31.842719579807408,
+          "totalKg": 781.8427195798074,
+          "precio": 0.8,
+          "total": 625.4741756638459,
+          "categoria": "CAT2"
+        }
+      ],
+      "kgDescarte": 685,
+      "precioDesc": 0,
+      "totalLiq": 23353.120805369123,
+      "adelanto": 10000,
+      "descuento": 0,
+      "porPagar": 13353.120805369123,
+      "totalKgPagar": 7145.000000000001,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1775674694718,
+      "fechaEmision": "8/4/2026, 1:58:14 p. m.",
+      "semana": "15",
+      "fuc": "PHJ-000102",
+      "productor": "LAZARO LOPEZ EDWIN RICARDO",
+      "guia": "N°EG07-00001252",
+      "fecha": "05/04/2026",
+      "jabas": 412,
+      "kgIngresados": 7148.4,
+      "sobrepeso": 243.39999999999964,
+      "kgExportableCat1": 6214,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 691,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 56,
+          "sp": 2.193498551657544,
+          "totalKg": 58.19349855165754,
+          "precio": 5.6,
+          "total": 325.88359188928223,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 204,
+          "sp": 7.990601866752483,
+          "totalKg": 211.99060186675248,
+          "precio": 5.6,
+          "total": 1187.147370453814,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 244,
+          "sp": 9.557386546507871,
+          "totalKg": 253.55738654650787,
+          "precio": 5.6,
+          "total": 1419.921364660444,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 548,
+          "sp": 21.464950112648825,
+          "totalKg": 569.4649501126488,
+          "precio": 5.6,
+          "total": 3189.003720630833,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 688,
+          "sp": 26.94869649179269,
+          "totalKg": 714.9486964917927,
+          "precio": 3.4,
+          "total": 2430.825568072095,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 884,
+          "sp": 34.625941422594096,
+          "totalKg": 918.6259414225941,
+          "precio": 3.4,
+          "total": 3123.32820083682,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 1040,
+          "sp": 40.7364016736401,
+          "totalKg": 1080.73640167364,
+          "precio": 3.4,
+          "total": 3674.5037656903764,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 760,
+          "sp": 29.768908915352387,
+          "totalKg": 789.7689089153524,
+          "precio": 2,
+          "total": 1579.5378178307049,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 660,
+          "sp": 25.851947215963914,
+          "totalKg": 685.851947215964,
+          "precio": 2,
+          "total": 1371.703894431928,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 650,
+          "sp": 25.460251046025064,
+          "totalKg": 675.4602510460251,
+          "precio": 2,
+          "total": 1350.9205020920501,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "32",
+          "kgExp": 480,
+          "sp": 18.801416157064665,
+          "totalKg": 498.80141615706464,
+          "precio": 1,
+          "total": 498.80141615706464,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 691,
+      "precioDesc": 0,
+      "totalLiq": 20151.57721274541,
+      "adelanto": 0,
+      "descuento": 0,
+      "porPagar": 20151.57721274541,
+      "totalKgPagar": 6457.400000000001,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1775693559609,
+      "fechaEmision": "8/4/2026, 7:12:39 p. m.",
+      "semana": "15",
+      "fuc": "PHJ-000105",
+      "productor": "ESPINOZA ÑAÑEZ EDWIN ORLANDO",
+      "guia": "N°EG07-00001255",
+      "fecha": "06/04/2026",
+      "jabas": 450,
+      "kgIngresados": 7980,
+      "sobrepeso": 308,
+      "kgExportableCat1": 6300,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 1372,
+      "filasCat1": [
+        {
+          "cal": "14",
+          "kgExp": 60,
+          "sp": 2.9333333333333336,
+          "totalKg": 62.93333333333334,
+          "precio": 5.6,
+          "total": 352.4266666666667,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 110,
+          "sp": 5.377777777777778,
+          "totalKg": 115.37777777777778,
+          "precio": 5.6,
+          "total": 646.1155555555555,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 280,
+          "sp": 13.68888888888889,
+          "totalKg": 293.68888888888887,
+          "precio": 5.6,
+          "total": 1644.6577777777775,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 360,
+          "sp": 17.599999999999998,
+          "totalKg": 377.6,
+          "precio": 3.4,
+          "total": 1283.8400000000001,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 470,
+          "sp": 22.977777777777778,
+          "totalKg": 492.97777777777776,
+          "precio": 3.4,
+          "total": 1676.1244444444444,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 880,
+          "sp": 43.022222222222226,
+          "totalKg": 923.0222222222222,
+          "precio": 3.4,
+          "total": 3138.2755555555555,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 620,
+          "sp": 30.31111111111111,
+          "totalKg": 650.3111111111111,
+          "precio": 2,
+          "total": 1300.6222222222223,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 820,
+          "sp": 40.08888888888889,
+          "totalKg": 860.0888888888888,
+          "precio": 2,
+          "total": 1720.1777777777777,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 1230,
+          "sp": 60.13333333333333,
+          "totalKg": 1290.1333333333334,
+          "precio": 2,
+          "total": 2580.266666666667,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "32",
+          "kgExp": 1470,
+          "sp": 71.86666666666667,
+          "totalKg": 1541.8666666666668,
+          "precio": 1,
+          "total": 1541.8666666666668,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 1372,
+      "precioDesc": 0,
+      "totalLiq": 15884.373333333333,
+      "adelanto": 0,
+      "descuento": 0,
+      "porPagar": 15884.373333333333,
+      "totalKgPagar": 6608,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1775751251896,
+      "fechaEmision": "9/4/2026, 11:14:11 a. m.",
+      "semana": "15",
+      "fuc": "PHJ-000100",
+      "productor": "LEVANO SOLANO BARTOLOME PATRICIO",
+      "guia": "N°EG07-00001249",
+      "fecha": "05/04/2026",
+      "jabas": 289,
+      "kgIngresados": 4589.8,
+      "sobrepeso": 186.80000000000018,
+      "kgExportableCat1": 3928,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 475,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 316,
+          "sp": 15.0276985743381,
+          "totalKg": 331.0276985743381,
+          "precio": 5.6,
+          "total": 1853.7551120162932,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 644,
+          "sp": 30.626069246435875,
+          "totalKg": 674.6260692464359,
+          "precio": 5.6,
+          "total": 3777.905987780041,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 680,
+          "sp": 32.338085539714896,
+          "totalKg": 712.3380855397149,
+          "precio": 5.6,
+          "total": 3989.0932790224033,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 748,
+          "sp": 35.57189409368639,
+          "totalKg": 783.5718940936864,
+          "precio": 5.6,
+          "total": 4388.002606924643,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 240,
+          "sp": 11.413441955193493,
+          "totalKg": 251.4134419551935,
+          "precio": 3.4,
+          "total": 854.8057026476579,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 600,
+          "sp": 28.533604887983735,
+          "totalKg": 628.5336048879838,
+          "precio": 2,
+          "total": 1257.0672097759675,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "35",
+          "kgExp": 600,
+          "sp": 28.533604887983735,
+          "totalKg": 628.5336048879838,
+          "precio": 0,
+          "total": 0,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "84",
+          "kgExp": 100,
+          "sp": 4.755600814663956,
+          "totalKg": 104.75560081466395,
+          "precio": 0,
+          "total": 0,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 475,
+      "precioDesc": 0,
+      "totalLiq": 16120.629898167006,
+      "adelanto": 0,
+      "descuento": 0,
+      "porPagar": 16120.629898167006,
+      "totalKgPagar": 4114.8,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1776113810816,
+      "fechaEmision": "13/4/2026, 3:56:50 p. m.",
+      "semana": "15",
+      "fuc": "PHJ-000113",
+      "productor": "PEVE CHUQUISPUMA HONORATO JUAN",
+      "guia": "N°EG07-00001267",
+      "fecha": "10/04/2026",
+      "jabas": 500,
+      "kgIngresados": 8640,
+      "sobrepeso": 220,
+      "kgExportableCat1": 7650,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 770,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 240,
+          "sp": 6.901960784313726,
+          "totalKg": 246.90196078431373,
+          "precio": 5.6,
+          "total": 1382.6509803921567,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 610,
+          "sp": 17.542483660130717,
+          "totalKg": 627.5424836601308,
+          "precio": 5.6,
+          "total": 3514.237908496732,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 1100,
+          "sp": 31.633986928104573,
+          "totalKg": 1131.6339869281046,
+          "precio": 5.6,
+          "total": 6337.150326797386,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 1480,
+          "sp": 42.56209150326797,
+          "totalKg": 1522.562091503268,
+          "precio": 5.6,
+          "total": 8526.347712418301,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 1270,
+          "sp": 36.52287581699346,
+          "totalKg": 1306.5228758169935,
+          "precio": 3.5,
+          "total": 4572.830065359477,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 1230,
+          "sp": 35.372549019607845,
+          "totalKg": 1265.372549019608,
+          "precio": 3.5,
+          "total": 4428.803921568628,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 770,
+          "sp": 22.143790849673202,
+          "totalKg": 792.1437908496732,
+          "precio": 3.5,
+          "total": 2772.503267973856,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 440,
+          "sp": 12.65359477124183,
+          "totalKg": 452.65359477124184,
+          "precio": 2.1,
+          "total": 950.5725490196079,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 340,
+          "sp": 9.777777777777779,
+          "totalKg": 349.77777777777777,
+          "precio": 2.1,
+          "total": 734.5333333333333,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 170,
+          "sp": 4.888888888888889,
+          "totalKg": 174.88888888888889,
+          "precio": 2.1,
+          "total": 367.26666666666665,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 770,
+      "precioDesc": 0,
+      "totalLiq": 33586.89673202616,
+      "adelanto": 0,
+      "descuento": 0,
+      "porPagar": 33586.89673202616,
+      "totalKgPagar": 7870,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1776113848346,
+      "fechaEmision": "13/4/2026, 3:57:28 p. m.",
+      "semana": "15",
+      "fuc": "PHJ-000112",
+      "productor": "PEVE CHUQUISPUMA HONORATO JUAN",
+      "guia": "N°EG07-00001268",
+      "fecha": "10/04/2026",
+      "jabas": 500,
+      "kgIngresados": 8570,
+      "sobrepeso": 240,
+      "kgExportableCat1": 7380,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 950,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 110,
+          "sp": 3.5772357723577235,
+          "totalKg": 113.57723577235772,
+          "precio": 5.6,
+          "total": 636.0325203252032,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 590,
+          "sp": 19.1869918699187,
+          "totalKg": 609.1869918699188,
+          "precio": 5.6,
+          "total": 3411.4471544715448,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 1100,
+          "sp": 35.77235772357724,
+          "totalKg": 1135.7723577235772,
+          "precio": 5.6,
+          "total": 6360.325203252032,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 1540,
+          "sp": 50.08130081300813,
+          "totalKg": 1590.081300813008,
+          "precio": 5.6,
+          "total": 8904.455284552845,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 1190,
+          "sp": 38.699186991869915,
+          "totalKg": 1228.69918699187,
+          "precio": 3.5,
+          "total": 4300.447154471545,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 990,
+          "sp": 32.19512195121951,
+          "totalKg": 1022.1951219512196,
+          "precio": 3.5,
+          "total": 3577.6829268292686,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 830,
+          "sp": 26.991869918699187,
+          "totalKg": 856.9918699186992,
+          "precio": 3.5,
+          "total": 2999.471544715447,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 500,
+          "sp": 16.260162601626014,
+          "totalKg": 516.260162601626,
+          "precio": 2.1,
+          "total": 1084.1463414634147,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 330,
+          "sp": 10.731707317073171,
+          "totalKg": 340.7317073170732,
+          "precio": 2.1,
+          "total": 715.5365853658537,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 200,
+          "sp": 6.504065040650407,
+          "totalKg": 206.5040650406504,
+          "precio": 2.1,
+          "total": 433.6585365853659,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 950,
+      "precioDesc": 0,
+      "totalLiq": 32423.203252032523,
+      "adelanto": 10000,
+      "descuento": 0,
+      "porPagar": 22423.203252032523,
+      "totalKgPagar": 7620,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1776113934278,
+      "fechaEmision": "13/4/2026, 3:58:54 p. m.",
+      "semana": "15",
+      "fuc": "PHJ-000111",
+      "productor": "PEVE CHUQUISPUMA HONORATO JUAN",
+      "guia": "N°EG07-00001266",
+      "fecha": "09/04/2026",
+      "jabas": 500,
+      "kgIngresados": 8440,
+      "sobrepeso": 268,
+      "kgExportableCat1": 7692,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 480,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 360,
+          "sp": 12.542901716068643,
+          "totalKg": 372.5429017160686,
+          "precio": 5.6,
+          "total": 2086.2402496099844,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 846,
+          "sp": 29.47581903276131,
+          "totalKg": 875.4758190327614,
+          "precio": 5.6,
+          "total": 4902.6645865834635,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 1076,
+          "sp": 37.489339573582946,
+          "totalKg": 1113.489339573583,
+          "precio": 5.6,
+          "total": 6235.5403016120645,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 1430,
+          "sp": 49.82319292771711,
+          "totalKg": 1479.8231929277172,
+          "precio": 5.6,
+          "total": 8287.009880395215,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 1160,
+          "sp": 40.41601664066563,
+          "totalKg": 1200.4160166406657,
+          "precio": 3.5,
+          "total": 4201.45605824233,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 1030,
+          "sp": 35.886635465418614,
+          "totalKg": 1065.8866354654185,
+          "precio": 3.5,
+          "total": 3730.603224128965,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 800,
+          "sp": 27.873114924596983,
+          "totalKg": 827.873114924597,
+          "precio": 3.5,
+          "total": 2897.5559022360894,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 410,
+          "sp": 14.284971398855955,
+          "totalKg": 424.28497139885593,
+          "precio": 2.1,
+          "total": 890.9984399375975,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 240,
+          "sp": 8.361934477379096,
+          "totalKg": 248.3619344773791,
+          "precio": 2.1,
+          "total": 521.5600624024961,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 170,
+          "sp": 5.923036921476859,
+          "totalKg": 175.92303692147686,
+          "precio": 2.1,
+          "total": 369.43837753510144,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "32",
+          "kgExp": 170,
+          "sp": 5.923036921476859,
+          "totalKg": 175.92303692147686,
+          "precio": 1,
+          "total": 175.92303692147686,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 480,
+      "precioDesc": 0,
+      "totalLiq": 34298.99011960479,
+      "adelanto": 10000,
+      "descuento": 0,
+      "porPagar": 24298.990119604787,
+      "totalKgPagar": 7959.999999999999,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1776135764377,
+      "fechaEmision": "13/4/2026, 10:02:44 p. m.",
+      "semana": "15",
+      "fuc": "PHJ-000114",
+      "productor": "SOTO SANTIAGO GREGORIO ESTEBAN",
+      "guia": "EG07-00001269",
+      "fecha": "10/04/2026",
+      "jabas": 500,
+      "kgIngresados": 10510,
+      "sobrepeso": 388,
+      "kgExportableCat1": 6620,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 3502,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 10,
+          "sp": 0.5861027190332326,
+          "totalKg": 10.586102719033233,
+          "precio": 5.6,
+          "total": 59.282175226586105,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 40,
+          "sp": 2.3444108761329305,
+          "totalKg": 42.34441087613293,
+          "precio": 5.6,
+          "total": 237.12870090634442,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 80,
+          "sp": 4.688821752265861,
+          "totalKg": 84.68882175226587,
+          "precio": 5.6,
+          "total": 474.25740181268884,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 120,
+          "sp": 7.0332326283987925,
+          "totalKg": 127.03323262839879,
+          "precio": 5.6,
+          "total": 711.3861027190331,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 170,
+          "sp": 9.963746223564955,
+          "totalKg": 179.96374622356495,
+          "precio": 3.4,
+          "total": 611.8767371601208,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 280,
+          "sp": 16.410876132930515,
+          "totalKg": 296.4108761329305,
+          "precio": 3.4,
+          "total": 1007.7969788519638,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 710,
+          "sp": 41.61329305135951,
+          "totalKg": 751.6132930513595,
+          "precio": 3.4,
+          "total": 2555.4851963746223,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 820,
+          "sp": 48.06042296072508,
+          "totalKg": 868.0604229607251,
+          "precio": 2,
+          "total": 1736.1208459214502,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 900,
+          "sp": 52.74924471299094,
+          "totalKg": 952.749244712991,
+          "precio": 2,
+          "total": 1905.498489425982,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 1120,
+          "sp": 65.64350453172206,
+          "totalKg": 1185.643504531722,
+          "precio": 2,
+          "total": 2371.287009063444,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "32",
+          "kgExp": 1340,
+          "sp": 78.53776435045317,
+          "totalKg": 1418.5377643504532,
+          "precio": 1,
+          "total": 1418.5377643504532,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [
+        {
+          "cal": "SC",
+          "kgExp": 1030,
+          "sp": 60.368580060422964,
+          "totalKg": 1090.368580060423,
+          "precio": 0.8,
+          "total": 872.2948640483385,
+          "categoria": "CAT2"
+        }
+      ],
+      "kgDescarte": 3502,
+      "precioDesc": 0,
+      "totalLiq": 13960.952265861028,
+      "adelanto": 0,
+      "descuento": 197,
+      "porPagar": 13763.952265861028,
+      "totalKgPagar": 7008,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1776159060849,
+      "fechaEmision": "14/4/2026, 4:31:00 a. m.",
+      "semana": "16",
+      "fuc": "PHJ-000116",
+      "productor": "CRISTOBAL PALOMINO SONIA",
+      "guia": "EG07-00001271",
+      "fecha": "13/04/2026",
+      "jabas": 500,
+      "kgIngresados": 8670,
+      "sobrepeso": 197,
+      "kgExportableCat1": 7510,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 963,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 1270,
+          "sp": 33.314247669773636,
+          "totalKg": 1303.3142476697735,
+          "precio": 5.1,
+          "total": 6646.9,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 1900,
+          "sp": 49.84021304926764,
+          "totalKg": 1949.8402130492677,
+          "precio": 5.1,
+          "total": 9944.19,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 1470,
+          "sp": 38.56058588548601,
+          "totalKg": 1508.560585885486,
+          "precio": 5.1,
+          "total": 7693.66,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 1230,
+          "sp": 32.26498002663116,
+          "totalKg": 1262.264980026631,
+          "precio": 5.1,
+          "total": 6437.55,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 570,
+          "sp": 14.952063914780293,
+          "totalKg": 584.9520639147803,
+          "precio": 2.7,
+          "total": 1579.37,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 440,
+          "sp": 11.541944074567244,
+          "totalKg": 451.54194407456725,
+          "precio": 2.7,
+          "total": 1219.16,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 240,
+          "sp": 6.29560585885486,
+          "totalKg": 246.29560585885486,
+          "precio": 2.7,
+          "total": 665,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 190,
+          "sp": 4.984021304926764,
+          "totalKg": 194.98402130492676,
+          "precio": 1.5,
+          "total": 292.48,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 100,
+          "sp": 2.623169107856192,
+          "totalKg": 102.62316910785619,
+          "precio": 1.5,
+          "total": 153.93,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 70,
+          "sp": 1.8362183754993342,
+          "totalKg": 71.83621837549933,
+          "precio": 1.5,
+          "total": 107.75,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "32",
+          "kgExp": 30,
+          "sp": 0.7869507323568575,
+          "totalKg": 30.786950732356857,
+          "precio": 0.8,
+          "total": 24.63,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 963,
+      "precioDesc": 0,
+      "totalLiq": 34764.62,
+      "adelanto": 0,
+      "descuento": 0,
+      "porPagar": 34764.62,
+      "totalKgPagar": 7707,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1776159217382,
+      "fechaEmision": "14/4/2026, 4:33:37 a. m.",
+      "semana": "16",
+      "fuc": "PHJ-000117",
+      "productor": "PEVE CHUQUISPUMA HONORATO JUAN",
+      "guia": "EG07-00001272",
+      "fecha": "12/04/2026",
+      "jabas": 215,
+      "kgIngresados": 3783,
+      "sobrepeso": 83,
+      "kgExportableCat1": 3360,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 340,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 90,
+          "sp": 2.2232142857142856,
+          "totalKg": 92.22321428571429,
+          "precio": 5.1,
+          "total": 470.3383928571429,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 350,
+          "sp": 8.645833333333334,
+          "totalKg": 358.6458333333333,
+          "precio": 5.1,
+          "total": 1829.0937499999998,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 430,
+          "sp": 10.62,
+          "totalKg": 440.62,
+          "precio": 5.1,
+          "total": 2247.16,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 640,
+          "sp": 15.81,
+          "totalKg": 655.81,
+          "precio": 5.1,
+          "total": 3344.63,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 510,
+          "sp": 12.6,
+          "totalKg": 522.6,
+          "precio": 2.7,
+          "total": 1411.02,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 440,
+          "sp": 10.86904761904762,
+          "totalKg": 450.8690476190476,
+          "precio": 2.7,
+          "total": 1217.3464285714285,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 270,
+          "sp": 6.669642857142858,
+          "totalKg": 276.66964285714283,
+          "precio": 2.7,
+          "total": 747.0080357142857,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 200,
+          "sp": 4.94047619047619,
+          "totalKg": 204.9404761904762,
+          "precio": 1.5,
+          "total": 307.41071428571433,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 120,
+          "sp": 2.96,
+          "totalKg": 122.96,
+          "precio": 1.5,
+          "total": 184.44,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 90,
+          "sp": 2.22,
+          "totalKg": 92.22,
+          "precio": 1.5,
+          "total": 138.33,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "32",
+          "kgExp": 80,
+          "sp": 1.98,
+          "totalKg": 81.98,
+          "precio": 0.8,
+          "total": 65.58,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [
+        {
+          "cal": "SC",
+          "kgExp": 140,
+          "sp": 3.46,
+          "totalKg": 143.46,
+          "precio": 0.7,
+          "total": 100.42,
+          "categoria": "CAT2"
+        }
+      ],
+      "kgDescarte": 340,
+      "precioDesc": 0,
+      "totalLiq": 12062.77732142857,
+      "adelanto": 0,
+      "descuento": 0,
+      "porPagar": 12062.77732142857,
+      "totalKgPagar": 3443,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1776159806129,
+      "fechaEmision": "14/4/2026, 4:43:26 a. m.",
+      "semana": "16",
+      "fuc": "PHJ-000118",
+      "productor": "RAMOS RAVELO EUSEBIO",
+      "guia": "EG07-00001273",
+      "fecha": "12/04/2026",
+      "jabas": 248,
+      "kgIngresados": 4463.6,
+      "sobrepeso": 105.60000000000036,
+      "kgExportableCat1": 3600,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 758,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 10,
+          "sp": 0.29333333333333433,
+          "totalKg": 10.293333333333335,
+          "precio": 5.1,
+          "total": 52.496,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 30,
+          "sp": 0.88,
+          "totalKg": 30.88,
+          "precio": 5.1,
+          "total": 157.49,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 40,
+          "sp": 1.17,
+          "totalKg": 41.17,
+          "precio": 5.1,
+          "total": 209.97,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 50,
+          "sp": 1.47,
+          "totalKg": 51.47,
+          "precio": 5.1,
+          "total": 262.5,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 60,
+          "sp": 1.760000000000006,
+          "totalKg": 61.760000000000005,
+          "precio": 2.7,
+          "total": 166.75200000000004,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 80,
+          "sp": 2.35,
+          "totalKg": 82.35,
+          "precio": 2.7,
+          "total": 222.35,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 150,
+          "sp": 4.4,
+          "totalKg": 154.4,
+          "precio": 2.7,
+          "total": 416.88,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 220,
+          "sp": 6.45,
+          "totalKg": 226.45,
+          "precio": 1.5,
+          "total": 339.67,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 350,
+          "sp": 10.27,
+          "totalKg": 360.27,
+          "precio": 1.5,
+          "total": 540.41,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 1010,
+          "sp": 29.626666666666768,
+          "totalKg": 1039.6266666666668,
+          "precio": 1.5,
+          "total": 1559.44,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "32",
+          "kgExp": 1600,
+          "sp": 46.93,
+          "totalKg": 1646.93,
+          "precio": 0.8,
+          "total": 1317.54,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [
+        {
+          "cal": "SC",
+          "kgExp": 0,
+          "sp": 0,
+          "totalKg": 0,
+          "precio": 0.7,
+          "total": 0,
+          "categoria": "CAT2"
+        }
+      ],
+      "kgDescarte": 758,
+      "precioDesc": 0,
+      "totalLiq": 5245.498,
+      "adelanto": 0,
+      "descuento": 0,
+      "porPagar": 5245.498,
+      "totalKgPagar": 3705.6000000000004,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1776270405897,
+      "fechaEmision": "15/4/2026, 11:26:45 a. m.",
+      "semana": "16",
+      "fuc": "PHJ-000115",
+      "productor": "SOTO SANTIAGO GREGORIO ESTEBAN",
+      "guia": "EG07-00001270",
+      "fecha": "13/04/2026",
+      "jabas": 316,
+      "kgIngresados": 6361.2,
+      "sobrepeso": 137.19999999999982,
+      "kgExportableCat1": 4130,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 2094,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 10,
+          "sp": 0.33220338983050807,
+          "totalKg": 10.332203389830507,
+          "precio": 5.2,
+          "total": 53.72745762711864,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 60,
+          "sp": 1.9932203389830483,
+          "totalKg": 61.99322033898305,
+          "precio": 5.2,
+          "total": 322.3647457627119,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 20,
+          "sp": 0.6644067796610161,
+          "totalKg": 20.664406779661014,
+          "precio": 5.2,
+          "total": 107.45491525423728,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 170,
+          "sp": 5.647457627118636,
+          "totalKg": 175.64745762711863,
+          "precio": 5.2,
+          "total": 913.3667796610168,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 170,
+          "sp": 5.647457627118636,
+          "totalKg": 175.64745762711863,
+          "precio": 2.7,
+          "total": 474.2481355932203,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 430,
+          "sp": 14.284745762711847,
+          "totalKg": 444.28474576271185,
+          "precio": 2.7,
+          "total": 1199.568813559322,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 480,
+          "sp": 15.945762711864386,
+          "totalKg": 495.9457627118644,
+          "precio": 2.7,
+          "total": 1339.053559322034,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 530,
+          "sp": 17.606779661016926,
+          "totalKg": 547.606779661017,
+          "precio": 1.5,
+          "total": 821.4101694915255,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 770,
+          "sp": 25.579661016949117,
+          "totalKg": 795.5796610169491,
+          "precio": 1.5,
+          "total": 1193.3694915254237,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 730,
+          "sp": 24.25084745762709,
+          "totalKg": 754.2508474576271,
+          "precio": 1.5,
+          "total": 1131.3762711864406,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "32",
+          "kgExp": 760,
+          "sp": 25.24745762711861,
+          "totalKg": 785.2474576271186,
+          "precio": 0.8,
+          "total": 628.1979661016949,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 2094,
+      "precioDesc": 0,
+      "totalLiq": 8184.138305084744,
+      "adelanto": 0,
+      "descuento": 0,
+      "porPagar": 8184.138305084744,
+      "totalKgPagar": 4267.2,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1776270838786,
+      "fechaEmision": "15/4/2026, 11:33:58 a. m.",
+      "semana": "16",
+      "fuc": "PHJ-000121",
+      "productor": "CAHUAS LEON NERIDA YOLANDA",
+      "guia": "EG07-00001274",
+      "fecha": "14/04/2026",
+      "jabas": 531,
+      "kgIngresados": 8664.2,
+      "sobrepeso": 201.20000000000073,
+      "kgExportableCat1": 2970,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 5493,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 10,
+          "sp": 0.6774410774410798,
+          "totalKg": 10.67744107744108,
+          "precio": 5.1,
+          "total": 54.4549494949495,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 30,
+          "sp": 2.0323232323232396,
+          "totalKg": 32.032323232323236,
+          "precio": 5.1,
+          "total": 163.3648484848485,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 60,
+          "sp": 4.064646464646479,
+          "totalKg": 64.06464646464647,
+          "precio": 5.1,
+          "total": 326.729696969697,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 160,
+          "sp": 10.839057239057277,
+          "totalKg": 170.83905723905727,
+          "precio": 5.1,
+          "total": 871.279191919192,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 90,
+          "sp": 6.096969696969719,
+          "totalKg": 96.09696969696972,
+          "precio": 2.7,
+          "total": 259.4618181818183,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 730,
+          "sp": 49.45319865319883,
+          "totalKg": 779.4531986531988,
+          "precio": 2.7,
+          "total": 2104.523636363637,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 210,
+          "sp": 14.226262626262677,
+          "totalKg": 224.22626262626267,
+          "precio": 2.7,
+          "total": 605.4109090909093,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 920,
+          "sp": 62.324579124579344,
+          "totalKg": 982.3245791245794,
+          "precio": 1.5,
+          "total": 1473.486868686869,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 340,
+          "sp": 23.032996632996717,
+          "totalKg": 363.03299663299674,
+          "precio": 1.5,
+          "total": 544.549494949495,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 420,
+          "sp": 28.452525252525355,
+          "totalKg": 448.45252525252533,
+          "precio": 1.5,
+          "total": 672.678787878788,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 5493,
+      "precioDesc": 0,
+      "totalLiq": 7075.940202020204,
+      "adelanto": 0,
+      "descuento": 1052,
+      "porPagar": 6023.940202020204,
+      "totalKgPagar": 3171.200000000001,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1776277166249,
+      "fechaEmision": "15/4/2026, 1:19:26 p. m.",
+      "semana": "16",
+      "fuc": "PHJ-000120",
+      "productor": "CRISTOBAL PALOMINO SONIA",
+      "guia": "EG07-00001276",
+      "fecha": "14/04/2026",
+      "jabas": 246,
+      "kgIngresados": 4287.2,
+      "sobrepeso": 141.19999999999982,
+      "kgExportableCat1": 3660,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 486,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 530,
+          "sp": 20.4469945355191,
+          "totalKg": 550.4469945355191,
+          "precio": 5.1,
+          "total": 2807.2796721311474,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 790,
+          "sp": 30.47759562841526,
+          "totalKg": 820.4775956284152,
+          "precio": 5.1,
+          "total": 4184.435737704917,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 670,
+          "sp": 25.84808743169396,
+          "totalKg": 695.848087431694,
+          "precio": 5.1,
+          "total": 3548.8252459016394,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 590,
+          "sp": 22.761748633879755,
+          "totalKg": 612.7617486338797,
+          "precio": 5.1,
+          "total": 3125.0849180327864,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 320,
+          "sp": 12.345355191256814,
+          "totalKg": 332.34535519125683,
+          "precio": 2.7,
+          "total": 897.3324590163935,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 300,
+          "sp": 11.573770491803263,
+          "totalKg": 311.57377049180326,
+          "precio": 2.7,
+          "total": 841.2491803278689,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 170,
+          "sp": 6.558469945355183,
+          "totalKg": 176.55846994535517,
+          "precio": 2.7,
+          "total": 476.707868852459,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 80,
+          "sp": 3.0863387978142036,
+          "totalKg": 83.08633879781421,
+          "precio": 1.5,
+          "total": 124.6295081967213,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 180,
+          "sp": 6.944262295081958,
+          "totalKg": 186.94426229508196,
+          "precio": 1.5,
+          "total": 280.41639344262296,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 30,
+          "sp": 1.1573770491803264,
+          "totalKg": 31.157377049180326,
+          "precio": 1.5,
+          "total": 46.73606557377049,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 486,
+      "precioDesc": 0,
+      "totalLiq": 16332.697049180326,
+      "adelanto": 0,
+      "descuento": 0,
+      "porPagar": 16332.697049180326,
+      "totalKgPagar": 3801.1999999999994,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1776277371204,
+      "fechaEmision": "15/4/2026, 1:22:51 p. m.",
+      "fechaModificacion": "15/4/2026, 5:45:30 p. m.",
+      "semana": "16",
+      "fuc": "PHJ-000119",
+      "productor": "SANCHEZ GOMEZ HERMAS ALBERTO",
+      "guia": "EG07-00001275",
+      "fecha": "14/04/2026",
+      "jabas": 500,
+      "kgIngresados": 8650,
+      "sobrepeso": 262,
+      "kgExportableCat1": 6980,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 0,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 330,
+          "sp": 12.386819484240688,
+          "totalKg": 342.3868194842407,
+          "precio": 5.2,
+          "total": 1780.41,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 570,
+          "sp": 21.39541547277937,
+          "totalKg": 591.3954154727794,
+          "precio": 5.2,
+          "total": 3075.26,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 890,
+          "sp": 33.40687679083094,
+          "totalKg": 923.4068767908309,
+          "precio": 5.2,
+          "total": 4801.72,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 1230,
+          "sp": 46.16905444126075,
+          "totalKg": 1276.1690544412606,
+          "precio": 5.2,
+          "total": 6636.08,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 930,
+          "sp": 34.90830945558739,
+          "totalKg": 964.9083094555874,
+          "precio": 2.7,
+          "total": 2605.25,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 930,
+          "sp": 34.90830945558739,
+          "totalKg": 964.9083094555874,
+          "precio": 2.7,
+          "total": 2605.25,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 650,
+          "sp": 24.398280802292263,
+          "totalKg": 674.3982808022922,
+          "precio": 2.7,
+          "total": 1820.88,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 420,
+          "sp": 15.765042979942693,
+          "totalKg": 435.7650429799427,
+          "precio": 1.5,
+          "total": 653.65,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 620,
+          "sp": 23.27220630372493,
+          "totalKg": 643.2722063037249,
+          "precio": 1.5,
+          "total": 964.91,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 240,
+          "sp": 9.008595988538682,
+          "totalKg": 249.00859598853867,
+          "precio": 1.5,
+          "total": 373.51,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "32",
+          "kgExp": 170,
+          "sp": 6.3810888252149,
+          "totalKg": 176.3810888252149,
+          "precio": 0.8,
+          "total": 141.1,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 1408,
+      "precioDesc": 0,
+      "totalLiq": 25458.02,
+      "adelanto": 0,
+      "descuento": 2573.33,
+      "responsable": "",
+      "porPagar": 22884.690000000002,
+      "totalKgPagar": 7241.999999999999,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1776277430185,
+      "fechaEmision": "15/4/2026, 1:23:50 p. m.",
+      "fechaModificacion": "15/4/2026, 5:43:32 p. m.",
+      "semana": "16",
+      "fuc": "PHJ-000122",
+      "productor": "SANCHEZ GOMEZ HERMAS ALBERTO",
+      "guia": "EG07-00001277",
+      "fecha": "14/04/2026",
+      "jabas": 500,
+      "kgIngresados": 8600,
+      "sobrepeso": 172,
+      "kgExportableCat1": 7050,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 0,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 200,
+          "sp": 4.879432624113475,
+          "totalKg": 204.87943262411346,
+          "precio": 5.2,
+          "total": 1065.37304964539,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 700,
+          "sp": 17.078014184397166,
+          "totalKg": 717.0780141843971,
+          "precio": 5.2,
+          "total": 3728.8056737588654,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 910,
+          "sp": 22.20141843971631,
+          "totalKg": 932.2014184397163,
+          "precio": 5.2,
+          "total": 4847.447375886525,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 1300,
+          "sp": 31.716312056737586,
+          "totalKg": 1331.7163120567375,
+          "precio": 5.2,
+          "total": 6924.924822695035,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 1130,
+          "sp": 27.568794326241136,
+          "totalKg": 1157.5687943262412,
+          "precio": 2.7,
+          "total": 3125.4357446808517,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 950,
+          "sp": 23.177304964539008,
+          "totalKg": 973.177304964539,
+          "precio": 2.7,
+          "total": 2627.5787234042555,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 690,
+          "sp": 16.83404255319149,
+          "totalKg": 706.8340425531915,
+          "precio": 2.7,
+          "total": 1908.4519148936172,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 440,
+          "sp": 10.734751773049645,
+          "totalKg": 450.73475177304965,
+          "precio": 1.5,
+          "total": 676.1021276595745,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 270,
+          "sp": 6.587234042553192,
+          "totalKg": 276.5872340425532,
+          "precio": 1.5,
+          "total": 414.88085106382977,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 240,
+          "sp": 5.855319148936171,
+          "totalKg": 245.85531914893616,
+          "precio": 1.5,
+          "total": 368.78297872340426,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "32",
+          "kgExp": 220,
+          "sp": 5.3673758865248224,
+          "totalKg": 225.36737588652483,
+          "precio": 0.8,
+          "total": 180.29390070921988,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 1378,
+      "precioDesc": 0,
+      "totalLiq": 25868.077163120564,
+      "adelanto": 0,
+      "descuento": 2573.33,
+      "responsable": "",
+      "porPagar": 23294.747163120563,
+      "totalKgPagar": 7222,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1776277556968,
+      "fechaEmision": "15/4/2026, 1:25:56 p. m.",
+      "fechaModificacion": "15/4/2026, 5:44:41 p. m.",
+      "semana": "16",
+      "fuc": "PHJ-000123",
+      "productor": "SANCHEZ GOMEZ HERMAS ALBERTO",
+      "guia": "EG07-00001278",
+      "fecha": "14/04/2026",
+      "jabas": 500,
+      "kgIngresados": 8700,
+      "sobrepeso": 196,
+      "kgExportableCat1": 5530,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 0,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 40,
+          "sp": 1.4177215189873418,
+          "totalKg": 41.41772151898734,
+          "precio": 5.2,
+          "total": 215.3721518987342,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 250,
+          "sp": 8.860759493670885,
+          "totalKg": 258.8607594936709,
+          "precio": 5.2,
+          "total": 1346.0759493670887,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 480,
+          "sp": 17.012658227848103,
+          "totalKg": 497.0126582278481,
+          "precio": 5.2,
+          "total": 2584.46582278481,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 660,
+          "sp": 23.39240506329114,
+          "totalKg": 683.3924050632911,
+          "precio": 5.2,
+          "total": 3553.640506329114,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 970,
+          "sp": 34.379746835443036,
+          "totalKg": 1004.379746835443,
+          "precio": 2.7,
+          "total": 2711.8253164556963,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 640,
+          "sp": 22.68354430379747,
+          "totalKg": 662.6835443037975,
+          "precio": 2.7,
+          "total": 1789.2455696202533,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 680,
+          "sp": 24.10126582278481,
+          "totalKg": 704.1012658227849,
+          "precio": 2.7,
+          "total": 1901.0734177215193,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 270,
+          "sp": 9.569620253164556,
+          "totalKg": 279.56962025316454,
+          "precio": 1.5,
+          "total": 419.3544303797468,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 680,
+          "sp": 24.10126582278481,
+          "totalKg": 704.1012658227849,
+          "precio": 1.5,
+          "total": 1056.1518987341774,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 450,
+          "sp": 15.949367088607595,
+          "totalKg": 465.9493670886076,
+          "precio": 1.5,
+          "total": 698.9240506329113,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "32",
+          "kgExp": 410,
+          "sp": 14.531645569620254,
+          "totalKg": 424.53164556962025,
+          "precio": 0.8,
+          "total": 339.62531645569624,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 2974,
+      "precioDesc": 0,
+      "totalLiq": 16615.754430379744,
+      "adelanto": 0,
+      "descuento": 3133.33,
+      "responsable": "",
+      "porPagar": 13482.424430379744,
+      "totalKgPagar": 5726,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1776471138724,
+      "fechaEmision": "17/4/2026, 7:12:18 p. m.",
+      "fechaModificacion": null,
+      "semana": "16",
+      "fuc": "PHJ-000126",
+      "productor": "CASTILLON RODRIGUEZ TEODOLINDA LEONOR",
+      "guia": "N°EG07-00001285",
+      "fecha": "15/04/2026",
+      "jabas": 500,
+      "kgIngresados": 8500,
+      "sobrepeso": 186,
+      "kgExportableCat1": 5670,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 2644,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 420,
+          "sp": 13.777777777777777,
+          "totalKg": 433.77777777777777,
+          "precio": 5.1,
+          "total": 2212.2666666666664,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 500,
+          "sp": 16.402116402116402,
+          "totalKg": 516.4021164021163,
+          "precio": 5.1,
+          "total": 2633.6507936507933,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 520,
+          "sp": 17.058201058201057,
+          "totalKg": 537.058201058201,
+          "precio": 5.1,
+          "total": 2738.996825396825,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 650,
+          "sp": 21.322751322751323,
+          "totalKg": 671.3227513227513,
+          "precio": 5.1,
+          "total": 3423.7460317460313,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 820,
+          "sp": 26.8994708994709,
+          "totalKg": 846.8994708994709,
+          "precio": 2.7,
+          "total": 2286.6285714285714,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 870,
+          "sp": 28.539682539682538,
+          "totalKg": 898.5396825396825,
+          "precio": 2.7,
+          "total": 2426.057142857143,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 420,
+          "sp": 13.777777777777777,
+          "totalKg": 433.77777777777777,
+          "precio": 2.7,
+          "total": 1171.2,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 430,
+          "sp": 14.105820105820104,
+          "totalKg": 444.1058201058201,
+          "precio": 1.5,
+          "total": 666.1587301587301,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 400,
+          "sp": 13.12169312169312,
+          "totalKg": 413.1216931216931,
+          "precio": 1.5,
+          "total": 619.6825396825396,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 380,
+          "sp": 12.465608465608465,
+          "totalKg": 392.46560846560845,
+          "precio": 1.5,
+          "total": 588.6984126984127,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "32",
+          "kgExp": 260,
+          "sp": 8.529100529100528,
+          "totalKg": 268.5291005291005,
+          "precio": 0.8,
+          "total": 214.8232804232804,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 2644,
+      "precioDesc": 0,
+      "totalLiq": 18981.908994708996,
+      "adelanto": 0,
+      "descuento": 3421.9,
+      "responsable": "",
+      "porPagar": 15560.008994708996,
+      "totalKgPagar": 5855.999999999999,
+      "estado": "EMITIDA"
+    },
+    {
+      "id": 1776471232250,
+      "fechaEmision": "17/4/2026, 7:13:52 p. m.",
+      "fechaModificacion": null,
+      "semana": "16",
+      "fuc": "PHJ-000128",
+      "productor": "CASTILLON RODRIGUEZ TEODOLINDA LEONOR",
+      "guia": "N°EG07-00001288",
+      "fecha": "16/04/2026",
+      "jabas": 497,
+      "kgIngresados": 8385.4,
+      "sobrepeso": 215.39999999999964,
+      "kgExportableCat1": 5270,
+      "kgExportableCat2": 0,
+      "kgMercadoNacional": 2900,
+      "filasCat1": [
+        {
+          "cal": "12",
+          "kgExp": 100,
+          "sp": 4.087286527514224,
+          "totalKg": 104.08728652751422,
+          "precio": 5.1,
+          "total": 530.8451612903225,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "14",
+          "kgExp": 320,
+          "sp": 13.079316888045518,
+          "totalKg": 333.0793168880455,
+          "precio": 5.1,
+          "total": 1698.704516129032,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "16",
+          "kgExp": 370,
+          "sp": 15.12296015180263,
+          "totalKg": 385.12296015180266,
+          "precio": 5.1,
+          "total": 1964.1270967741934,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "18",
+          "kgExp": 690,
+          "sp": 28.20227703984815,
+          "totalKg": 718.2022770398481,
+          "precio": 5.1,
+          "total": 3662.831612903225,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "20",
+          "kgExp": 840,
+          "sp": 34.33320683111949,
+          "totalKg": 874.3332068311195,
+          "precio": 2.7,
+          "total": 2360.6996584440226,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "22",
+          "kgExp": 720,
+          "sp": 29.428462998102418,
+          "totalKg": 749.4284629981024,
+          "precio": 2.7,
+          "total": 2023.4568500948767,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "24",
+          "kgExp": 560,
+          "sp": 22.88880455407966,
+          "totalKg": 582.8888045540797,
+          "precio": 2.7,
+          "total": 1573.7997722960154,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "26",
+          "kgExp": 480,
+          "sp": 19.618975332068278,
+          "totalKg": 499.61897533206826,
+          "precio": 1.5,
+          "total": 749.4284629981024,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "28",
+          "kgExp": 440,
+          "sp": 17.98406072106259,
+          "totalKg": 457.9840607210626,
+          "precio": 1.5,
+          "total": 686.9760910815938,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "30",
+          "kgExp": 400,
+          "sp": 16.349146110056896,
+          "totalKg": 416.3491461100569,
+          "precio": 1.5,
+          "total": 624.5237191650854,
+          "categoria": "CAT1"
+        },
+        {
+          "cal": "32",
+          "kgExp": 350,
+          "sp": 14.305502846299785,
+          "totalKg": 364.30550284629976,
+          "precio": 0.8,
+          "total": 291.44440227703984,
+          "categoria": "CAT1"
+        }
+      ],
+      "filasCat2": [],
+      "kgDescarte": 2900,
+      "precioDesc": 0,
+      "totalLiq": 16166.837343453508,
+      "adelanto": 0,
+      "descuento": 3558,
+      "responsable": "",
+      "porPagar": 12608.837343453508,
+      "totalKgPagar": 5485.4,
+      "estado": "EMITIDA"
+    }
+  ],
+  "jr_analytics_v1": [
+    {
+      "id": 1776717370083,
+      "tipo": "simulacion",
+      "fecha": "20/4/2026, 3:36:10 p. m.",
+      "ref": "",
+      "cliente": "TOMINAGA",
+      "destino": "JAPON",
+      "semana": "17",
+      "kg": 24000,
+      "cajas": 2400,
+      "tc": 3.42,
+      "opl": 2000,
+      "qi": 180,
+      "ft": 0,
+      "fin": 200,
+      "analisis": 300,
+      "estr": 3000,
+      "otros": 6400,
+      "maquila_kg": 0.14,
+      "caja_kg": 0.07,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1400,
+      "tipo_precio": "fijo",
+      "adelanto_pct": 50,
+      "dias_cobro": 40,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "24",
+          "p": 40,
+          "v": 5.2
+        },
+        {
+          "n": "30",
+          "p": 25,
+          "v": 2.7
+        },
+        {
+          "n": "35",
+          "p": 25,
+          "v": 1.5
+        },
+        {
+          "n": "84",
+          "p": 10,
+          "v": 0.8
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "24",
+          "p": 40,
+          "v": 2.22
+        },
+        {
+          "n": "30",
+          "p": 25,
+          "v": 2.32
+        },
+        {
+          "n": "35",
+          "p": 25,
+          "v": 2.1
+        },
+        {
+          "n": "84",
+          "p": 10,
+          "v": 2
+        }
+      ],
+      "mp_sol": 3.21,
+      "mp_usd": 0.976140350877193,
+      "ct": 40547.36842105263,
+      "cu": 1.6894736842105265,
+      "pvt": 52632,
+      "pvu": 2.193,
+      "ub": 12084.631578947367,
+      "db": 1578.96,
+      "uir": 15063.591578947366,
+      "ir": 4443.759515789473,
+      "un": 10619.832063157894,
+      "mrg": 20.177519499844,
+      "adelanto_usd": 26316,
+      "exposicion": 14231.368421052633,
+      "cobertura_pct": 64.9018691588785,
+      "riesgo": "BAJO-MEDIO",
+      "score": 29
+    },
+    {
+      "id": 1776873250038,
+      "tipo": "simulacion",
+      "fecha": "22/4/2026, 10:54:10 a. m.",
+      "ref": "",
+      "cliente": "TOMINAGA",
+      "destino": "JAPON",
+      "semana": "16",
+      "kg": 24000,
+      "cajas": 2400,
+      "tc": 3.42,
+      "opl": 2000,
+      "qi": 180,
+      "ft": 0,
+      "fin": 200,
+      "analisis": 300,
+      "estr": 3000,
+      "otros": 5000,
+      "maquila_kg": 0.14,
+      "caja_kg": 0.07,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1400,
+      "tipo_precio": "fijo",
+      "adelanto_pct": 50,
+      "dias_cobro": 60,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "24",
+          "p": 25,
+          "v": 4
+        },
+        {
+          "n": "30",
+          "p": 45,
+          "v": 4
+        },
+        {
+          "n": "35",
+          "p": 20,
+          "v": 3
+        },
+        {
+          "n": "84",
+          "p": 10,
+          "v": 1.25
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "24",
+          "p": 25,
+          "v": 2
+        },
+        {
+          "n": "30",
+          "p": 45,
+          "v": 2
+        },
+        {
+          "n": "35",
+          "p": 20,
+          "v": 1.8
+        },
+        {
+          "n": "84",
+          "p": 10,
+          "v": 1.35
+        }
+      ],
+      "mp_sol": 3.5250000000000004,
+      "mp_usd": 1.0719298245614037,
+      "ct": 41446.315789473694,
+      "cu": 1.726929824561404,
+      "pvt": 45480,
+      "pvu": 1.895,
+      "ub": 4033.684210526306,
+      "db": 1364.3999999999999,
+      "uir": 6798.0842105263055,
+      "ir": 2005.43484210526,
+      "un": 4792.649368421045,
+      "mrg": 10.537927371198428,
+      "adelanto_usd": 22740,
+      "exposicion": 18706.315789473694,
+      "cobertura_pct": 54.866155330929026,
+      "riesgo": "MEDIO",
+      "score": 39
+    },
+    {
+      "id": 1776874689302,
+      "tipo": "simulacion",
+      "fecha": "22/4/2026, 11:18:09 a. m.",
+      "ref": "WALTER",
+      "cliente": "KRAAIJEVELD",
+      "destino": "ESPAÑA",
+      "semana": "16",
+      "kg": 24000,
+      "cajas": 2400,
+      "tc": 3.42,
+      "opl": 2000,
+      "qi": 180,
+      "ft": 0,
+      "fin": 200,
+      "analisis": 300,
+      "estr": 3000,
+      "otros": 0,
+      "maquila_kg": 0.14,
+      "caja_kg": 0.07,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1400,
+      "tipo_precio": "fijo",
+      "adelanto_pct": 50,
+      "dias_cobro": 60,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "12-18",
+          "p": 30,
+          "v": 5
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 3
+        },
+        {
+          "n": "26-30",
+          "p": 20,
+          "v": 1.5
+        },
+        {
+          "n": "32",
+          "p": 10,
+          "v": 1
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "12-18",
+          "p": 30,
+          "v": 1.9
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 1.9
+        },
+        {
+          "n": "26-30",
+          "p": 20,
+          "v": 1.2
+        },
+        {
+          "n": "32",
+          "p": 10,
+          "v": 1.2
+        }
+      ],
+      "mp_sol": 3.1000000000000005,
+      "mp_usd": 0.9426900584795324,
+      "ct": 33344.56140350878,
+      "cu": 1.3893567251461991,
+      "pvt": 40560,
+      "pvu": 1.69,
+      "ub": 7215.438596491222,
+      "db": 1216.8,
+      "uir": 9832.238596491221,
+      "ir": 2900.5103859649103,
+      "un": 6931.728210526311,
+      "mrg": 17.090059690646726,
+      "adelanto_usd": 20280,
+      "exposicion": 13064.561403508778,
+      "cobertura_pct": 60.81951342705614,
+      "riesgo": "BAJO-MEDIO",
+      "score": 29
+    },
+    {
+      "id": 1776881128954,
+      "tipo": "simulacion",
+      "fecha": "22/4/2026, 1:05:28 p. m.",
+      "ref": "MUNGI",
+      "cliente": "KRAAIJEVELD",
+      "destino": "ESPAÑA",
+      "semana": "16",
+      "kg": 24000,
+      "cajas": 2400,
+      "tc": 3.42,
+      "opl": 2000,
+      "qi": 180,
+      "ft": 0,
+      "fin": 200,
+      "analisis": 300,
+      "estr": 3000,
+      "otros": 0,
+      "maquila_kg": 0.14,
+      "caja_kg": 0.07,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1400,
+      "tipo_precio": "fijo",
+      "adelanto_pct": 50,
+      "dias_cobro": 60,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "12-18",
+          "p": 15,
+          "v": 3
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 3
+        },
+        {
+          "n": "26-30",
+          "p": 40,
+          "v": 1.8
+        },
+        {
+          "n": "32",
+          "p": 5,
+          "v": 0.97
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "12-18",
+          "p": 15,
+          "v": 1.9
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 1.9
+        },
+        {
+          "n": "26-30",
+          "p": 40,
+          "v": 1.2
+        },
+        {
+          "n": "32",
+          "p": 5,
+          "v": 1.2
+        }
+      ],
+      "mp_sol": 2.4185000000000003,
+      "mp_usd": 0.7354502923976609,
+      "ct": 28370.807017543862,
+      "cu": 1.1821169590643277,
+      "pvt": 38040,
+      "pvu": 1.585,
+      "ub": 9669.192982456138,
+      "db": 1141.2,
+      "uir": 12210.392982456138,
+      "ir": 3602.0659298245605,
+      "un": 8608.327052631577,
+      "mrg": 22.629671536886377,
+      "adelanto_usd": 19020,
+      "exposicion": 9350.807017543862,
+      "cobertura_pct": 67.04074363566205,
+      "riesgo": "BAJO-MEDIO",
+      "score": 29
+    },
+    {
+      "id": 1776957986838,
+      "tipo": "simulacion",
+      "fecha": "27/4/2026, 12:13:06 p. m.",
+      "ref": "",
+      "cliente": "",
+      "destino": "",
+      "semana": "",
+      "kg": 24000,
+      "cajas": 2400,
+      "tc": 3.75,
+      "opl": 2000,
+      "qi": 180,
+      "ft": 0,
+      "fin": 200,
+      "analisis": 300,
+      "estr": 3000,
+      "flete": 5700,
+      "otros": 0,
+      "maquila_kg": 0.14,
+      "caja_kg": 0.07,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1400,
+      "tipo_precio": "fijo",
+      "adelanto_pct": 80,
+      "dias_cobro": 60,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "12-18",
+          "p": 30,
+          "v": 5.2
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 3
+        },
+        {
+          "n": "26-30",
+          "p": 30,
+          "v": 1.4
+        },
+        {
+          "n": "32-SC",
+          "p": 0,
+          "v": 0
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "12-18",
+          "p": 30,
+          "v": 2
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 2
+        },
+        {
+          "n": "26-30",
+          "p": 30,
+          "v": 1.2
+        },
+        {
+          "n": "32-SC",
+          "p": 0,
+          "v": 0
+        }
+      ],
+      "mp_sol": 3.18,
+      "mp_usd": 0.8819200000000001,
+      "ct": 31886.080000000005,
+      "cu": 1.3285866666666668,
+      "pvt": 42240,
+      "pvu": 1.76,
+      "ub": 10353.919999999995,
+      "db": 1267.2,
+      "uir": 13021.119999999995,
+      "ir": 3841.2303999999986,
+      "un": 9179.889599999997,
+      "mrg": 21.732693181818174,
+      "adelanto_usd": 33792,
+      "exposicion": -1905.9199999999946,
+      "cobertura_pct": 105.97727911364456,
+      "riesgo": "BAJO",
+      "score": 4
+    },
+    {
+      "id": 1780011358601,
+      "tipo": "simulacion",
+      "fecha": "28/5/2026, 6:35:58 p. m.",
+      "ref": "",
+      "cliente": "",
+      "destino": "JAPON",
+      "semana": "",
+      "kg": 24000,
+      "cajas": 2400,
+      "tc": 3.35,
+      "opl": 2000,
+      "qi": 180,
+      "ft": 0,
+      "fin": 200,
+      "analisis": 300,
+      "estr": 3000,
+      "flete": 7000,
+      "otros": 0,
+      "maquila_kg": 0.14,
+      "caja_kg": 0.07,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1400,
+      "tipo_precio": "fijo",
+      "adelanto_pct": 50,
+      "dias_cobro": 60,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "24",
+          "p": 40,
+          "v": 3.315
+        },
+        {
+          "n": "30",
+          "p": 30,
+          "v": 3.315
+        },
+        {
+          "n": "35",
+          "p": 20,
+          "v": 3.315
+        },
+        {
+          "n": "84",
+          "p": 10,
+          "v": 3.315
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "24",
+          "p": 40,
+          "v": 2.3
+        },
+        {
+          "n": "30",
+          "p": 30,
+          "v": 2.1
+        },
+        {
+          "n": "35",
+          "p": 20,
+          "v": 1.7
+        },
+        {
+          "n": "84",
+          "p": 10,
+          "v": 1.4
+        }
+      ],
+      "mp_sol": 3.315000000000001,
+      "mp_usd": 1.0291343283582093,
+      "ct": 35419.22388059703,
+      "cu": 1.475800995024876,
+      "pvt": 48720,
+      "pvu": 2.03,
+      "ub": 13300.776119402974,
+      "db": 1461.6,
+      "uir": 16162.376119402974,
+      "ir": 4767.900955223877,
+      "un": 11394.475164179097,
+      "mrg": 23.387674803323268,
+      "adelanto_usd": 24360,
+      "exposicion": 11059.223880597026,
+      "cobertura_pct": 68.77621057457623,
+      "riesgo": "BAJO-MEDIO",
+      "score": 29
+    },
+    {
+      "id": 1780012256772,
+      "tipo": "simulacion",
+      "fecha": "28/5/2026, 6:50:56 p. m.",
+      "ref": "",
+      "cliente": "",
+      "destino": "JAPON",
+      "semana": "",
+      "kg": 24000,
+      "cajas": 2400,
+      "tc": 3.35,
+      "opl": 2000,
+      "qi": 180,
+      "ft": 0,
+      "fin": 200,
+      "analisis": 300,
+      "estr": 3000,
+      "flete": 7000,
+      "otros": 0,
+      "maquila_kg": 0.14,
+      "caja_kg": 0.07,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1400,
+      "tipo_precio": "fijo",
+      "adelanto_pct": 80,
+      "dias_cobro": 60,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "24",
+          "p": 40,
+          "v": 3.32
+        },
+        {
+          "n": "30",
+          "p": 30,
+          "v": 3.32
+        },
+        {
+          "n": "35",
+          "p": 20,
+          "v": 3.32
+        },
+        {
+          "n": "84",
+          "p": 10,
+          "v": 3.32
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "24",
+          "p": 40,
+          "v": 2.3
+        },
+        {
+          "n": "30",
+          "p": 30,
+          "v": 2.1
+        },
+        {
+          "n": "35",
+          "p": 20,
+          "v": 1.9
+        },
+        {
+          "n": "84",
+          "p": 10,
+          "v": 1.4
+        }
+      ],
+      "mp_sol": 3.3200000000000003,
+      "mp_usd": 1.0306865671641792,
+      "ct": 42456.477611940296,
+      "cu": 1.7690199004975122,
+      "pvt": 49680,
+      "pvu": 2.07,
+      "ub": 7223.522388059704,
+      "db": 1490.3999999999999,
+      "uir": 10113.922388059704,
+      "ir": 2983.6071044776127,
+      "un": 7130.315283582091,
+      "mrg": 14.35248648064028,
+      "adelanto_usd": 39744,
+      "exposicion": 2712.477611940296,
+      "cobertura_pct": 93.61115720259974,
+      "riesgo": "BAJO-MEDIO",
+      "score": 29
+    },
+    {
+      "id": 1780076199681,
+      "tipo": "simulacion",
+      "fecha": "29/5/2026, 12:36:39 p. m.",
+      "ref": "ETD 24",
+      "cliente": "PREMIER",
+      "destino": "REINO UNIDO",
+      "semana": "",
+      "kg": 24000,
+      "cajas": 2400,
+      "tc": 3.35,
+      "opl": 2000,
+      "qi": 180,
+      "ft": 0,
+      "fin": 200,
+      "analisis": 300,
+      "estr": 3000,
+      "flete": 7500,
+      "otros": 0,
+      "maquila_kg": 0.15,
+      "caja_kg": 0.07,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1400,
+      "tipo_precio": "fijo",
+      "adelanto_pct": 60,
+      "dias_cobro": 60,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "12-18",
+          "p": 30,
+          "v": 4.3
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 3.8
+        },
+        {
+          "n": "26-30",
+          "p": 20,
+          "v": 2.2
+        },
+        {
+          "n": "32",
+          "p": 10,
+          "v": 1.5
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "12-18",
+          "p": 30,
+          "v": 2.2
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 2.2
+        },
+        {
+          "n": "26-30",
+          "p": 20,
+          "v": 1.8
+        },
+        {
+          "n": "32",
+          "p": 10,
+          "v": 1.37
+        }
+      ],
+      "mp_sol": 3.4,
+      "mp_usd": 1.0555223880597016,
+      "ct": 43792.53731343284,
+      "cu": 1.8246890547263683,
+      "pvt": 48888,
+      "pvu": 2.037,
+      "ub": 5095.46268656716,
+      "db": 1466.6399999999999,
+      "uir": 7962.102686567159,
+      "ir": 2348.820292537312,
+      "un": 5613.282394029848,
+      "mrg": 11.481922750020143,
+      "adelanto_usd": 29332.8,
+      "exposicion": 14459.73731343284,
+      "cobertura_pct": 66.98127534848845,
+      "riesgo": "MEDIO",
+      "score": 39
+    },
+    {
+      "id": 1780414194312,
+      "tipo": "simulacion",
+      "fecha": "2/6/2026, 10:30:17 a. m.",
+      "ref": "ETD-24",
+      "cliente": "Kraaijeveld",
+      "destino": "HOLANDA",
+      "semana": "25",
+      "kg": 24000,
+      "cajas": 2400,
+      "tc": 3.35,
+      "opl": 2000,
+      "qi": 180,
+      "ft": 0,
+      "fin": 200,
+      "analisis": 300,
+      "estr": 3000,
+      "flete": 0,
+      "otros": 0,
+      "maquila_kg": 0.15,
+      "caja_kg": 0.07,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1400,
+      "tipo_precio": "fijo",
+      "adelanto_pct": 100,
+      "dias_cobro": 5,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "12-18",
+          "p": 40,
+          "v": 4
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 2.6
+        },
+        {
+          "n": "26-30",
+          "p": 20,
+          "v": 1.8
+        },
+        {
+          "n": "32",
+          "p": 0,
+          "v": 0
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "12-18",
+          "p": 40,
+          "v": 1.45
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 1.45
+        },
+        {
+          "n": "26-30",
+          "p": 20,
+          "v": 1.3
+        },
+        {
+          "n": "32",
+          "p": 0,
+          "v": 0
+        }
+      ],
+      "mp_sol": 3,
+      "mp_usd": 0.9313432835820895,
+      "ct": 33312.23880597015,
+      "cu": 1.3880099502487562,
+      "pvt": 34080,
+      "pvu": 1.42,
+      "ub": 767.761194029852,
+      "db": 1022.4,
+      "uir": 3190.161194029852,
+      "ir": 941.0975522388063,
+      "un": 2249.063641791046,
+      "mrg": 6.599365146100487,
+      "adelanto_usd": 34080,
+      "exposicion": -767.761194029852,
+      "cobertura_pct": 102.30474210545182,
+      "riesgo": "BAJO-MEDIO",
+      "score": 20
+    },
+    {
+      "id": 1780415425613,
+      "tipo": "simulacion",
+      "fecha": "2/6/2026, 10:50:25 a. m.",
+      "ref": "ETD-24",
+      "cliente": "Kraaijeveld",
+      "destino": "HOLANDA",
+      "semana": "25",
+      "kg": 24000,
+      "cajas": 2400,
+      "tc": 3.35,
+      "opl": 2000,
+      "qi": 180,
+      "ft": 0,
+      "fin": 200,
+      "analisis": 300,
+      "estr": 3000,
+      "flete": 0,
+      "otros": 0,
+      "maquila_kg": 0.15,
+      "caja_kg": 0.07,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1400,
+      "tipo_precio": "fijo",
+      "adelanto_pct": 100,
+      "dias_cobro": 5,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "12-18",
+          "p": 40,
+          "v": 3.8
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 2.7
+        },
+        {
+          "n": "26-30",
+          "p": 20,
+          "v": 1.8
+        },
+        {
+          "n": "32",
+          "p": 0,
+          "v": 0
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "12-18",
+          "p": 40,
+          "v": 1.45
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 1.45
+        },
+        {
+          "n": "26-30",
+          "p": 20,
+          "v": 1.3
+        },
+        {
+          "n": "32",
+          "p": 0,
+          "v": 0
+        }
+      ],
+      "mp_sol": 2.96,
+      "mp_usd": 0.9189253731343284,
+      "ct": 33014.20895522388,
+      "cu": 1.375592039800995,
+      "pvt": 34080,
+      "pvu": 1.42,
+      "ub": 1065.791044776117,
+      "db": 1022.4,
+      "uir": 3488.191044776117,
+      "ir": 1029.0163582089544,
+      "un": 2459.1746865671626,
+      "mrg": 7.215888164809749,
+      "adelanto_usd": 34080,
+      "exposicion": -1065.791044776117,
+      "cobertura_pct": 103.22827981800688,
+      "riesgo": "BAJO-MEDIO",
+      "score": 20
+    },
+    {
+      "id": 1781130673018,
+      "tipo": "simulacion",
+      "fecha": "10/6/2026, 5:31:13 p. m.",
+      "ref": "",
+      "variedad": "Palta Hass",
+      "puerto_carga": "Callao",
+      "puerto_descarga": "Busan",
+      "condicion": "FOB",
+      "cliente": "AK FARM",
+      "destino": "KOREA",
+      "semana": "26",
+      "kg": 21120,
+      "cajas": 5280,
+      "tc": 3.36,
+      "opl": 2100,
+      "qi": 180,
+      "ft": 0,
+      "fin": 200,
+      "analisis": 300,
+      "estr": 3000,
+      "flete": 0,
+      "otros": 0,
+      "maquila_kg": 0.1515,
+      "caja_kg": 0.1,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1400,
+      "tipo_precio": "fijo",
+      "adelanto_pct": 60,
+      "dias_cobro": 60,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "16-20",
+          "p": 60,
+          "v": 3.7
+        },
+        {
+          "n": "22",
+          "p": 40,
+          "v": 3.7
+        },
+        {
+          "n": "",
+          "p": 0,
+          "v": 0
+        },
+        {
+          "n": "",
+          "p": 0,
+          "v": 0
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "16-20",
+          "p": 60,
+          "v": 1.9
+        },
+        {
+          "n": "22",
+          "p": 40,
+          "v": 1.7
+        },
+        {
+          "n": "",
+          "p": 0,
+          "v": 0
+        },
+        {
+          "n": "",
+          "p": 0,
+          "v": 0
+        }
+      ],
+      "mp_sol": 3.7,
+      "mp_usd": 1.1452380952380954,
+      "ct": 35279.10857142857,
+      "cu": 1.6704123376623377,
+      "pvt": 38438.4,
+      "pvu": 1.82,
+      "ub": 3159.2914285714287,
+      "db": 1153.152,
+      "uir": 5712.443428571429,
+      "ir": 1685.1708114285714,
+      "un": 4027.2726171428576,
+      "mrg": 10.477211895247612,
+      "adelanto_usd": 23063.04,
+      "exposicion": 12216.068571428572,
+      "cobertura_pct": 65.37308036937766,
+      "riesgo": "MEDIO",
+      "score": 39
+    },
+    {
+      "id": 1781131332349,
+      "tipo": "simulacion",
+      "fecha": "10/6/2026, 5:44:19 p. m.",
+      "ref": "",
+      "variedad": "Palta Hass",
+      "puerto_carga": "Callao",
+      "puerto_descarga": "Shanghai",
+      "condicion": "FOB",
+      "cliente": "SUPAFRESH",
+      "destino": "CHINA",
+      "semana": "26",
+      "kg": 22250,
+      "cajas": 3214,
+      "tc": 3.4,
+      "opl": 2100,
+      "qi": 180,
+      "ft": 0,
+      "fin": 200,
+      "analisis": 300,
+      "estr": 3000,
+      "flete": 0,
+      "otros": 0,
+      "maquila_kg": 0.1515,
+      "caja_kg": 0.1,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1400,
+      "tipo_precio": "fijo",
+      "adelanto_pct": 80,
+      "dias_cobro": 60,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "18-24",
+          "p": 60,
+          "v": 3.7
+        },
+        {
+          "n": "26-30",
+          "p": 25,
+          "v": 3.7
+        },
+        {
+          "n": "32",
+          "p": 15,
+          "v": 3.7
+        },
+        {
+          "n": "",
+          "p": -2,
+          "v": 0
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "18-24",
+          "p": 60,
+          "v": 1.9
+        },
+        {
+          "n": "26-30",
+          "p": 25,
+          "v": 1.6
+        },
+        {
+          "n": "32",
+          "p": 15,
+          "v": 1.6
+        },
+        {
+          "n": "",
+          "p": 0,
+          "v": 0
+        }
+      ],
+      "mp_sol": 3.7755102040816335,
+      "mp_usd": 1.1548619447779114,
+      "ct": 37071.55327130853,
+      "cu": 1.6661372256767877,
+      "pvt": 39605,
+      "pvu": 1.78,
+      "ub": 2533.4467286914733,
+      "db": 1188.1499999999999,
+      "uir": 5121.596728691473,
+      "ir": 1510.8710349639844,
+      "un": 3610.7256937274888,
+      "mrg": 9.116843059531595,
+      "adelanto_usd": 31684,
+      "exposicion": 5387.553271308527,
+      "cobertura_pct": 85.46714988746314,
+      "riesgo": "MEDIO",
+      "score": 39
+    },
+    {
+      "id": 1781132316426,
+      "tipo": "simulacion",
+      "fecha": "10/6/2026, 5:58:36 p. m.",
+      "ref": "",
+      "variedad": "Palta Hass",
+      "puerto_carga": "Callao",
+      "puerto_descarga": "Shanghai",
+      "condicion": "FOB",
+      "cliente": "DALIAN YIDU",
+      "destino": "CHINA",
+      "semana": "26",
+      "kg": 22252,
+      "cajas": 3124,
+      "tc": 3.4,
+      "opl": 2100,
+      "qi": 180,
+      "ft": 0,
+      "fin": 200,
+      "analisis": 300,
+      "estr": 3000,
+      "flete": 0,
+      "otros": 0,
+      "maquila_kg": 0.1515,
+      "caja_kg": 0.1,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1400,
+      "tipo_precio": "fijo",
+      "adelanto_pct": 80,
+      "dias_cobro": 60,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "18-24",
+          "p": 60,
+          "v": 3.7
+        },
+        {
+          "n": "26-30",
+          "p": 25,
+          "v": 3.7
+        },
+        {
+          "n": "32",
+          "p": 15,
+          "v": 3.7
+        },
+        {
+          "n": "",
+          "p": 0,
+          "v": 0
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "18-24",
+          "p": 60,
+          "v": 1.9
+        },
+        {
+          "n": "26-30",
+          "p": 25,
+          "v": 1.6
+        },
+        {
+          "n": "32",
+          "p": 15,
+          "v": 1.6
+        },
+        {
+          "n": "",
+          "p": 0,
+          "v": 0
+        }
+      ],
+      "mp_sol": 3.7000000000000006,
+      "mp_usd": 1.1317647058823532,
+      "ct": 36560.406235294126,
+      "cu": 1.6430166382929232,
+      "pvt": 39608.56,
+      "pvu": 1.7799999999999998,
+      "ub": 3048.153764705872,
+      "db": 1188.2567999999999,
+      "uir": 5636.410564705872,
+      "ir": 1662.7411165882322,
+      "un": 3973.66944811764,
+      "mrg": 10.03235019934489,
+      "adelanto_usd": 31686.847999999998,
+      "exposicion": 4873.558235294127,
+      "cobertura_pct": 86.6698465987247,
+      "riesgo": "BAJO-MEDIO",
+      "score": 29
+    },
+    {
+      "id": 1781133546657,
+      "tipo": "simulacion",
+      "fecha": "10/6/2026, 6:19:06 p. m.",
+      "ref": "",
+      "variedad": "Palta Hass",
+      "puerto_carga": "Callao",
+      "puerto_descarga": "KOBE",
+      "condicion": "CIF",
+      "cliente": "TOMINAGA",
+      "destino": "JAPON",
+      "semana": "26",
+      "kg": 24000,
+      "cajas": 2400,
+      "tc": 3.4,
+      "opl": 2100,
+      "qi": 180,
+      "ft": 0,
+      "fin": 200,
+      "analisis": 300,
+      "estr": 3000,
+      "flete": 5700,
+      "otros": 0,
+      "maquila_kg": 0.1515,
+      "caja_kg": 0.1,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1400,
+      "tipo_precio": "fijo",
+      "adelanto_pct": 80,
+      "dias_cobro": 60,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "24",
+          "p": 40,
+          "v": 3.7
+        },
+        {
+          "n": "30",
+          "p": 25,
+          "v": 3.7
+        },
+        {
+          "n": "35",
+          "p": 25,
+          "v": 3.7
+        },
+        {
+          "n": "84",
+          "p": 10,
+          "v": 3.7
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "24",
+          "p": 40,
+          "v": 2.25
+        },
+        {
+          "n": "30",
+          "p": 25,
+          "v": 2.15
+        },
+        {
+          "n": "35",
+          "p": 25,
+          "v": 1.75
+        },
+        {
+          "n": "84",
+          "p": 10,
+          "v": 1.45
+        }
+      ],
+      "mp_sol": 3.7,
+      "mp_usd": 1.131764705882353,
+      "ct": 44678.352941176476,
+      "cu": 1.8615980392156866,
+      "pvt": 48480,
+      "pvu": 2.02,
+      "ub": 3801.6470588235243,
+      "db": 1454.3999999999999,
+      "uir": 6656.047058823524,
+      "ir": 1963.5338823529394,
+      "un": 4692.513176470585,
+      "mrg": 9.679276354105992,
+      "adelanto_usd": 38784,
+      "exposicion": 5894.352941176476,
+      "cobertura_pct": 86.80713913304507,
+      "riesgo": "MEDIO",
+      "score": 39
+    },
+    {
+      "id": 1781372358270,
+      "tipo": "simulacion",
+      "fecha": "13/6/2026, 12:39:18 p. m.",
+      "ref": "",
+      "variedad": "Palta Hass",
+      "puerto_carga": "Callao",
+      "puerto_descarga": "Kobe",
+      "condicion": "CIF",
+      "cliente": "TOMINAGA",
+      "destino": "JAPON",
+      "semana": "",
+      "kg": 24000,
+      "cajas": 2400,
+      "tc": 3.4,
+      "opl": 2300,
+      "qi": 180,
+      "ft": 0,
+      "fin": 200,
+      "analisis": 300,
+      "estr": 3000,
+      "flete": 5700,
+      "otros": 0,
+      "maquila_kg": 0.14,
+      "caja_kg": 0.07,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1300,
+      "tipo_precio": "fijo",
+      "adelanto_pct": 50,
+      "dias_cobro": 45,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "24",
+          "p": 40,
+          "v": 3.5
+        },
+        {
+          "n": "30",
+          "p": 25,
+          "v": 3
+        },
+        {
+          "n": "35",
+          "p": 25,
+          "v": 2
+        },
+        {
+          "n": "84",
+          "p": 10,
+          "v": 1.5
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "24",
+          "p": 40,
+          "v": 1.8
+        },
+        {
+          "n": "30",
+          "p": 25,
+          "v": 1.75
+        },
+        {
+          "n": "35",
+          "p": 25,
+          "v": 1.55
+        },
+        {
+          "n": "84",
+          "p": 10,
+          "v": 1.25
+        }
+      ],
+      "mp_sol": 2.8000000000000003,
+      "mp_usd": 0.8564705882352942,
+      "ct": 37275.29411764706,
+      "cu": 1.5531372549019609,
+      "pvt": 40080,
+      "pvu": 1.67,
+      "ub": 2804.705882352937,
+      "db": 1202.3999999999999,
+      "uir": 5307.1058823529365,
+      "ir": 1565.5962352941162,
+      "un": 3741.5096470588205,
+      "mrg": 9.335103909827398,
+      "exposicion": 17235.294117647063,
+      "cobertura_pct": 53.76215124352986,
+      "riesgo": "ALTO",
+      "score": 70
+    },
+    {
+      "id": 1781377643568,
+      "tipo": "simulacion",
+      "fecha": "14/6/2026, 9:28:57 a. m.",
+      "ref": "Joel - Precios Yamashita",
+      "variedad": "Palta Hass",
+      "puerto_carga": "Callao",
+      "puerto_descarga": "Kobe",
+      "condicion": "CIF",
+      "cliente": "TOMINAGA",
+      "destino": "JAPON",
+      "semana": "26",
+      "kg": 24000,
+      "cajas": 2400,
+      "tc": 3.35,
+      "opl": 2300,
+      "qi": 180,
+      "ft": 0,
+      "fin": 200,
+      "analisis": 300,
+      "estr": 3000,
+      "flete": 5700,
+      "otros": 0,
+      "maquila_kg": 0.14,
+      "caja_kg": 0.07,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1300,
+      "tipo_precio": "pmg",
+      "adelanto_pct": 50,
+      "dias_cobro": 45,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "24",
+          "p": 40,
+          "v": 3.5
+        },
+        {
+          "n": "30",
+          "p": 25,
+          "v": 3.5
+        },
+        {
+          "n": "35",
+          "p": 25,
+          "v": 2.5
+        },
+        {
+          "n": "84",
+          "p": 10,
+          "v": 1.5
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "24",
+          "p": 40,
+          "v": 1.8
+        },
+        {
+          "n": "30",
+          "p": 25,
+          "v": 1.75
+        },
+        {
+          "n": "35",
+          "p": 25,
+          "v": 1.55
+        },
+        {
+          "n": "84",
+          "p": 10,
+          "v": 1.25
+        }
+      ],
+      "mp_sol": 3.0500000000000003,
+      "mp_usd": 0.9468656716417913,
+      "ct": 39444.77611940299,
+      "cu": 1.643532338308458,
+      "pvt": 40080,
+      "pvu": 1.67,
+      "ub": 635.2238805970119,
+      "db": 1202.3999999999999,
+      "uir": 3137.6238805970115,
+      "ir": 925.5990447761184,
+      "un": 2212.0248358208933,
+      "mrg": 5.519024041469295,
+      "exposicion": 19404.776119402988,
+      "cobertura_pct": 50.80520659906159,
+      "riesgo": "ALTO",
+      "score": 80
+    },
+    {
+      "id": 1781447250039,
+      "tipo": "simulacion",
+      "fecha": "14/6/2026, 9:30:25 a. m.",
+      "ref": "Joel - precios requeridos a Tominaga",
+      "variedad": "Palta Hass",
+      "puerto_carga": "Callao",
+      "puerto_descarga": "Kobe",
+      "condicion": "CIF",
+      "cliente": "TOMINAGA",
+      "destino": "JAPON",
+      "semana": "26",
+      "kg": 24000,
+      "cajas": 2400,
+      "tc": 3.35,
+      "opl": 2300,
+      "qi": 180,
+      "ft": 0,
+      "fin": 200,
+      "analisis": 300,
+      "estr": 3000,
+      "flete": 5700,
+      "otros": 0,
+      "maquila_kg": 0.14,
+      "caja_kg": 0.07,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1300,
+      "tipo_precio": "pmg",
+      "adelanto_pct": 50,
+      "dias_cobro": 45,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "24",
+          "p": 40,
+          "v": 3.5
+        },
+        {
+          "n": "30",
+          "p": 25,
+          "v": 3.5
+        },
+        {
+          "n": "35",
+          "p": 25,
+          "v": 2.5
+        },
+        {
+          "n": "84",
+          "p": 10,
+          "v": 1.5
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "24",
+          "p": 40,
+          "v": 2
+        },
+        {
+          "n": "30",
+          "p": 25,
+          "v": 1.95
+        },
+        {
+          "n": "35",
+          "p": 25,
+          "v": 1.75
+        },
+        {
+          "n": "84",
+          "p": 10,
+          "v": 1.55
+        }
+      ],
+      "mp_sol": 3.0500000000000003,
+      "mp_usd": 0.9468656716417913,
+      "ct": 39444.77611940299,
+      "cu": 1.643532338308458,
+      "pvt": 45120,
+      "pvu": 1.88,
+      "ub": 5675.223880597012,
+      "db": 1353.6,
+      "uir": 8328.823880597012,
+      "ir": 2457.0030447761183,
+      "un": 5871.820835820894,
+      "mrg": 13.01378731343283,
+      "exposicion": 16884.776119402988,
+      "cobertura_pct": 57.193885273195086,
+      "riesgo": "MEDIO-ALTO",
+      "score": 50
+    },
+    {
+      "id": 1781628087068,
+      "tipo": "simulacion",
+      "fecha": "16/6/2026, 11:41:27 a. m.",
+      "ref": "S26 - Precios Faja Joel",
+      "planta": "ara",
+      "modo_compra": "faja",
+      "campo_fruta": 3,
+      "campo_cosecha": 0.3,
+      "campo_flete": 0.1,
+      "campo_desc_pct": 10,
+      "campo_desc_precio": 0.8,
+      "variedad": "Palta Hass",
+      "puerto_carga": "Callao",
+      "puerto_descarga": "Rotterdam",
+      "condicion": "FOB",
+      "cliente": "KRAAIJEVELD",
+      "destino": "HOLANDA",
+      "semana": "26",
+      "kg": 24000,
+      "cajas": 2400,
+      "tc": 3.35,
+      "opl": 2300,
+      "qi": 180,
+      "ft": 0,
+      "fin": 100,
+      "analisis": 150,
+      "estr": 2500,
+      "flete": 0,
+      "otros": 1500,
+      "maquila_kg": 0.14,
+      "caja_kg": 0.09,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1400,
+      "tipo_precio": "pmg",
+      "adelanto_pct": 100,
+      "dias_cobro": 60,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "12-18",
+          "p": 40,
+          "v": 3.5
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 3.5
+        },
+        {
+          "n": "26-30",
+          "p": 20,
+          "v": 2.5
+        },
+        {
+          "n": "32",
+          "p": 0,
+          "v": 1.8
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "12-18",
+          "p": 40,
+          "v": 1.7
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 2
+        },
+        {
+          "n": "26-30",
+          "p": 20,
+          "v": 2.1
+        },
+        {
+          "n": "32",
+          "p": 0,
+          "v": 0.8
+        }
+      ],
+      "mp_sol": 3.3000000000000003,
+      "mp_usd": 1.0244776119402985,
+      "ct": 36837.462686567174,
+      "cu": 1.5348942786069657,
+      "pvt": 45600,
+      "pvu": 1.9,
+      "ub": 8762.537313432826,
+      "db": 1368,
+      "uir": 11530.537313432826,
+      "ir": 3401.508507462683,
+      "un": 8129.0288059701425,
+      "mrg": 17.82681755695207,
+      "exposicion": -8762.537313432826,
+      "cobertura_pct": 123.78702732050027,
+      "riesgo": "BAJO",
+      "score": 10
+    },
+    {
+      "id": 1781628165293,
+      "tipo": "simulacion",
+      "fecha": "16/6/2026, 12:53:46 p. m.",
+      "ref": "S26 Precio Joel",
+      "planta": "ara",
+      "modo_compra": "faja",
+      "campo_fruta": 3,
+      "campo_cosecha": 0.2,
+      "campo_flete": 0.15,
+      "campo_desc_pct": 8,
+      "campo_desc_precio": 0.4,
+      "variedad": "Palta Hass",
+      "puerto_carga": "Callao",
+      "puerto_descarga": "Rotterdam",
+      "condicion": "FOB",
+      "cliente": "KRAAIJEVELD",
+      "destino": "HOLANDA",
+      "semana": "26",
+      "kg": 24000,
+      "cajas": 2400,
+      "tc": 3.35,
+      "opl": 2300,
+      "qi": 180,
+      "ft": 0,
+      "fin": 100,
+      "analisis": 150,
+      "estr": 2500,
+      "flete": 0,
+      "otros": 1500,
+      "maquila_kg": 0.14,
+      "caja_kg": 0.07,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1400,
+      "tipo_precio": "pmg",
+      "adelanto_pct": 100,
+      "dias_cobro": 60,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "12-18",
+          "p": 35,
+          "v": 3.5
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 3.5
+        },
+        {
+          "n": "26-30",
+          "p": 20,
+          "v": 2.5
+        },
+        {
+          "n": "32",
+          "p": 5,
+          "v": 1.8
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "12-18",
+          "p": 35,
+          "v": 1.7
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 2
+        },
+        {
+          "n": "26-30",
+          "p": 20,
+          "v": 2.1
+        },
+        {
+          "n": "32",
+          "p": 5,
+          "v": 2
+        }
+      ],
+      "mp_sol": 3.215,
+      "mp_usd": 0.9980895522388059,
+      "ct": 35724.149253731346,
+      "cu": 1.4885062189054727,
+      "pvt": 45960,
+      "pvu": 1.915,
+      "ub": 10235.850746268654,
+      "db": 1378.8,
+      "uir": 13014.650746268653,
+      "ir": 3839.3219701492526,
+      "un": 9175.3287761194,
+      "mrg": 19.96372666692646,
+      "exposicion": -10235.850746268654,
+      "cobertura_pct": 128.6524688763569,
+      "riesgo": "BAJO",
+      "score": 0
+    },
+    {
+      "id": 1781632591947,
+      "tipo": "simulacion",
+      "fecha": "16/6/2026, 12:57:21 p. m.",
+      "ref": "S26 Precio campo 3 soles",
+      "planta": "ara",
+      "modo_compra": "campo",
+      "campo_fruta": 2.7,
+      "campo_cosecha": 0.3,
+      "campo_flete": 0.1,
+      "campo_desc_pct": 10,
+      "campo_desc_precio": 0.8,
+      "variedad": "Palta Hass",
+      "puerto_carga": "Callao",
+      "puerto_descarga": "Rotterdam",
+      "condicion": "FOB",
+      "cliente": "KRAAIJEVELD",
+      "destino": "HOLANDA",
+      "semana": "26",
+      "kg": 24000,
+      "cajas": 2400,
+      "tc": 3.35,
+      "opl": 2300,
+      "qi": 180,
+      "ft": 0,
+      "fin": 100,
+      "analisis": 300,
+      "estr": 2500,
+      "flete": 0,
+      "otros": 1500,
+      "maquila_kg": 0.14,
+      "caja_kg": 0.07,
+      "plu_kg": 0,
+      "sobrepeso_pct": 4,
+      "db_pct": 3,
+      "rebate": 1400,
+      "tipo_precio": "pmg",
+      "adelanto_pct": 100,
+      "dias_cobro": 60,
+      "pmg_esperado": 100,
+      "rangos_compra": [
+        {
+          "n": "12-18",
+          "p": 30,
+          "v": 5.2
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 3
+        },
+        {
+          "n": "26-30",
+          "p": 20,
+          "v": 1.4
+        },
+        {
+          "n": "32",
+          "p": 10,
+          "v": 0.8
+        }
+      ],
+      "rangos_venta": [
+        {
+          "n": "12-18",
+          "p": 30,
+          "v": 1.7
+        },
+        {
+          "n": "20-24",
+          "p": 40,
+          "v": 2
+        },
+        {
+          "n": "26-30",
+          "p": 20,
+          "v": 2.1
+        },
+        {
+          "n": "32",
+          "p": 10,
+          "v": 2
+        }
+      ],
+      "mp_sol": 3.1200000000000006,
+      "mp_usd": 0.9685970149253733,
+      "ct": 35166.328358208964,
+      "cu": 1.4652636815920401,
+      "pvt": 46320,
+      "pvu": 1.93,
+      "ub": 11153.671641791036,
+      "db": 1389.6,
+      "uir": 13943.271641791036,
+      "ir": 4113.265134328355,
+      "un": 9830.00650746268,
+      "mrg": 21.221948418529102,
+      "exposicion": -11153.671641791036,
+      "cobertura_pct": 131.71690694626471,
+      "riesgo": "BAJO",
+      "score": 0
+    }
+  ],
+  "jr_precios_v1": {
+    "ETD 4": {
+      "ROVEG": {
+        "CAT1_12-18": 2.58,
+        "CAT1_20": 2.58,
+        "CAT1_22": 2.58,
+        "CAT1_24": 2.58,
+        "CAT1_26": 1.99,
+        "CAT1_28": 1.99,
+        "CAT1_30": 1.99
+      }
+    },
+    "ETD 5": {
+      "ROVEG": {
+        "CAT1_20": 2.75,
+        "CAT1_22": 2.75,
+        "CAT1_24": 2.75,
+        "CAT1_26": 2.2,
+        "CAT1_28": 2.2,
+        "CAT1_30": 2.2
+      }
+    },
+    "ETD 6": {
+      "KRAAIJEVELD": {
+        "CAT1_12-18": 2.65,
+        "CAT1_20": 2.65,
+        "CAT1_22": 2.65,
+        "CAT1_24": 2.65,
+        "CAT1_26": 2.15,
+        "CAT1_28": 2.15,
+        "CAT1_30": 2.15
+      },
+      "MEHADRIN": {
+        "CAT1_12-18": 2.75,
+        "CAT1_20": 2.75,
+        "CAT1_22": 2.75,
+        "CAT1_24": 2.75,
+        "CAT1_26": 2,
+        "CAT1_28": 2,
+        "CAT1_30": 2
+      }
+    },
+    "ETD 7": {
+      "MEHADRIN": {
+        "CAT1_12-18": 2.75,
+        "CAT1_20": 2.75,
+        "CAT1_22": 2.75,
+        "CAT1_24": 2.75,
+        "CAT1_26": 2,
+        "CAT1_28": 2,
+        "CAT1_30": 2
+      }
+    },
+    "ETD 9": {
+      "KRAAIJEVELD": {
+        "CAT1_12-18": 2.75,
+        "CAT1_20": 2.75,
+        "CAT1_22": 2.75,
+        "CAT1_24": 2.75,
+        "CAT1_26": 2.25,
+        "CAT1_28": 2.25,
+        "CAT1_30": 2.25
+      },
+      "MEHADRIN": {
+        "CAT1_12-18": 2.8,
+        "CAT1_20": 2.8,
+        "CAT1_22": 2.8,
+        "CAT1_24": 2.8,
+        "CAT1_26": 2.3,
+        "CAT1_28": 2.3,
+        "CAT1_30": 2.3
+      },
+      "MONTOSA": {
+        "CAT1_12-18": 2.5,
+        "CAT1_20": 2.4,
+        "CAT1_22": 2.3,
+        "CAT1_24": 2.2,
+        "CAT1_26": 2,
+        "CAT1_28": 1.9,
+        "CAT1_30": 1.8,
+        "CAT1_32": 1.5
+      },
+      "TROPICSUR": {
+        "CAT1_12-18": 2.85,
+        "CAT1_20": 2.85,
+        "CAT1_22": 2.85,
+        "CAT1_24": 2.85,
+        "CAT1_26": 2,
+        "CAT1_28": 2,
+        "CAT1_30": 2
+      }
+    },
+    "ETD 10": {
+      "KRAAIJEVELD": {
+        "CAT1_12-18": 2.75,
+        "CAT1_20": 2.75,
+        "CAT1_22": 2.75,
+        "CAT1_24": 2.75,
+        "CAT1_26": 2.25,
+        "CAT1_28": 2.25,
+        "CAT1_30": 2.25
+      },
+      "MEHADRIN": {
+        "CAT1_12-18": 2.55,
+        "CAT1_20": 2.55,
+        "CAT1_22": 2.55,
+        "CAT1_24": 2.55,
+        "CAT1_26": 1.9,
+        "CAT1_28": 1.9,
+        "CAT1_30": 1.9
+      },
+      "MONTOSA": {
+        "CAT1_12-18": 2.5,
+        "CAT1_20": 2.45,
+        "CAT1_22": 2.35,
+        "CAT1_24": 2.25,
+        "CAT1_26": 2.05,
+        "CAT1_28": 1.9,
+        "CAT1_30": 1.8,
+        "CAT1_32": 1.5
+      },
+      "TROPICSUR": {
+        "CAT1_12-18": 2.9,
+        "CAT1_20": 2.9,
+        "CAT1_22": 2.9,
+        "CAT1_24": 2.9,
+        "CAT1_26": 2.05,
+        "CAT1_28": 2.05,
+        "CAT1_30": 2.05
+      }
+    },
+    "ETD 11": {
+      "KRAAIJEVELD": {
+        "CAT1_12-18": 2.75,
+        "CAT1_20": 2.75,
+        "CAT1_22": 2.75,
+        "CAT1_24": 2.75,
+        "CAT1_26": 2.25,
+        "CAT1_28": 2.25,
+        "CAT1_30": 2.25
+      },
+      "MEHADRIN": {
+        "CAT1_12-18": 2.55,
+        "CAT1_20": 2.55,
+        "CAT1_22": 2.55,
+        "CAT1_24": 2.55,
+        "CAT1_26": 1.9,
+        "CAT1_28": 1.9,
+        "CAT1_30": 1.9
+      },
+      "MONTOSA": {
+        "CAT1_12-18": 2.5,
+        "CAT1_20": 2.45,
+        "CAT1_22": 2.35,
+        "CAT1_24": 2.25,
+        "CAT1_26": 2.05,
+        "CAT1_28": 1.9,
+        "CAT1_30": 1.8,
+        "CAT1_32": 1.5
+      },
+      "TROPICSUR": {
+        "CAT1_12-18": 2.65,
+        "CAT1_20": 2.6,
+        "CAT1_22": 2.6,
+        "CAT1_24": 2.6,
+        "CAT1_26": 1.9,
+        "CAT1_28": 1.9,
+        "CAT1_30": 1.9
+      },
+      "AXARQUIA TROPICAL": {
+        "CAT1_12-18": 2.75,
+        "CAT1_20": 2.75,
+        "CAT1_22": 2.55,
+        "CAT1_24": 2.55,
+        "CAT1_26": 2,
+        "CAT1_28": 2,
+        "CAT1_30": 2
+      },
+      "PREMIER": {
+        "CAT1_12-18": 3.4,
+        "CAT1_20": 3.4,
+        "CAT1_22": 3.4,
+        "CAT1_24": 3.4,
+        "CAT1_26": 2.4,
+        "CAT1_28": 2.4,
+        "CAT1_30": 2.4
+      }
+    },
+    "ETD 12": {
+      "KRAAIJEVELD": {
+        "CAT1_12-18": 2.55,
+        "CAT1_20": 2.55,
+        "CAT1_22": 2.55,
+        "CAT1_24": 2.55,
+        "CAT1_26": 1.9,
+        "CAT1_28": 1.9,
+        "CAT1_30": 1.9
+      },
+      "MEHADRIN": {
+        "CAT1_12-18": 2.55,
+        "CAT1_20": 2.55,
+        "CAT1_22": 2.55,
+        "CAT1_24": 2.55,
+        "CAT1_26": 1.9,
+        "CAT1_28": 1.9,
+        "CAT1_30": 1.9
+      },
+      "MONTOSA": {
+        "CAT1_12-18": 2.5,
+        "CAT1_20": 2.35,
+        "CAT1_22": 2.25,
+        "CAT1_24": 2.15,
+        "CAT1_26": 2,
+        "CAT1_28": 1.85,
+        "CAT1_30": 1.75,
+        "CAT1_32": 1.45
+      },
+      "AXARQUIA TROPICAL": {
+        "CAT1_12-18": 2.7,
+        "CAT1_20": 2.7,
+        "CAT1_22": 2.45,
+        "CAT1_24": 2.45,
+        "CAT1_26": 1.9,
+        "CAT1_28": 1.9,
+        "CAT1_30": 1.9,
+        "CAT1_32": 1.5
+      }
+    },
+    "ETD 13": {
+      "KRAAIJEVELD": {
+        "CAT1_12-18": 2.4,
+        "CAT1_20": 2.4,
+        "CAT1_22": 2.4,
+        "CAT1_24": 2.4,
+        "CAT1_26": 1.8,
+        "CAT1_28": 1.8,
+        "CAT1_30": 1.8,
+        "CAT1_32": 1.8
+      },
+      "MEHADRIN": {
+        "CAT1_12-18": 2.75,
+        "CAT1_20": 2.75,
+        "CAT1_22": 2.75,
+        "CAT1_24": 2.75,
+        "CAT1_26": 1.7,
+        "CAT1_28": 1.7,
+        "CAT1_30": 1.7,
+        "CAT1_32": 1.7
+      },
+      "MONTOSA": {
+        "CAT1_12-18": 2.5,
+        "CAT1_20": 2.35,
+        "CAT1_22": 2.2,
+        "CAT1_24": 2.1,
+        "CAT1_26": 2,
+        "CAT1_28": 1.85,
+        "CAT1_30": 1.75,
+        "CAT1_32": 1.45
+      },
+      "TROPICSUR": {
+        "CAT1_12-18": 2.3,
+        "CAT1_20": 2.3,
+        "CAT1_22": 2.3,
+        "CAT1_24": 2.3,
+        "CAT1_26": 1.7,
+        "CAT1_28": 1.7,
+        "CAT1_30": 1.7
+      },
+      "AXARQUIA TROPICAL": {
+        "CAT1_12-18": 2.6,
+        "CAT1_20": 2.6,
+        "CAT1_22": 2.35,
+        "CAT1_24": 2.35,
+        "CAT1_26": 1.85,
+        "CAT1_28": 1.85,
+        "CAT1_30": 1.85,
+        "CAT1_32": 1.5
+      }
+    },
+    "ETD 14": {
+      "KRAAIJEVELD": {
+        "CAT1_12-18": 2.35,
+        "CAT1_20": 2.35,
+        "CAT1_22": 2.35,
+        "CAT1_24": 2.35,
+        "CAT1_26": 1.7,
+        "CAT1_28": 1.7,
+        "CAT1_30": 1.7,
+        "CAT1_32": 1.5
+      },
+      "MEHADRIN": {
+        "CAT1_12-18": 2.5625,
+        "CAT1_20": 2.5625,
+        "CAT1_22": 2.5625,
+        "CAT1_24": 2.5625,
+        "CAT1_26": 1.55,
+        "CAT1_28": 1.55,
+        "CAT1_30": 1.55,
+        "CAT1_32": 1.55
+      },
+      "MONTOSA": {
+        "CAT1_12-18": 2.4,
+        "CAT1_20": 2.2,
+        "CAT1_22": 2.1,
+        "CAT1_24": 2,
+        "CAT1_26": 1.9,
+        "CAT1_28": 1.9,
+        "CAT1_30": 1.8,
+        "CAT1_32": 1.5
+      },
+      "TROPICSUR": {
+        "CAT1_12-18": 2.3,
+        "CAT1_20": 2.3,
+        "CAT1_22": 2.3,
+        "CAT1_24": 2.3,
+        "CAT1_26": 1.7,
+        "CAT1_28": 1.7,
+        "CAT1_30": 1.7
+      },
+      "AXARQUIA TROPICAL": {
+        "CAT1_12-18": 2.4,
+        "CAT1_20": 2.4,
+        "CAT1_22": 2.4,
+        "CAT1_24": 2.4,
+        "CAT1_26": 1.65,
+        "CAT1_28": 1.65,
+        "CAT1_30": 1.65,
+        "CAT1_32": 1.5
+      },
+      "PREMIER": {
+        "CAT1_24": 2.61,
+        "CAT1_30": 2.61,
+        "CAT1_35": 2.21,
+        "CAT1_84": 2.11
+      }
+    },
+    "ETD 15": {
+      "KRAAIJEVELD": {
+        "CAT1_12-18": 2.25,
+        "CAT1_20": 2.25,
+        "CAT1_22": 2.25,
+        "CAT1_24": 2.25,
+        "CAT1_26": 1.6,
+        "CAT1_28": 1.6,
+        "CAT1_30": 1.6,
+        "CAT1_32": 1.6
+      },
+      "MEHADRIN": {
+        "CAT1_12-18": 2,
+        "CAT1_20": 2,
+        "CAT1_22": 2,
+        "CAT1_24": 2,
+        "CAT1_26": 1.2,
+        "CAT1_28": 1.2,
+        "CAT1_30": 1.2,
+        "CAT1_32": 1.2
+      },
+      "MONTOSA": {
+        "CAT1_12-18": 2.3,
+        "CAT1_20": 2.1,
+        "CAT1_22": 2,
+        "CAT1_24": 1.9,
+        "CAT1_26": 1.8,
+        "CAT1_28": 1.7,
+        "CAT1_30": 1.7,
+        "CAT1_32": 1.4
+      },
+      "PREMIER": {
+        "CAT1_24": 2.61,
+        "CAT1_30": 2.61,
+        "CAT1_35": 2.21,
+        "CAT1_84": 2.11
+      }
+    },
+    "ETD 16": {
+      "KRAAIJEVELD": {
+        "CAT1_12-18": 2.2,
+        "CAT1_20": 2.2,
+        "CAT1_22": 2.2,
+        "CAT1_24": 2.2,
+        "CAT1_26": 1.4,
+        "CAT1_28": 1.4,
+        "CAT1_30": 1.4,
+        "CAT1_32": 1.2
+      },
+      "MEHADRIN": {
+        "CAT1_12-18": 2,
+        "CAT1_20": 2,
+        "CAT1_22": 2,
+        "CAT1_24": 2,
+        "CAT1_26": 1.2,
+        "CAT1_28": 1.2,
+        "CAT1_30": 1.2,
+        "CAT1_32": 1.2
+      },
+      "MONTOSA": {
+        "CAT1_12-18": 2.2,
+        "CAT1_20": 1.9,
+        "CAT1_22": 1.8,
+        "CAT1_24": 1.7,
+        "CAT1_26": 1.6,
+        "CAT1_28": 1.6,
+        "CAT1_30": 1.5,
+        "CAT1_32": 1.2
+      },
+      "PREMIER": {
+        "CAT1_24": 2.61,
+        "CAT1_30": 2.61,
+        "CAT1_35": 2.21,
+        "CAT1_84": 2.11
+      }
+    },
+    "ETD 17": {
+      "KRAAIJEVELD": {
+        "CAT1_12-18": 2.1,
+        "CAT1_20": 2.1,
+        "CAT1_22": 2.1,
+        "CAT1_24": 2.1,
+        "CAT1_26": 1.4,
+        "CAT1_28": 1.4,
+        "CAT1_30": 1.4,
+        "CAT1_32": 1.4
+      },
+      "MONTOSA": {
+        "CAT1_12-18": 2.2,
+        "CAT1_20": 1.8,
+        "CAT1_22": 1.7,
+        "CAT1_24": 1.5,
+        "CAT1_26": 1.4,
+        "CAT1_28": 1.4,
+        "CAT1_30": 1.3,
+        "CAT1_32": 1
+      },
+      "PREMIER": {
+        "CAT1_24": 2.61,
+        "CAT1_30": 2.61,
+        "CAT1_35": 2.21,
+        "CAT1_84": 2.11
+      }
+    },
+    "ETD 18": {
+      "MONTOSA": {
+        "CAT1_12-18": 2.2,
+        "CAT1_20": 1.8,
+        "CAT1_22": 1.6,
+        "CAT1_24": 1.4,
+        "CAT1_26": 1.3,
+        "CAT1_28": 1.3,
+        "CAT1_30": 1.1,
+        "CAT1_32": 0.9
+      },
+      "PREMIER": {
+        "CAT1_24": 2.15,
+        "CAT1_30": 2.05,
+        "CAT1_35": 1.85,
+        "CAT1_84": 1.45
+      }
+    }
+  },
+  "jr_cotizaciones_v1": [
+    {
+      "id": 1781369491587,
+      "num": "COT-2026-007",
+      "fecha": "2026-06-13",
+      "valida": "2026-06-28",
+      "cliente": "TOMINAGA",
+      "pais": "Japon",
+      "etd": "",
+      "puerto_carga": "Callao",
+      "puerto_descarga": "Kobe",
+      "condicion": "CIF",
+      "pago": "fijo",
+      "pago1_pct": 50,
+      "dias": 45,
+      "moneda": "USD",
+      "tc": 1.08,
+      "obs": "Simulacion: Sin ref | 13/6/2026, 11:48:48 a. m. | Margen: 9.3% | Util.Neta: $3836.29 | Variedad: Palta Hass",
+      "precios": {
+        "CAT1_24": 2.2,
+        "CAT1_30": 1.8,
+        "CAT1_35": 1.2,
+        "CAT1_84": 0.8
+      }
+    },
+    {
+      "id": 1781133648193,
+      "num": "COT-2026-006",
+      "fecha": "2026-06-10",
+      "valida": "2026-06-25",
+      "cliente": "TOMINAGA",
+      "pais": "Japon",
+      "etd": "26",
+      "puerto_carga": "Callao",
+      "puerto_descarga": "Kobe",
+      "condicion": "CIF",
+      "pago": "fijo",
+      "pago1_pct": 60,
+      "dias": 60,
+      "moneda": "USD",
+      "tc": 1.15,
+      "obs": "",
+      "precios": {
+        "CAT1_24": 2.2,
+        "CAT1_30": 2.3,
+        "CAT1_35": 1.85,
+        "CAT1_84": 1.55
+      }
+    },
+    {
+      "id": 1781132375053,
+      "num": "COT-2026-005",
+      "fecha": "2026-06-10",
+      "valida": "2026-06-14",
+      "cliente": "DALIAN YIDU",
+      "pais": "China",
+      "etd": "26",
+      "puerto_carga": "Callao",
+      "puerto_descarga": "Shanghai",
+      "condicion": "FOB",
+      "pago": "pmg",
+      "pago1_pct": 80,
+      "dias": 60,
+      "moneda": "USD",
+      "tc": 1.08,
+      "obs": "8% Comission",
+      "precios": {
+        "CAT1_18-24": 1.9,
+        "CAT1_26-30": 1.6,
+        "CAT1_32": 1.6
+      }
+    },
+    {
+      "id": 1781131668549,
+      "num": "COT-2026-004",
+      "fecha": "2026-06-10",
+      "valida": "2026-06-14",
+      "cliente": "SUPAFRESH",
+      "pais": "China",
+      "etd": "26",
+      "puerto_carga": "Callao",
+      "puerto_descarga": "Shanghai",
+      "condicion": "FOB",
+      "pago": "pmg",
+      "pago1_pct": 80,
+      "dias": 60,
+      "moneda": "USD",
+      "tc": 1.16,
+      "obs": "8% Comission",
+      "precios": {
+        "CAT1_18-24": 1.9,
+        "CAT1_26-30": 1.6,
+        "CAT1_32": 1.6
+      }
+    },
+    {
+      "id": 1781131419128,
+      "num": "COT-2026-003",
+      "fecha": "2026-06-10",
+      "valida": "2026-06-14",
+      "cliente": "SUPAFRESH",
+      "pais": "China",
+      "etd": "26",
+      "puerto_carga": "Callao",
+      "puerto_descarga": "Shanghai",
+      "condicion": "CIF",
+      "pago": "pmg",
+      "pago1_pct": 80,
+      "dias": 60,
+      "moneda": "USD",
+      "tc": 1.08,
+      "obs": "8% Comission\n",
+      "precios": {
+        "CAT1_18-24": 1.9,
+        "CAT1_26-30": 1.6,
+        "CAT1_32": 1.4
+      }
+    },
+    {
+      "id": 1781130724634,
+      "num": "COT-2026-002",
+      "fecha": "2026-06-10",
+      "valida": "2026-06-25",
+      "cliente": "AK FARM",
+      "pais": "Korea",
+      "etd": "26",
+      "puerto_carga": "Callao",
+      "puerto_descarga": "Busan",
+      "condicion": "FOB",
+      "pago": "pmg",
+      "pago1_pct": 60,
+      "dias": 60,
+      "moneda": "USD",
+      "tc": 1.16,
+      "obs": "8% comission. ",
+      "precios": {
+        "CAT1_16-20": 1.9,
+        "CAT1_22": 1.7
+      }
+    },
+    {
+      "id": 1781127331859,
+      "num": "COT-2026-001",
+      "fecha": "2026-06-10",
+      "valida": "2026-06-25",
+      "cliente": "AK FARM",
+      "pais": "Korea",
+      "etd": "26",
+      "puerto_carga": "Callao",
+      "puerto_descarga": "Busan",
+      "condicion": "FOB",
+      "pago": "pmg",
+      "pago1_pct": 60,
+      "dias": 60,
+      "moneda": "USD",
+      "tc": 1.17,
+      "obs": "Simulacion: Sin ref | 10/6/2026, 4:35:03 p. m. Variedad: Palta Hass",
+      "precios": {
+        "CAT1_16-20": 1.8,
+        "CAT1_22": 1.6
+      }
+    }
+  ],
+  "jr_clientes_gjr_v1": [
+    {
+      "id": 1,
+      "nombre": "MONTOSA",
+      "pais": "ESPAÑA",
+      "region": "europa",
+      "condicion": "FOB",
+      "moneda": "EUR",
+      "contacto": "",
+      "telefono": "",
+      "email": ""
+    },
+    {
+      "id": 2,
+      "nombre": "TROPICSUR",
+      "pais": "ESPAÑA",
+      "region": "europa",
+      "condicion": "FOB",
+      "moneda": "USD",
+      "contacto": "",
+      "telefono": "",
+      "email": ""
+    },
+    {
+      "id": 3,
+      "nombre": "AXARQUIA TROPICAL",
+      "pais": "ESPAÑA",
+      "region": "europa",
+      "condicion": "FOB",
+      "moneda": "USD",
+      "contacto": "",
+      "telefono": "",
+      "email": ""
+    },
+    {
+      "id": 4,
+      "nombre": "ROVEG",
+      "pais": "HOLANDA",
+      "region": "europa",
+      "condicion": "FOB",
+      "moneda": "USD",
+      "contacto": "",
+      "telefono": "",
+      "email": ""
+    },
+    {
+      "id": 5,
+      "nombre": "KRAAIJEVELD",
+      "pais": "HOLANDA",
+      "region": "europa",
+      "condicion": "FOB",
+      "moneda": "USD",
+      "contacto": "",
+      "telefono": "",
+      "email": ""
+    },
+    {
+      "id": 6,
+      "nombre": "MEHADRIN",
+      "pais": "HOLANDA",
+      "region": "europa",
+      "condicion": "FOB",
+      "moneda": "USD",
+      "contacto": "",
+      "telefono": "",
+      "email": ""
+    },
+    {
+      "id": 7,
+      "nombre": "PREMIER",
+      "pais": "REINO UNIDO",
+      "region": "europa",
+      "condicion": "FOB",
+      "moneda": "USD",
+      "contacto": "",
+      "telefono": "",
+      "email": ""
+    },
+    {
+      "id": 8,
+      "nombre": "TOMINAGA",
+      "pais": "JAPON",
+      "region": "asia",
+      "condicion": "CIF",
+      "moneda": "USD",
+      "contacto": "",
+      "telefono": "",
+      "email": ""
+    },
+    {
+      "id": 9,
+      "nombre": "NOWFRUTTI",
+      "pais": "CHINA",
+      "region": "asia",
+      "condicion": "CIF",
+      "moneda": "USD",
+      "contacto": "",
+      "telefono": "",
+      "email": ""
+    },
+    {
+      "id": 10,
+      "nombre": "AK FARM",
+      "pais": "KOREA",
+      "region": "asia",
+      "condicion": "CIF",
+      "moneda": "USD",
+      "contacto": "",
+      "telefono": "",
+      "email": ""
+    },
+    {
+      "id": 1781128157375,
+      "nombre": "SUPAFRESH",
+      "pais": "CHINA",
+      "region": "asia",
+      "condicion": "FOB",
+      "moneda": "USD",
+      "contacto": "Daniela Osorio",
+      "telefono": "+56995341267",
+      "email": ""
+    },
+    {
+      "id": 1781131841821,
+      "nombre": "DALIAN YIDU",
+      "pais": "CHINA",
+      "region": "asia",
+      "condicion": "FOB",
+      "moneda": "USD",
+      "contacto": "Rosita",
+      "telefono": "",
+      "email": ""
+    },
+    {
+      "id": 1781289754258,
+      "nombre": "N&K",
+      "pais": "HOLANDA",
+      "region": "europa",
+      "condicion": "FOB",
+      "moneda": "USD",
+      "contacto": "Nils",
+      "telefono": "",
+      "email": ""
+    }
+  ]
+}
