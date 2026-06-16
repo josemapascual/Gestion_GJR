@@ -1095,7 +1095,7 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
             <div class="field"><label>OPL <span id="s_opl_label" style="font-weight:400;color:#888;font-size:10px"></span></label><input type="number" id="s_opl" value="2000" oninput="simCalc()"></div>
             <div class="field"><label>Q.I.</label><input type="number" id="s_qi" value="180" oninput="simCalc()"></div>
-            <div class="field"><label>F/T (por caja)</label><input type="number" id="s_ft" value="0" step="0.01" oninput="simCalc()"></div>
+            
             <div class="field"><label>Gastos financieros</label><input type="number" id="s_fin" value="200" oninput="simCalc()"></div>
             <div class="field"><label>Costo an&#225;lisis</label><input type="number" id="s_analisis" value="300" oninput="simCalc()"></div>
             <div class="field"><label>Estructura</label><input type="number" id="s_estructura" value="3000" oninput="simCalc()"></div>
@@ -1358,7 +1358,7 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
             <div class="field"><label>OPL</label><input type="number" id="sm_opl" value="2000" oninput="simMandCalc()"></div>
             <div class="field"><label>Q.I.</label><input type="number" id="sm_qi" value="180" oninput="simMandCalc()"></div>
-            <div class="field"><label>F/T (por caja)</label><input type="number" id="sm_ft" value="0" step="0.01" oninput="simMandCalc()"></div>
+            
             <div class="field"><label>Gastos financieros</label><input type="number" id="sm_fin" value="200" oninput="simMandCalc()"></div>
             <div class="field"><label>Costo an&#225;lisis</label><input type="number" id="sm_analisis" value="300" oninput="simMandCalc()"></div>
             <div class="field"><label>Estructura</label><input type="number" id="sm_estructura" value="3000" oninput="simMandCalc()"></div>
@@ -1564,7 +1564,7 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
             <div class="field"><label>OPL</label><input type="number" id="c_opl" value="2000" oninput="costeoCalc()"></div>
             <div class="field"><label>Q.I.</label><input type="number" id="c_qi" value="500" oninput="costeoCalc()"></div>
-            <div class="field"><label>F/T (total)</label><input type="number" id="c_ft" value="0" oninput="costeoCalc()"></div>
+            
             <div class="field"><label>Gastos financieros</label><input type="number" id="c_fin" value="0" oninput="costeoCalc()"></div>
             <div class="field"><label>Costo an&#225;lisis</label><input type="number" id="c_analisis" value="0" oninput="costeoCalc()"></div>
             <div class="field"><label>Estructura</label><input type="number" id="c_estructura" value="0" oninput="costeoCalc()"></div>
@@ -1694,7 +1694,7 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
             <div class="field"><label>OPL</label><input type="number" id="cm_opl" value="2000" oninput="costeoMandCalc()"></div>
             <div class="field"><label>Q.I.</label><input type="number" id="cm_qi" value="180" oninput="costeoMandCalc()"></div>
-            <div class="field"><label>F/T total</label><input type="number" id="cm_ft" value="0" oninput="costeoMandCalc()"></div>
+            
             <div class="field"><label>Gastos financieros</label><input type="number" id="cm_fin" value="200" oninput="costeoMandCalc()"></div>
             <div class="field"><label>Costo an&#225;lisis</label><input type="number" id="cm_analisis" value="300" oninput="costeoMandCalc()"></div>
             <div class="field"><label>Estructura</label><input type="number" id="cm_estructura" value="3000" oninput="costeoMandCalc()"></div>
@@ -4228,7 +4228,7 @@ function simCalc() {
   var tc    = _gv('s_tc') || 3.75;
   var opl   = _gv('s_opl');
   var qi    = _gv('s_qi');
-  var ft    = _gv('s_ft') * cajas;
+  var ft    = 0;
   var fin   = _gv('s_fin');
   var analisis = _gv('s_analisis');
   var estr  = _gv('s_estructura');
@@ -4505,7 +4505,7 @@ function _pdfHeader(html, title, subtitle, rightText) {
 }
 function simPDF() {
   var kg=_gv('s_kg'),cajas=_gv('s_cajas'),tc=_gv('s_tc')||3.75;
-  var opl=_gv('s_opl'),qi=_gv('s_qi'),ft=_gv('s_ft')*cajas,fin=_gv('s_fin');
+  var opl=_gv('s_opl'),qi=_gv('s_qi'),ft=0,fin=_gv('s_fin');
   var analisis=_gv('s_analisis'),estr=_gv('s_estructura'),flete=_gv('s_flete'),otros=_gv('s_otros');
   var maquila=_gv('s_maquila'),caja_c=_gv('s_caja'),plu=_gv('s_plu');
   var db_pct=_gv('s_db')/100,rebate=_gv('s_rebate');
@@ -4996,7 +4996,7 @@ function anSave(d) { localStorage.setItem(AN_KEY, JSON.stringify(d)); }
 
 function simGuardar() {
   var kg=_gv('s_kg'),cajas=_gv('s_cajas'),tc=_gv('s_tc')||3.75;
-  var opl=_gv('s_opl'),qi=_gv('s_qi'),ft=_gv('s_ft')*cajas;
+  var opl=_gv('s_opl'),qi=_gv('s_qi'),ft=0;
   var fin=_gv('s_fin'),analisis=_gv('s_analisis'),estr=_gv('s_estructura'),flete=_gv('s_flete'),otros=_gv('s_otros');
   var maquila=_gv('s_maquila'),caja_c=_gv('s_caja'),plu=_gv('s_plu');
   var db_pct=_gv('s_db')/100,rebate=_gv('s_rebate');
@@ -5489,7 +5489,6 @@ function anModificar(id) {
       if(condSimEl)condSimEl.value=r.condicion||'FOB';sv('s_destino',r.destino);sv('s_semana',r.semana);
       sv('s_kg',r.kg);sv('s_cajas',r.cajas);sv('s_tc',r.tc);
       sv('s_opl',r.opl);sv('s_qi',r.qi);
-      if(r.cajas&&r.ft)sv('s_ft',(r.ft/r.cajas).toFixed(4));
       sv('s_fin',r.fin);sv('s_analisis',r.analisis);sv('s_estructura',r.estr);sv('s_flete',r.flete||0); sv('s_otros',r.otros);
       sv('s_maquila',r.maquila_kg);sv('s_caja',r.caja_kg);sv('s_plu',r.plu_kg);
       sv('s_sobrepeso',(r.sobrepeso_pct!=null?r.sobrepeso_pct:4));
@@ -6650,9 +6649,7 @@ function anModificar(id) {
       sv('s_estructura', r.estr);
       sv('s_otros',      r.otros);
       // F/T: guardado como total, convertir a por caja
-      if (r.cajas && r.ft) sv('s_ft', (r.ft / r.cajas).toFixed(4));
-
-      // Costos variables
+           // Costos variables
       sv('s_maquila',   r.maquila_kg);
       sv('s_caja',      r.caja_kg);
       sv('s_plu',       r.plu_kg);
@@ -7088,7 +7085,7 @@ function simMandCalc() {
   var cajas = _gv('sm_cajas');
   var tc    = _gv('sm_tc') || 3.75;
   var opl   = _gv('sm_opl'); var qi = _gv('sm_qi');
-  var ft    = _gv('sm_ft') * cajas;
+  var ft    = 0;
   var fin   = _gv('sm_fin'); var analisis = _gv('sm_analisis');
   var estr  = _gv('sm_estructura'); var flete = _gv('sm_flete'); var otros = _gv('sm_otros');
   var maquila = _gv('sm_maquila'); var caja_c = _gv('sm_caja'); var plu = _gv('sm_plu');
@@ -7208,7 +7205,7 @@ function simMandCalc() {
 // ── GUARDAR SIMULACION MANDARINA ──
 function simMandGuardar() {
   var kg=_gv('sm_kg'),cajas=_gv('sm_cajas'),tc=_gv('sm_tc')||3.75;
-  var opl=_gv('sm_opl'),qi=_gv('sm_qi'),ft=_gv('sm_ft')*cajas;
+  var opl=_gv('sm_opl'),qi=_gv('sm_qi'),ft=0;
   var fin=_gv('sm_fin'),analisis=_gv('sm_analisis'),estr=_gv('sm_estructura'),otros=_gv('sm_otros');
   var maquila=_gv('sm_maquila'),caja_c=_gv('sm_caja'),plu=_gv('sm_plu');
   var db_pct=_gv('sm_db')/100,rebate=_gv('sm_rebate');
@@ -7422,7 +7419,7 @@ function anPDFMand(id){
 function simMandPDF(){
   var kg=_gv('sm_kg'),cajas=_gv('sm_cajas'),tc=_gv('sm_tc')||3.75;
   var sp_pct=(function(){var el=document.getElementById('sm_sobrepeso');return el&&el.value!==''?parseFloat(el.value)||0:4;})(),sp_f=1+sp_pct/100;
-  var opl=_gv('sm_opl'),qi=_gv('sm_qi'),ft=_gv('sm_ft')*cajas,fin=_gv('sm_fin');
+  var opl=_gv('sm_opl'),qi=_gv('sm_qi'),ft=0,fin=_gv('sm_fin');
   var analisis=_gv('sm_analisis'),estr=_gv('sm_estructura'),otros=_gv('sm_otros');
   var maquila=_gv('sm_maquila'),caja_c=_gv('sm_caja'),plu=_gv('sm_plu');
   var db_pct=_gv('sm_db')/100,rebate=_gv('sm_rebate');
@@ -8798,7 +8795,7 @@ function simGenerarCotizacion() {
   for (var ri=0; ri<4; ri++) pvt+=(_gv('s_r'+ri+'_p')/100)*_gv('s_r'+ri+'_v')*kg;
 
   var maquila=_gv('s_maquila'), caja_c=_gv('s_caja'), plu=_gv('s_plu');
-  var opl=_gv('s_opl'), qi=_gv('s_qi'), ft=_gv('s_ft')*cajas;
+  var opl=_gv('s_opl'), qi=_gv('s_qi'), ft=0;
   var fin=_gv('s_fin'), analisis=_gv('s_analisis'), estr=_gv('s_estructura');
   var flete=_gv('s_flete'), otros=_gv('s_otros');
   var cv2=(mp_usd+maquila+caja_c+plu)*kg;
@@ -10397,7 +10394,7 @@ function simNueva() {
     's_kg':'24000','s_cajas':'2400','s_tc':'3.75',
     's_sobrepeso':'4','s_maquila':'0.14','s_caja':'0.07',
     's_plu':'0','s_opl':'2300','s_qi':'180',
-    's_ft':'0.85','s_fin':'200','s_analisis':'300',
+    's_fin':'200','s_analisis':'300',
     's_estructura':'3000','s_flete':'0','s_otros':'0',
     's_db':'3','s_rebate':'0',
     's_pago1_pct':'80','s_dias_cobro':'60',
