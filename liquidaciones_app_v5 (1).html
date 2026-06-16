@@ -1,4 +1,3 @@
- && git add . && git commit -m "update" && git push
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5025,7 +5024,7 @@ function simGuardar() {
   var pmge=_gv('s_pmg_esperado')||100;
 
   // Calcular riesgo con función compartida
-  var _risk=calcRiesgo(mrg,pago1_pct,tc,tp,dc,pvt,ct);
+  var _risk=calcRiesgo(mrg,pago1_pct,tc,tp,dc,pvt,ct,cf);
 
   if(pvt===0){showStatus('Calcula primero',true);return;}
 
@@ -5461,6 +5460,11 @@ function anModificar(id) {
     state._editingAnId = id;
     // Ensure palta panel is showing (not mandarina)
     setSimProducto('palta');
+    // Scroll to top of simulador form immediately
+    setTimeout(function(){
+      var simPanel = document.getElementById('simPaltaPanel');
+      if (simPanel) simPanel.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 50);
     window._simLoadingRecord = true;
     setTimeout(function(){
       function sv(elId,val){var el=document.getElementById(elId);if(el&&val!==undefined&&val!==null)el.value=val;}
@@ -5502,6 +5506,13 @@ function anModificar(id) {
       var btn=document.getElementById('btnGuardarSim');
       if(btn)btn.textContent='Actualizar simulacion';
       showStatus('Simulacion cargada para editar. Modifica y pulsa Guardar.');
+      // Highlight form briefly
+      var simCard = document.querySelector('#simPaltaPanel');
+      if (simCard) {
+        simCard.style.transition = 'box-shadow .3s';
+        simCard.style.boxShadow = '0 0 0 3px #E65100';
+        setTimeout(function(){ simCard.style.boxShadow = ''; }, 2000);
+      }
     },200);
 
   } else {
@@ -6754,86 +6765,7 @@ function anModificar(id) {
 
 function anSave(d) { localStorage.setItem(AN_KEY, JSON.stringify(d)); }
 
-function simGuardar() {
-  var kg=_gv('s_kg'),cajas=_gv('s_cajas'),tc=_gv('s_tc')||3.75;
-  var opl=_gv('s_opl'),qi=_gv('s_qi'),ft=_gv('s_ft')*cajas;
-  var fin=_gv('s_fin'),analisis=_gv('s_analisis'),estr=_gv('s_estructura'),flete=_gv('s_flete'),otros=_gv('s_otros');
-  var maquila=_gv('s_maquila'),caja_c=_gv('s_caja'),plu=_gv('s_plu');
-  var db_pct=_gv('s_db')/100,rebate=_gv('s_rebate');
-  var sp_pct=(function(){var el=document.getElementById('s_sobrepeso');return el&&el.value!==''?parseFloat(el.value)||0:4;})(),sp_f=1+sp_pct/100;
 
-  // PMP compra
-  var _mp=0,_pp=0;
-  for(var ci=0;ci<4;ci++){var cp=_gv('s_c'+ci+'_p')/100,cv3=_gv('s_c'+ci+'_v');_mp+=cp*cv3;_pp+=cp;}
-  var mp_sol_base=_pp>0?_mp/_pp:0,mp_usd=(mp_sol_base*sp_f)/tc;
-
-  // PVT venta
-  var pvt=0;
-  for(var ri=0;ri<4;ri++) pvt+=(_gv('s_r'+ri+'_p')/100)*_gv('s_r'+ri+'_v')*kg;
-
-  var cv2=(mp_usd+maquila+caja_c+plu)*kg;
-  var cf=opl+qi+ft+fin+analisis+estr+flete+otros;
-  var ct=cv2+cf,cu=ct/kg,pvu=pvt/kg;
-  var ub=pvt-ct,db=pvt*db_pct,uir=ub+db+rebate;
-  var ir=uir>0?uir*0.295:0,un=uir-ir,mrg=pvt>0?(un/pvt*100):0;
-
-  // Pagos y riesgo — usando la misma lógica que simCalc
-  var pago1_pct=(function(){var el=document.getElementById('s_pago1_pct');return el&&el.value!==''?parseFloat(el.value)||0:80;})();
-  var dc=_gv('s_dias_cobro');
-  var tp=(document.getElementById('s_tipo_precio')||{}).value||'fijo';
-  var pmge=_gv('s_pmg_esperado')||100;
-
-  // Calcular riesgo con función compartida
-  var _risk=calcRiesgo(mrg,pago1_pct,tc,tp,dc,pvt,ct);
-
-  if(pvt===0){showStatus('Calcula primero',true);return;}
-
-  // Rangos
-  var rangos_compra=[],rangos_venta=[];
-  for(var j=0;j<4;j++){
-    rangos_compra.push({n:(document.getElementById('s_c'+j+'_n')||{}).value||'',p:_gv('s_c'+j+'_p'),v:_gv('s_c'+j+'_v')});
-    rangos_venta.push({n:(document.getElementById('s_r'+j+'_n')||{}).value||'',p:_gv('s_r'+j+'_p'),v:_gv('s_r'+j+'_v')});
-  }
-
-  var data=anLoad();
-  var editId=state._editingAnId||null;
-  if(editId){
-    data=data.filter(function(r){return Number(r.id)!==Number(editId);});
-    state._editingAnId=null;
-    var badge=document.getElementById('simGuardadoBadge');
-    if(badge){badge.style.display='block';badge.querySelector('span').textContent='&#10003; Simulacion actualizada';}
-  }
-  data.push({
-    id:editId||Date.now(),tipo:'simulacion',fecha:new Date().toLocaleString('es-PE'),
-    ref:(document.getElementById('s_ref')||{}).value||'',
-    variedad:(document.getElementById('s_variedad')||{value:'Palta Hass'}).value||'Palta Hass',
-    puerto_carga:(document.getElementById('s_puerto_carga')||{}).value||'Callao',
-    puerto_descarga:(document.getElementById('s_puerto_descarga')||{}).value||'',
-    condicion:(document.getElementById('s_condicion')||{}).value||'FOB',
-    cliente:(document.getElementById('s_cliente')||{}).value||'',
-    destino:(document.getElementById('s_destino')||{}).value||'',
-    semana:String(_gv('s_semana')||''),
-    kg:kg,cajas:cajas,tc:tc,
-    opl:opl,qi:qi,ft:ft,fin:fin,analisis:analisis,estr:estr,flete:flete,otros:otros,
-    maquila_kg:maquila,caja_kg:caja_c,plu_kg:plu,sobrepeso_pct:sp_pct,
-    db_pct:_gv('s_db'),rebate:rebate,
-    tipo_precio:tp,adelanto_pct:pago1_pct,dias_cobro:dc,pmg_esperado:pmge,
-    rangos_compra:rangos_compra,rangos_venta:rangos_venta,
-    mp_sol:mp_sol_base,mp_usd:mp_usd,ct:ct,cu:cu,pvt:pvt,pvu:pvu,
-    ub:ub,db:db,uir:uir,ir:ir,un:un,mrg:mrg,
-    adelanto_usd:_risk.adv_usd,exposicion:_risk.exposicion,
-    cobertura_pct:_risk.cobertura,
-    riesgo:_risk.nivel,score:_risk.score,
-  });
-  anSave(data);
-  var badge2=document.getElementById('simGuardadoBadge');
-  if(badge2){badge2.style.display='block';}
-  var btnG=document.getElementById('btnGuardarSim');
-  if(btnG){btnG.textContent='Guardar simulación';btnG.style.background='';}
-  showStatus(editId?'Simulacion actualizada correctamente':'Simulacion guardada');
-  renderListadoSim();
-  analyticsRender();
-}
 
 function costeoGuardar() {
   var kg = _gv('c_kg');
