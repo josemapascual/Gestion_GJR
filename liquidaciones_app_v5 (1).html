@@ -1042,16 +1042,6 @@
             <div class="field"><label>Cliente</label>
               <select id="s_cliente" onchange="simClienteChange()">
                 <option value="">-- Selecciona cliente --</option>
-                <option>MONTOSA</option>
-                <option>TROPICSUR</option>
-                <option>AXARQUIA TROPICAL</option>
-                <option>ROVEG</option>
-                <option>KRAAIJEVELD</option>
-                <option>MEHADRIN</option>
-                <option>PREMIER</option>
-                <option>TOMINAGA</option>
-                <option>NOWFRUTTI</option>
-                <option>AK FARM</option>
               </select>
             </div>
             <div class="field"><label>Continente</label>
@@ -1075,6 +1065,7 @@
               <select id="s_puerto_carga">
                 <option value="Callao">Callao</option>
                 <option value="Paita">Paita</option>
+                <option value="Chancay">Chancay</option>
               </select>
             </div>
             <div class="field"><label>Puerto de descarga</label>
@@ -1877,10 +1868,6 @@
         <div class="field"><label>Cliente</label>
           <select id="cot_cliente" onchange="cotizacionClienteChange()">
             <option value="">-- Selecciona --</option>
-            <option>MONTOSA</option><option>TROPICSUR</option><option>AXARQUIA TROPICAL</option>
-            <option>ROVEG</option><option>KRAAIJEVELD</option><option>MEHADRIN</option>
-            <option>PREMIER</option><option>TOMINAGA</option><option>NOWFRUTTI</option>
-            <option>AK FARM</option>
           </select>
         </div>
         <div class="field"><label>Pa&#237;s destino</label>
@@ -8212,10 +8199,14 @@ var COT_PUERTOS = {
 };
 
 var COT_CLIENTES_PAIS = {
-  'MONTOSA': 'España', 'TROPICSUR': 'España', 'AXARQUIA TROPICAL': 'España',
-  'ROVEG': 'Holanda', 'KRAAIJEVELD': 'Holanda', 'MEHADRIN': 'Holanda',
-  'PREMIER': 'Inglaterra', 'TOMINAGA': 'Japon',
-  'NOWFRUTTI': 'China', 'AK FARM': 'Korea',
+  'KRAAIJEVELD':'Holanda','N&K':'Holanda','MEHADRIN':'Holanda',
+  'ROVEG':'Holanda','FRUITPRO':'Holanda',
+  'MONTOSA':'España','TROPICSUR':'España','AXARQUIA TROPICAL':'España',
+  'TROPICAL BAEZ':'España',
+  'PREMIER':'Inglaterra',
+  'TOMINAGA':'Japon',
+  'AK FARM':'Korea',
+  'YIDU':'China','SUPAFRESH':'China','NOWFRUTTI':'China',
 };
 
 var COT_CLIENTES_MONEDA = {
@@ -8934,16 +8925,20 @@ function simSyncPct(rangoIdx) {
 var GJR_CLIENTES_KEY = 'jr_clientes_gjr_v1';
 
 var GJR_CLIENTES_DEFAULT = [
-  {id:1, nombre:'MONTOSA',           pais:'ESPAÑA',      region:'europa', condicion:'FOB', moneda:'EUR', contacto:'', telefono:'', email:''},
-  {id:2, nombre:'TROPICSUR',         pais:'ESPAÑA',      region:'europa', condicion:'FOB', moneda:'USD', contacto:'', telefono:'', email:''},
-  {id:3, nombre:'AXARQUIA TROPICAL', pais:'ESPAÑA',      region:'europa', condicion:'FOB', moneda:'USD', contacto:'', telefono:'', email:''},
-  {id:4, nombre:'ROVEG',             pais:'HOLANDA',     region:'europa', condicion:'FOB', moneda:'USD', contacto:'', telefono:'', email:''},
-  {id:5, nombre:'KRAAIJEVELD',       pais:'HOLANDA',     region:'europa', condicion:'FOB', moneda:'USD', contacto:'', telefono:'', email:''},
-  {id:6, nombre:'MEHADRIN',          pais:'HOLANDA',     region:'europa', condicion:'FOB', moneda:'USD', contacto:'', telefono:'', email:''},
-  {id:7, nombre:'PREMIER',           pais:'REINO UNIDO', region:'europa', condicion:'FOB', moneda:'USD', contacto:'', telefono:'', email:''},
-  {id:8, nombre:'TOMINAGA',          pais:'JAPON',       region:'asia',   condicion:'CIF', moneda:'USD', contacto:'', telefono:'', email:''},
-  {id:9, nombre:'NOWFRUTTI',         pais:'CHINA',       region:'asia',   condicion:'CIF', moneda:'USD', contacto:'', telefono:'', email:''},
-  {id:10,nombre:'AK FARM',           pais:'KOREA',       region:'asia',   condicion:'CIF', moneda:'USD', contacto:'', telefono:'', email:''},
+  {id:1,  nombre:'KRAAIJEVELD',       pais:'HOLANDA',     region:'europa', condicion:'FOB', moneda:'USD', contacto:'', telefono:'', email:''},
+  {id:2,  nombre:'N&K',               pais:'HOLANDA',     region:'europa', condicion:'FOB', moneda:'USD', contacto:'', telefono:'', email:''},
+  {id:3,  nombre:'MEHADRIN',          pais:'HOLANDA',     region:'europa', condicion:'FOB', moneda:'USD', contacto:'', telefono:'', email:''},
+  {id:4,  nombre:'ROVEG',             pais:'HOLANDA',     region:'europa', condicion:'FOB', moneda:'USD', contacto:'', telefono:'', email:''},
+  {id:5,  nombre:'FRUITPRO',          pais:'HOLANDA',     region:'europa', condicion:'FOB', moneda:'USD', contacto:'', telefono:'', email:''},
+  {id:6,  nombre:'MONTOSA',           pais:'ESPANA',      region:'europa', condicion:'FOB', moneda:'EUR', contacto:'', telefono:'', email:''},
+  {id:7,  nombre:'TROPICSUR',         pais:'ESPANA',      region:'europa', condicion:'FOB', moneda:'USD', contacto:'', telefono:'', email:''},
+  {id:8,  nombre:'AXARQUIA TROPICAL', pais:'ESPANA',      region:'europa', condicion:'FOB', moneda:'USD', contacto:'', telefono:'', email:''},
+  {id:9,  nombre:'TROPICAL BAEZ',     pais:'ESPANA',      region:'europa', condicion:'FOB', moneda:'USD', contacto:'', telefono:'', email:''},
+  {id:10, nombre:'PREMIER',           pais:'REINO UNIDO', region:'europa', condicion:'CIF', moneda:'USD', contacto:'', telefono:'', email:''},
+  {id:11, nombre:'TOMINAGA',          pais:'JAPON',       region:'asia',   condicion:'CIF', moneda:'USD', contacto:'', telefono:'', email:''},
+  {id:12, nombre:'AK FARM',           pais:'KOREA',       region:'asia',   condicion:'FOB', moneda:'USD', contacto:'', telefono:'', email:''},
+  {id:13, nombre:'YIDU',              pais:'CHINA',       region:'asia',   condicion:'FOB', moneda:'USD', contacto:'', telefono:'', email:''},
+  {id:14, nombre:'SUPAFRESH',         pais:'CHINA',       region:'asia',   condicion:'FOB', moneda:'USD', contacto:'', telefono:'', email:''},
 ];
 
 function gjrClientesLoad() {
@@ -9145,34 +9140,75 @@ function simClienteChange() {
   var cliente = (document.getElementById('s_cliente')||{}).value || '';
   if (!cliente) return;
 
+  // First try GJR_SIM_DEFAULTS for full auto-fill
+  var def = GJR_SIM_DEFAULTS[cliente.toUpperCase()] || GJR_SIM_DEFAULTS[cliente];
+
+  function sv(elId, val) {
+    var el = document.getElementById(elId);
+    if (el && val !== undefined && val !== null) el.value = val;
+  }
+
+  if (def) {
+    // Set continente
+    var contEl = document.getElementById('s_continente');
+    if (contEl) { contEl.value = def.continente; simContinenteChange(); }
+
+    setTimeout(function(){
+      // Set pais
+      var paisEl = document.getElementById('s_pais');
+      if (paisEl) {
+        var opts = Array.from(paisEl.options);
+        var match = opts.find(function(o){ return o.value === def.pais; });
+        if (match) { paisEl.value = match.value; simPaisChange(); }
+      }
+      // Set condicion
+      var condEl = document.getElementById('s_condicion');
+      if (condEl) condEl.value = def.condicion;
+      // Set puertos
+      sv('s_puerto_carga',    def.puerto_carga);
+      sv('s_puerto_descarga', def.puerto_descarga);
+      // Set kg, cajas
+      sv('s_kg',    def.kg);
+      sv('s_cajas', def.cajas);
+      // Set costos fijos
+      sv('s_fin',       def.fin);
+      sv('s_analisis',  def.analisis);
+      sv('s_estructura',def.estructura);
+      sv('s_flete',     def.flete);
+      sv('s_otros',     def.otros);
+      sv('s_rebate',    def.rebate);
+      // Moneda
+      var monedaEl = document.getElementById('s_moneda');
+      if (monedaEl) monedaEl.value = cliente==='MONTOSA'?'EUR':'USD';
+
+      setTimeout(simCalc, 150);
+      showStatus('Cliente: '+cliente+' — datos cargados automáticamente');
+    }, 200);
+    return;
+  }
+
+  // Fallback: use GJR clients data
   var clientes = gjrClientesLoad();
   var c = clientes.filter(function(x){ return x.nombre===cliente; })[0];
   if (!c) return;
 
-  // Continente
   var contEl = document.getElementById('s_continente');
   if (contEl) {
     contEl.value = c.region==='asia'?'ASIA':(c.region==='america'?'AMERICA':'EUROPA');
     simContinenteChange();
   }
-
   setTimeout(function(){
-    // Pais
     var paisEl = document.getElementById('s_pais');
     if (paisEl) {
       var opts = Array.from(paisEl.options);
       var match = opts.find(function(o){ return o.value===c.pais; });
       if (match) { paisEl.value=match.value; simPaisChange(); }
     }
-    // Condicion
     var condEl = document.getElementById('s_condicion');
     if (condEl) condEl.value = c.condicion||'FOB';
-    // Destino
     var destEl = document.getElementById('s_destino');
     if (destEl && !destEl.value) destEl.value = c.pais;
-
     setTimeout(function(){
-      // Puerto descarga
       var PUERTOS = {
         'ESPANA':'Algeciras','ESPAÑA':'Algeciras','HOLANDA':'Rotterdam',
         'REINO UNIDO':'Rotterdam','INGLATERRA':'Rotterdam','FRANCIA':'Rotterdam',
@@ -9181,13 +9217,11 @@ function simClienteChange() {
         'USA':'Los Angeles','CANADA':'Vancouver','CHILE':'Valparaiso',
       };
       var pdEl = document.getElementById('s_puerto_descarga');
-      if (pdEl) {
-        var puerto = PUERTOS[c.pais.toUpperCase()];
-        if (puerto) pdEl.value = puerto;
-      }
-      var msg = 'Cliente: '+c.nombre+' — '+c.pais+' — '+c.condicion;
-      if (c.moneda==='EUR') msg += ' — EUR';
+      if (pdEl) { var p=PUERTOS[c.pais.toUpperCase()]; if(p) pdEl.value=p; }
+      var msg='Cliente: '+c.nombre+' — '+c.pais+' — '+c.condicion;
+      if(c.moneda==='EUR') msg+=' — EUR';
       showStatus(msg);
+      setTimeout(simCalc, 100);
     }, 200);
   }, 150);
 }
@@ -10420,6 +10454,24 @@ function simNueva() {
   setTimeout(simCalc, 100);
   showStatus('Simulador listo para nueva simulaci\u00f3n');
 }
+
+// ── Datos por defecto por cliente (auto-fill simulador) ──
+var GJR_SIM_DEFAULTS = {
+  'KRAAIJEVELD':      {continente:'EUROPA', pais:'HOLANDA',     puerto_carga:'Callao',   puerto_descarga:'Rotterdam',    condicion:'FOB', kg:24000, cajas:2400, fin:100, analisis:150, estructura:2500, flete:0,    otros:0,    rebate:1400},
+  'N&K':              {continente:'EUROPA', pais:'HOLANDA',     puerto_carga:'Callao',   puerto_descarga:'Rotterdam',    condicion:'FOB', kg:24000, cajas:2400, fin:100, analisis:150, estructura:2500, flete:0,    otros:0,    rebate:1400},
+  'MEHADRIN':         {continente:'EUROPA', pais:'HOLANDA',     puerto_carga:'Callao',   puerto_descarga:'Rotterdam',    condicion:'FOB', kg:24000, cajas:2400, fin:100, analisis:150, estructura:2500, flete:0,    otros:0,    rebate:1400},
+  'ROVEG':            {continente:'EUROPA', pais:'HOLANDA',     puerto_carga:'Callao',   puerto_descarga:'Rotterdam',    condicion:'FOB', kg:24000, cajas:2400, fin:100, analisis:150, estructura:2500, flete:0,    otros:0,    rebate:1400},
+  'FRUITPRO':         {continente:'EUROPA', pais:'HOLANDA',     puerto_carga:'Callao',   puerto_descarga:'Rotterdam',    condicion:'FOB', kg:24000, cajas:2400, fin:100, analisis:150, estructura:2500, flete:0,    otros:0,    rebate:1400},
+  'MONTOSA':          {continente:'EUROPA', pais:'ESPANA',      puerto_carga:'Callao',   puerto_descarga:'Algeciras',    condicion:'FOB', kg:24000, cajas:2400, fin:100, analisis:150, estructura:2500, flete:0,    otros:0,    rebate:1400},
+  'TROPICSUR':        {continente:'EUROPA', pais:'ESPANA',      puerto_carga:'Callao',   puerto_descarga:'Algeciras',    condicion:'FOB', kg:24000, cajas:2400, fin:100, analisis:150, estructura:2500, flete:0,    otros:0,    rebate:1400},
+  'AXARQUIA TROPICAL':{continente:'EUROPA', pais:'ESPANA',      puerto_carga:'Callao',   puerto_descarga:'Algeciras',    condicion:'FOB', kg:24000, cajas:2400, fin:100, analisis:150, estructura:2500, flete:0,    otros:0,    rebate:1300},
+  'TROPICAL BAEZ':    {continente:'EUROPA', pais:'ESPANA',      puerto_carga:'Callao',   puerto_descarga:'Algeciras',    condicion:'FOB', kg:24000, cajas:2400, fin:100, analisis:150, estructura:2500, flete:0,    otros:0,    rebate:1300},
+  'PREMIER':          {continente:'EUROPA', pais:'REINO UNIDO', puerto_carga:'Callao',   puerto_descarga:'London Gateway',condicion:'CIF',kg:24000, cajas:2400, fin:100, analisis:150, estructura:2500, flete:6700, otros:0,    rebate:900},
+  'TOMINAGA':         {continente:'ASIA',   pais:'JAPON',       puerto_carga:'Callao',   puerto_descarga:'Kobe',         condicion:'CIF', kg:24000, cajas:2400, fin:100, analisis:150, estructura:2500, flete:5700, otros:0,    rebate:1400},
+  'AK FARM':          {continente:'ASIA',   pais:'KOREA',       puerto_carga:'Callao',   puerto_descarga:'Busan',        condicion:'FOB', kg:21120, cajas:5280, fin:100, analisis:150, estructura:2500, flete:0,    otros:0,    rebate:1400},
+  'YIDU':             {continente:'ASIA',   pais:'CHINA',       puerto_carga:'Chancay',  puerto_descarga:'Shanghai',     condicion:'FOB', kg:24000, cajas:2400, fin:100, analisis:150, estructura:2500, flete:0,    otros:0,    rebate:1400},
+  'SUPAFRESH':        {continente:'ASIA',   pais:'CHINA',       puerto_carga:'Chancay',  puerto_descarga:'Shanghai',     condicion:'FOB', kg:24000, cajas:2400, fin:100, analisis:150, estructura:2500, flete:0,    otros:0,    rebate:1400},
+};
 </script>
 
 
