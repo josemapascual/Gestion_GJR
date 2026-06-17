@@ -2064,6 +2064,29 @@
       </div>
     </div>
 
+    <!-- Nube compartida (Supabase) -->
+    <div class="card" style="margin-bottom:16px;border:2px solid #1B5E20">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div style="font-size:22px">&#9729;</div>
+        <div>
+          <div class="card-title" style="margin-bottom:2px;color:#1B5E20">&#11088; Base de datos compartida GJR</div>
+          <div style="font-size:11px;color:#888">Todos los usuarios ven los mismos datos en tiempo real</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <button class="btn btn-primary" onclick="gjrCloudSave()" style="background:#1B5E20;font-size:12px">
+          &#8593; Guardar en la nube
+        </button>
+        <button class="btn btn-outline" onclick="gjrCloudLoad()" style="border-color:#1B5E20;color:#1B5E20;font-size:12px">
+          &#8595; Cargar desde la nube
+        </button>
+      </div>
+      <div id="sync_cloud_status" style="font-size:11px;color:#888;min-height:16px"></div>
+      <div style="margin-top:10px;padding:8px;background:#E8F5E9;border-radius:6px;font-size:10px;color:#1B5E20">
+        &#9989; Conectado a Supabase GJR &mdash; Los 3 usuarios comparten esta base de datos
+      </div>
+    </div>
+
     <!-- GitHub -->
     <div class="card" style="margin-bottom:16px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
@@ -4979,7 +5002,7 @@ var AN_KEY = 'jr_analytics_v1';
 var _anCharts = {};
 
 function anLoad() { try { return JSON.parse(localStorage.getItem(AN_KEY)||'[]'); } catch(e) { return []; } }
-function anSave(d) { localStorage.setItem(AN_KEY, JSON.stringify(d)); }
+function anSave(d) { localStorage.setItem(AN_KEY, JSON.stringify(d)); gjrAutoCloudSave(); }
 
 function simGuardar() {
   var kg=_gv('s_kg'),cajas=_gv('s_cajas'),tc=_gv('s_tc')||3.75;
@@ -6747,7 +6770,7 @@ function anModificar(id) {
   }
 }
 
-function anSave(d) { localStorage.setItem(AN_KEY, JSON.stringify(d)); }
+function anSave(d) { localStorage.setItem(AN_KEY, JSON.stringify(d)); gjrAutoCloudSave(); }
 
 
 
@@ -10472,6 +10495,142 @@ var GJR_SIM_DEFAULTS = {
   'YIDU':             {continente:'ASIA',   pais:'CHINA',       puerto_carga:'Chancay',  puerto_descarga:'Shanghai',     condicion:'FOB', kg:24000, cajas:2400, fin:100, analisis:150, estructura:2500, flete:0,    otros:0,    rebate:1400},
   'SUPAFRESH':        {continente:'ASIA',   pais:'CHINA',       puerto_carga:'Chancay',  puerto_descarga:'Shanghai',     condicion:'FOB', kg:24000, cajas:2400, fin:100, analisis:150, estructura:2500, flete:0,    otros:0,    rebate:1400},
 };
+
+// ════════════════════════════════════════════════════════════
+// SUPABASE — BASE DE DATOS COMPARTIDA
+// ════════════════════════════════════════════════════════════
+
+var GJR_SUPABASE_URL = 'https://riidmxztyxldnojjkncx.supabase.co';
+var GJR_SUPABASE_KEY = 'sb_publishable_ZbMZbTdBcYnGceF_woayjQ_CCCEHRYS';
+
+function gjrSupabaseHeaders() {
+  return {
+    'apikey': GJR_SUPABASE_KEY,
+    'Authorization': 'Bearer ' + GJR_SUPABASE_KEY,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
+}
+
+// ── Guardar registro en Supabase ──
+async function gjrSupabaseSave(tabla, id, datos) {
+  var url = GJR_SUPABASE_URL + '/rest/v1/' + tabla;
+  var body = JSON.stringify({ id: id, datos: datos, updated_at: new Date().toISOString() });
+  
+  // Upsert (insert or update)
+  var resp = await fetch(url + '?on_conflict=id', {
+    method: 'POST',
+    headers: Object.assign({}, gjrSupabaseHeaders(), {'Prefer': 'resolution=merge-duplicates,return=minimal'}),
+    body: body
+  });
+  return resp.ok;
+}
+
+// ── Cargar todos los registros de una tabla ──
+async function gjrSupabaseLoad(tabla) {
+  var url = GJR_SUPABASE_URL + '/rest/v1/' + tabla + '?select=*&order=updated_at.desc';
+  var resp = await fetch(url, { headers: gjrSupabaseHeaders() });
+  if (!resp.ok) return [];
+  var rows = await resp.json();
+  return rows.map(function(r) { return r.datos; });
+}
+
+// ── Eliminar registro ──
+async function gjrSupabaseDelete(tabla, id) {
+  var url = GJR_SUPABASE_URL + '/rest/v1/' + tabla + '?id=eq.' + id;
+  var resp = await fetch(url, { method: 'DELETE', headers: gjrSupabaseHeaders() });
+  return resp.ok;
+}
+
+// ── Sincronizar TODOS los datos locales a Supabase ──
+async function gjrCloudSave() {
+  var statusEl = document.getElementById('sync_cloud_status');
+  if (statusEl) { statusEl.textContent = 'Guardando en la nube...'; statusEl.style.color = '#E65100'; }
+
+  try {
+    // Simulaciones
+    var sims = anLoad();
+    for (var i = 0; i < sims.length; i++) {
+      await gjrSupabaseSave('simulaciones', sims[i].id, sims[i]);
+    }
+
+    // Liquidaciones
+    var liqs = JSON.parse(localStorage.getItem('jr_liq_v5') || '[]');
+    for (var j = 0; j < liqs.length; j++) {
+      await gjrSupabaseSave('liquidaciones', liqs[j].id || j, liqs[j]);
+    }
+
+    // Cotizaciones
+    var cots = cotizacionLoadData ? cotizacionLoadData() : [];
+    for (var k = 0; k < cots.length; k++) {
+      await gjrSupabaseSave('cotizaciones', cots[k].id, cots[k]);
+    }
+
+    // Clientes
+    var clis = gjrClientesLoad();
+    for (var l = 0; l < clis.length; l++) {
+      await gjrSupabaseSave('clientes', clis[l].id, clis[l]);
+    }
+
+    localStorage.setItem(GJR_SYNC_KEY, new Date().toISOString());
+    if (statusEl) { statusEl.textContent = '✓ Guardado en la nube — ' + new Date().toLocaleTimeString('es-PE'); statusEl.style.color = '#1B5E20'; }
+    gjrSyncUpdateInfo();
+
+  } catch(e) {
+    if (statusEl) { statusEl.textContent = 'Error: ' + e.message; statusEl.style.color = '#C62828'; }
+  }
+}
+
+// ── Cargar TODOS los datos desde Supabase ──
+async function gjrCloudLoad() {
+  var statusEl = document.getElementById('sync_cloud_status');
+  if (statusEl) { statusEl.textContent = 'Cargando desde la nube...'; statusEl.style.color = '#E65100'; }
+
+  try {
+    if (!confirm('Se cargarán los datos de la nube. ¿Sobreescribir datos locales?')) {
+      if (statusEl) statusEl.textContent = 'Cancelado';
+      return;
+    }
+
+    // Simulaciones
+    var sims = await gjrSupabaseLoad('simulaciones');
+    if (sims.length) localStorage.setItem('jr_analytics_v1', JSON.stringify(sims));
+
+    // Liquidaciones
+    var liqs = await gjrSupabaseLoad('liquidaciones');
+    if (liqs.length) localStorage.setItem('jr_liq_v5', JSON.stringify(liqs));
+
+    // Cotizaciones
+    var cots = await gjrSupabaseLoad('cotizaciones');
+    if (cots.length) localStorage.setItem('jr_cotizaciones_v1', JSON.stringify(cots));
+
+    // Clientes
+    var clis = await gjrSupabaseLoad('clientes');
+    if (clis.length) { localStorage.setItem('jr_clientes_gjr_v1', JSON.stringify(clis)); gjrRefreshAllSelects(); }
+
+    localStorage.setItem(GJR_SYNC_KEY, new Date().toISOString());
+    if (statusEl) { statusEl.textContent = '✓ Datos cargados desde la nube — ' + new Date().toLocaleTimeString('es-PE'); statusEl.style.color = '#1B5E20'; }
+    gjrSyncUpdateInfo();
+
+    // Refresh UI
+    setTimeout(function() {
+      renderHistorial && renderHistorial();
+      analyticsRender && analyticsRender();
+      dashRender && dashRender();
+    }, 300);
+
+  } catch(e) {
+    if (statusEl) { statusEl.textContent = 'Error: ' + e.message; statusEl.style.color = '#C62828'; }
+  }
+}
+
+// ── Auto-guardar en nube al guardar simulacion/liquidacion/cotizacion ──
+function gjrAutoCloudSave() {
+  // Silently save to cloud after each local save
+  setTimeout(function() {
+    gjrCloudSave().catch(function(){});
+  }, 1000);
+}
 </script>
 
 
