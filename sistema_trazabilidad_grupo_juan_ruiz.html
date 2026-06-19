@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Trazabilidad – Grupo Juan Ruiz</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --verde-oscuro:#1a3d2b; --verde-medio:#2d6a4f; --verde-claro:#52b788;
+  --verde-lima:#8dc561; --dorado:#c9a84c; --dorado-claro:#f0d080;
+  --blanco:#fff; --gris-bg:#f2f4f1; --gris-texto:#3a3a3a;
+  --rojo:#c0392b; --rojo-suave:#fdecea; --naranja:#e67e22;
+  --verde-ok:#1b7a50; --verde-ok-suave:#eaf5ee; --border:#e2ebe3;
+  --agq-color:#1565c0; --groen-color:#2d7a35;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--gris-bg);color:var(--gris-texto);min-height:100vh;}
+
+/* ═══ HEADER – idéntico a la foto ═══ */
+.header-banner{
+  background:linear-gradient(110deg,#163320 0%,#1e4d2b 35%,#2d6e3a 65%,#1e5030 100%);
+  position:relative;overflow:hidden;
+}
+.header-banner::before{
+  content:'';position:absolute;top:-60%;right:-5%;
+  width:700px;height:700px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,168,76,.13) 0%,transparent 65%);
+  pointer-events:none;
+}
+.header-banner::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,#c9a84c,#f0d080,#c9a84c,transparent);
+}
+.banner-inner{
+  max-width:1400px;margin:0 auto;
+  padding:20px 40px 18px;
+  display:flex;align-items:center;gap:28px;
+  position:relative;z-index:1;
+}
+/* Logo circular blanco */
+.logo-wrap{
+  width:88px;height:88px;border-radius:50%;
+  background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  border:3px solid rgba(201,168,76,.55);
+  box-shadow:0 0 0 5px rgba(201,168,76,.18),0 6px 24px rgba(0,0,0,.35);
+  flex-shrink:0;overflow:hidden;
+}
+.logo-wrap img{width:82px;height:82px;object-fit:contain;border-radius:50%;}
+/* Marca */
+.brand-block{display:flex;flex-direction:column;gap:2px;}
+.brand-name{
+  font-family:'Playfair Display',serif;
+  font-size:26px;font-weight:800;color:#fff;letter-spacing:.5px;line-height:1.1;
+  text-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+.brand-sub{
+  font-size:10.5px;letter-spacing:4px;color:rgba(255,255,255,.55);
+  text-transform:uppercase;font-weight:500;
+}
+/* Título central */
+.banner-title-block{flex:1;text-align:center;padding:0 16px;}
+.banner-title{
+  font-family:'Playfair Display',serif;
+  font-size:27px;font-weight:700;color:#fff;
+  letter-spacing:.3px;line-height:1.25;
+  text-shadow:0 2px 12px rgba(0,0,0,.25);
+}
+.banner-subtitle{
+  font-size:10.5px;letter-spacing:3.5px;color:rgba(255,255,255,.55);
+  text-transform:uppercase;margin-top:6px;font-weight:400;
+}
+/* Badges derecha */
+.banner-badges{display:flex;flex-direction:column;gap:8px;align-items:flex-end;flex-shrink:0;}
+.badge-pill{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(201,168,76,.18);
+  border:1px solid rgba(201,168,76,.45);
+  color:#f0d080;padding:6px 16px;border-radius:22px;
+  font-size:12px;font-weight:600;letter-spacing:.4px;
+  white-space:nowrap;
+}
+.badge-pill .bp-icon{font-size:13px;}
+
+/* ═══ NAV ═══ */
+.nav-bar{background:rgba(16,38,22,.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;z-index:50;}
+.nav-inner{max-width:1400px;margin:0 auto;padding:0 40px;display:flex;gap:0;}
+.nav-tab{
+  color:rgba(255,255,255,.58);padding:13px 24px;
+  font-size:11.5px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;border-bottom:3px solid transparent;
+  transition:all .2s;white-space:nowrap;user-select:none;
+}
+.nav-tab:hover{color:rgba(255,255,255,.9);}
+.nav-tab.active{color:#fff;border-bottom-color:var(--dorado);background:rgba(255,255,255,.04);}
+
+/* ═══ LAYOUT ═══ */
+.main{max-width:1400px;margin:0 auto;padding:32px 40px;}
+.page{display:none;}.page.active{display:block;}
+
+/* ═══ KPI CARDS ═══ */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:28px;}
+.kpi-card{
+  background:#fff;border-radius:12px;padding:22px 20px;
+  border:1px solid rgba(0,0,0,.05);
+  box-shadow:0 2px 10px rgba(0,0,0,.045);
+  position:relative;overflow:hidden;
+  transition:transform .18s,box-shadow .18s;
+}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.08);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3.5px;}
+.kpi-card.c-total::before{background:var(--verde-medio);}
+.kpi-card.c-apr::before{background:var(--verde-ok);}
+.kpi-card.c-rej::before{background:var(--rojo);}
+.kpi-card.c-ta::before{background:var(--verde-claro);}
+.kpi-card.c-tr::before{background:var(--naranja);}
+.kpi-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#999;font-weight:700;margin-bottom:8px;}
+.kpi-val{font-family:'Playfair Display',serif;font-size:40px;font-weight:700;line-height:1;}
+.c-total .kpi-val{color:var(--verde-medio);}
+.c-apr .kpi-val{color:var(--verde-ok);}
+.c-rej .kpi-val{color:var(--rojo);}
+.c-ta .kpi-val{color:var(--verde-claro);}
+.c-tr .kpi-val{color:var(--naranja);}
+.kpi-sub{font-size:11px;color:#bbb;margin-top:5px;}
+
+/* ═══ DIST BAR ═══ */
+.dist-panel{background:#fff;border-radius:12px;padding:24px 28px;margin-bottom:24px;
+  border:1px solid rgba(0,0,0,.05);box-shadow:0 2px 10px rgba(0,0,0,.04);}
+.panel-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#999;font-weight:700;margin-bottom:14px;}
+.dist-bar{height:18px;border-radius:9px;overflow:hidden;display:flex;}
+.dist-apr{background:linear-gradient(90deg,#1b7a50,#52b788);transition:width 1s ease;}
+.dist-rej{background:linear-gradient(90deg,#e67e22,#c0392b);transition:width 1s ease;}
+.dist-labels{display:flex;justify-content:space-between;margin-top:10px;font-size:12.5px;font-weight:600;}
+.dl-a{color:var(--verde-ok);}
+.dl-r{color:var(--rojo);}
+
+/* ═══ LAB TABS ═══ */
+.lab-filter-row{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap;align-items:center;}
+.lab-btn{
+  padding:8px 22px;border-radius:22px;border:2px solid var(--border);
+  background:#fff;font-size:12px;font-weight:700;cursor:pointer;
+  transition:all .18s;letter-spacing:.5px;font-family:'DM Sans',sans-serif;
+}
+.lab-btn:hover{border-color:var(--verde-medio);color:var(--verde-medio);}
+.lab-btn.sel-all{background:var(--verde-oscuro);color:#fff;border-color:var(--verde-oscuro);}
+.lab-btn.sel-agq{background:var(--agq-color);color:#fff;border-color:var(--agq-color);}
+.lab-btn.sel-groen{background:var(--groen-color);color:#fff;border-color:var(--groen-color);}
+
+/* ═══ 2/3 COL GRIDS ═══ */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:22px;}
+.panel{background:#fff;border-radius:12px;padding:22px 24px;
+  border:1px solid rgba(0,0,0,.05);box-shadow:0 2px 10px rgba(0,0,0,.04);}
+.panel-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;
+  color:var(--verde-oscuro);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #eee;}
+
+/* ═══ DEPT ROWS ═══ */
+.dept-row{display:flex;justify-content:space-between;align-items:center;
+  padding:9px 0;border-bottom:1px solid #f5f5f5;}
+.dept-row:last-child{border-bottom:none;}
+.dept-name{font-size:13px;color:#555;font-weight:500;}
+.dept-badges{display:flex;gap:8px;}
+.db-a{background:var(--verde-ok-suave);color:var(--verde-ok);padding:3px 10px;
+  border-radius:10px;font-size:11.5px;font-weight:700;}
+.db-r{background:var(--rojo-suave);color:var(--rojo);padding:3px 10px;
+  border-radius:10px;font-size:11.5px;font-weight:700;}
+
+/* ═══ PEST BARS ═══ */
+.pest-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f5f5f5;}
+.pest-row:last-child{border-bottom:none;}
+.pest-name{font-size:12.5px;font-weight:600;flex:1;color:#444;}
+.pest-bar-track{width:100px;height:6px;background:#f0e8e7;border-radius:3px;flex-shrink:0;}
+.pest-bar-fill{height:6px;background:var(--rojo);border-radius:3px;}
+.pest-count{font-size:13px;font-weight:800;color:var(--rojo);width:22px;text-align:right;}
+
+/* ═══ LAB SUMMARY CARDS ═══ */
+.lab-cards-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px;}
+.lab-card{border-radius:14px;padding:24px 26px;background:#fff;
+  box-shadow:0 2px 12px rgba(0,0,0,.06);border-left:5px solid;}
+.lab-card.agq{border-left-color:var(--agq-color);}
+.lab-card.groen{border-left-color:var(--groen-color);}
+.lab-card-name{font-size:24px;font-weight:900;font-family:'Playfair Display',serif;letter-spacing:.5px;}
+.lab-card.agq .lab-card-name{color:var(--agq-color);}
+.lab-card.groen .lab-card-name{color:var(--groen-color);}
+.lab-card-desc{font-size:11px;color:#aaa;letter-spacing:1px;margin-top:2px;text-transform:uppercase;}
+.lab-stats-row{display:flex;gap:20px;margin-top:16px;}
+.ls{text-align:center;}
+.ls-val{font-size:28px;font-weight:800;font-family:'Playfair Display',serif;}
+.ls-val.g{color:var(--verde-ok);}
+.ls-val.r{color:var(--rojo);}
+.ls-val.t{color:#777;}
+.ls-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#aaa;font-weight:600;}
+.lab-pct-bar{margin-top:14px;}
+.lp-track{height:8px;background:#eee;border-radius:4px;overflow:hidden;}
+.lp-fill{height:8px;border-radius:4px;transition:width .8s ease;}
+.lab-card.agq .lp-fill{background:linear-gradient(90deg,#1565c0,#42a5f5);}
+.lab-card.groen .lp-fill{background:linear-gradient(90deg,#2d6a4f,#52b788);}
+.lp-txt{font-size:11px;color:#aaa;margin-top:5px;}
+
+/* ═══ COLLAPSE ═══ */
+.collapse-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;user-select:none;
+  padding:14px 22px;background:#fff;border-radius:10px;
+  border:1px solid var(--border);margin-bottom:10px;
+  font-weight:700;font-size:13.5px;color:var(--verde-oscuro);
+  box-shadow:0 1px 6px rgba(0,0,0,.04);transition:background .15s;
+}
+.collapse-hdr:hover{background:#f8faf8;}
+.collapse-hdr .chev{transition:transform .28s;font-size:15px;color:var(--dorado);}
+.collapse-hdr.open .chev{transform:rotate(180deg);}
+.collapse-body{display:none;margin-bottom:20px;}
+.collapse-body.open{display:block;}
+.badge-lab{display:inline-block;padding:2px 9px;border-radius:8px;
+  font-size:10px;font-weight:800;text-transform:uppercase;margin-right:6px;}
+.badge-lab.AGQ{background:#e3f2fd;color:#1565c0;}
+.badge-lab.GROEN{background:#e8f5e9;color:#2d7a35;}
+
+/* ═══ CHART WRAP ═══ */
+.chart-wrap{position:relative;height:250px;}
+.chart-wrap-sm{position:relative;height:200px;}
+
+/* ═══ TABLE PAGE ═══ */
+.filters-bar{background:#fff;border-radius:12px;padding:20px 24px;margin-bottom:18px;
+  border:1px solid rgba(0,0,0,.05);box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.filters-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-top:12px;}
+.filter-group{display:flex;flex-direction:column;gap:5px;flex:1;min-width:140px;}
+.filter-lbl{font-size:10.5px;font-weight:700;color:#999;letter-spacing:.5px;text-transform:uppercase;}
+.filter-inp,.filter-sel{
+  border:1px solid #e0e0e0;border-radius:8px;padding:9px 13px;
+  font-size:13px;font-family:'DM Sans',sans-serif;color:var(--gris-texto);
+  background:#fff;outline:none;transition:border-color .2s;
+}
+.filter-inp:focus,.filter-sel:focus{border-color:var(--verde-medio);}
+.status-pills{display:flex;gap:8px;}
+.sp{
+  padding:7px 18px;border-radius:22px;font-size:12px;font-weight:700;
+  cursor:pointer;border:2px solid;transition:all .18s;font-family:'DM Sans',sans-serif;
+}
+.sp-all{border-color:var(--verde-oscuro);color:var(--verde-oscuro);background:#fff;}
+.sp-all.active{background:var(--verde-oscuro);color:#fff;}
+.sp-apr{border-color:var(--verde-ok);color:var(--verde-ok);background:#fff;}
+.sp-apr.active{background:var(--verde-ok);color:#fff;}
+.sp-rej{border-color:var(--rojo);color:var(--rojo);background:#fff;}
+.sp-rej.active{background:var(--rojo);color:#fff;}
+.btn-apply{background:var(--verde-oscuro);color:#fff;border:none;
+  padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;
+  font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .2s;}
+.btn-apply:hover{background:var(--verde-medio);}
+.btn-clear{background:#fff;color:#999;border:1px solid #ddd;
+  padding:9px 15px;border-radius:8px;font-size:12px;
+  font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;}
+.btn-clear:hover{border-color:#aaa;color:#555;}
+.tbl-section{background:#fff;border-radius:12px;border:1px solid rgba(0,0,0,.05);
+  box-shadow:0 2px 10px rgba(0,0,0,.04);overflow:hidden;}
+.tbl-hdr{padding:18px 24px;border-bottom:1px solid #f0f0f0;
+  display:flex;justify-content:space-between;align-items:center;}
+.tbl-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:var(--verde-oscuro);}
+.rec-count{font-size:11.5px;color:#999;background:#f0f7f0;
+  padding:4px 12px;border-radius:14px;font-weight:600;}
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+thead tr{background:#f8faf8;border-bottom:2px solid #e8ede8;}
+th{padding:11px 14px;text-align:left;font-size:10px;font-weight:700;
+  letter-spacing:.8px;text-transform:uppercase;color:var(--verde-oscuro);white-space:nowrap;}
+tbody tr{border-bottom:1px solid #f2f2f2;transition:background .12s;}
+tbody tr:hover{background:#f5fbf5;}
+tbody tr.row-rej:hover{background:#fef8f7;}
+td{padding:10px 14px;vertical-align:middle;}
+.badge-e{display:inline-flex;align-items:center;gap:4px;
+  padding:3px 9px;border-radius:16px;font-size:11px;font-weight:700;white-space:nowrap;}
+.badge-e.apr{background:var(--verde-ok-suave);color:var(--verde-ok);border:1px solid rgba(27,122,80,.18);}
+.badge-e.rej{background:var(--rojo-suave);color:var(--rojo);border:1px solid rgba(192,57,43,.18);}
+.bdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.apr .bdot{background:var(--verde-ok);}
+.rej .bdot{background:var(--rojo);}
+.badge-an{background:#f0f4ff;color:#3a5bbd;border:1px solid rgba(58,91,189,.18);
+  padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;}
+.pest-cell{max-width:170px;font-size:11px;color:var(--rojo);line-height:1.45;white-space:pre-line;}
+.no-data{color:#ccc;font-size:11px;}
+.lab-chip{padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800;text-transform:uppercase;}
+.lab-chip.AGQ{background:#e3f2fd;color:#1565c0;}
+.lab-chip.GROEN{background:#e8f5e9;color:#2d7a35;}
+/* pagination */
+.pagination{display:flex;justify-content:center;align-items:center;gap:6px;
+  padding:18px;border-top:1px solid #f0f0f0;}
+.pg-btn{width:34px;height:34px;border-radius:8px;border:1px solid #e0e0e0;
+  background:#fff;cursor:pointer;font-size:12.5px;font-family:'DM Sans',sans-serif;
+  color:#555;transition:all .12s;display:flex;align-items:center;justify-content:center;}
+.pg-btn:hover{border-color:var(--verde-medio);color:var(--verde-medio);}
+.pg-btn.active{background:var(--verde-oscuro);color:#fff;border-color:var(--verde-oscuro);}
+.pg-btn:disabled{opacity:.3;cursor:not-allowed;}
+.pg-info{font-size:11.5px;color:#aaa;margin:0 6px;}
+
+/* ═══ RESUMEN DE MUESTRAS ═══ */
+.resumen-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.res-card{background:#fff;border-radius:12px;padding:20px;
+  border:1px solid rgba(0,0,0,.05);box-shadow:0 2px 10px rgba(0,0,0,.04);text-align:center;}
+.res-icon{font-size:26px;margin-bottom:8px;}
+.res-val{font-size:28px;font-weight:800;font-family:'Playfair Display',serif;color:var(--verde-oscuro);}
+.res-lbl{font-size:11px;color:#aaa;margin-top:4px;text-transform:uppercase;letter-spacing:1px;font-weight:600;}
+
+/* scrollbar */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:#f0f0f0;}
+::-webkit-scrollbar-thumb{background:#bbb;border-radius:3px;}
+
+.footer{text-align:center;padding:22px;color:#bbb;font-size:11.5px;
+  border-top:1px solid #e8e8e8;margin-top:10px;}
+
+@media(max-width:960px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+  .two-col,.three-col,.lab-cards-row,.resumen-grid{grid-template-columns:1fr;}
+  .main{padding:20px;}
+  .nav-inner{overflow-x:auto;padding:0 16px;}
+  .banner-inner{padding:16px 20px;flex-wrap:wrap;gap:14px;}
+  .banner-title{font-size:20px;}
+}
+
+/* ═══ HEADER GJR — idéntico a Liquidaciones ═══ */
+.gjr-header {
+  background: #1B5E20;
+  color: white;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+.gjr-header img {
+  height: 40px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  flex-shrink: 0;
+}
+.gjr-header h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  margin: 0;
+}
+.gjr-header span {
+  font-size: 11px;
+  opacity: 0.7;
+  font-weight: 300;
+  display: block;
+  margin-top: 1px;
+}
+.gjr-header-back {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.28);
+  color: rgba(255,255,255,0.90);
+  padding: 6px 14px;
+  border-radius: 18px;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-decoration: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.gjr-header-back:hover { background: rgba(255,255,255,0.22); }
+
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER GJR ═══ -->
+<div class="gjr-header">
+  <img src="data:image/png;base64,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" alt="Grupo Juan Ruiz">
+  <div>
+    <h1>Sistema de Trazabilidad</h1>
+    <span>Grupo Juan Ruiz — Control de Calidad Agrícola</span>
+  </div>
+  <a class="gjr-header-back" href="index.html">← Inicio</a>
+</div>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav-bar">
+  <div class="nav-inner">
+    <div class="nav-tab active" onclick="showPage('trazabilidad',this)">Trazabilidad</div>
+    <div class="nav-tab" onclick="showPage('resumen',this)">Resumen de Muestras</div>
+    <div class="nav-tab" onclick="showPage('estadisticas',this)">Estadísticas</div>
+    <div class="nav-tab" onclick="showPage('laboratorios',this)">Laboratorios</div>
+    <div class="nav-tab" onclick="showPage('datos',this)">Datos</div>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- ═══════════════ PAGE: TRAZABILIDAD ═══════════════ -->
+<div class="page active" id="page-trazabilidad">
+  <div class="kpi-grid" id="kpi-grid"></div>
+  <div class="dist-panel">
+    <div class="panel-label">Distribución de Resultados</div>
+    <div class="dist-bar">
+      <div class="dist-apr" id="dist-apr" style="width:0%"></div>
+      <div class="dist-rej" id="dist-rej" style="width:0%"></div>
+    </div>
+    <div class="dist-labels">
+      <span class="dl-a">✔ Aprobados: <strong id="dl-a-pct">–</strong></span>
+      <span class="dl-r">✗ Rechazados: <strong id="dl-r-pct">–</strong></span>
+    </div>
+  </div>
+
+  <div class="lab-filter-row" id="lab-filter">
+    <button class="lab-btn sel-all" data-lab="ALL" onclick="filterOverview('ALL',this)">Todos</button>
+    <button class="lab-btn" data-lab="AGQ" onclick="filterOverview('AGQ',this)">AGQ</button>
+    <button class="lab-btn" data-lab="GROEN" onclick="filterOverview('GROEN',this)">GROEN</button>
+  </div>
+
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-title">Resultados por Departamento</div>
+      <div id="dept-list"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Pesticidas más frecuentes en Rechazados</div>
+      <div id="pest-list"></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-title">Estado por Tipo de Análisis (MP / LMR)</div>
+      <div class="chart-wrap"><canvas id="chartAnalisis"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Evolución Mensual de Envíos</div>
+      <div class="chart-wrap"><canvas id="chartTimeline"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE: RESUMEN DE MUESTRAS ═══════════════ -->
+<div class="page" id="page-resumen">
+  <div class="resumen-grid" id="resumen-cards"></div>
+
+  <div class="two-col" style="margin-bottom:22px">
+    <div class="panel">
+      <div class="panel-title">Resumen por Laboratorio</div>
+      <div id="lab-resumen-list"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Muestras por Producto</div>
+      <div class="chart-wrap-sm"><canvas id="chartProductoResumen"></canvas></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:22px">
+    <div class="panel-title">Registro de Muestras – Vista Compacta</div>
+    <div id="resumen-table-wrap"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE: ESTADÍSTICAS ═══════════════ -->
+<div class="page" id="page-estadisticas">
+  <div class="collapse-hdr open" onclick="toggleCol(this,'col-estados')">
+    <span>📊 Distribución General de Resultados</span><span class="chev">▾</span>
+  </div>
+  <div class="collapse-body open" id="col-estados">
+    <div class="three-col">
+      <div class="panel">
+        <div class="panel-title">Por Estado</div>
+        <div class="chart-wrap"><canvas id="chartEstado"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Por Laboratorio</div>
+        <div class="chart-wrap"><canvas id="chartLab"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Rechazos por Departamento</div>
+        <div class="chart-wrap"><canvas id="chartDeptRej"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="collapse-hdr open" onclick="toggleCol(this,'col-timeline')">
+    <span>📅 Evolución Temporal de Envíos</span><span class="chev">▾</span>
+  </div>
+  <div class="collapse-body open" id="col-timeline">
+    <div class="panel">
+      <div class="panel-title">Muestras por Mes (Aprobados vs Rechazados)</div>
+      <div style="height:240px;position:relative"><canvas id="chartTimelineFull"></canvas></div>
+    </div>
+  </div>
+
+  <div class="collapse-hdr open" onclick="toggleCol(this,'col-pest')">
+    <span>🧪 Top Pesticidas Detectados en Rechazos</span><span class="chev">▾</span>
+  </div>
+  <div class="collapse-body open" id="col-pest">
+    <div class="panel">
+      <div style="height:260px;position:relative"><canvas id="chartPestTop"></canvas></div>
+    </div>
+  </div>
+
+  <div class="collapse-hdr open" onclick="toggleCol(this,'col-analisis')">
+    <span>🔬 Análisis MP vs LMR por Laboratorio</span><span class="chev">▾</span>
+  </div>
+  <div class="collapse-body open" id="col-analisis">
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-title">Tipo de Análisis – AGQ</div>
+        <div class="chart-wrap-sm"><canvas id="chartAnalisisAGQ"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Tipo de Análisis – GROEN</div>
+        <div class="chart-wrap-sm"><canvas id="chartAnalisisGROEN"></canvas></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE: LABORATORIOS ═══════════════ -->
+<div class="page" id="page-laboratorios">
+  <div class="lab-cards-row" id="lab-cards-row"></div>
+
+  <div class="collapse-hdr open" onclick="toggleCol(this,'col-agq')">
+    <span><span class="badge-lab AGQ">AGQ</span> Detalle por Departamento – AGQ</span>
+    <span class="chev">▾</span>
+  </div>
+  <div class="collapse-body open" id="col-agq">
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-title">Resultados por Departamento – AGQ</div>
+        <div id="dept-agq"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Distribución AGQ</div>
+        <div class="chart-wrap"><canvas id="chartAGQ"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="collapse-hdr open" onclick="toggleCol(this,'col-groen')">
+    <span><span class="badge-lab GROEN">GROEN</span> Detalle por Departamento – GROEN</span>
+    <span class="chev">▾</span>
+  </div>
+  <div class="collapse-body open" id="col-groen">
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-title">Resultados por Departamento – GROEN</div>
+        <div id="dept-groen"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Distribución GROEN</div>
+        <div class="chart-wrap"><canvas id="chartGROEN"></canvas></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE: DATOS ═══════════════ -->
+<div class="page" id="page-datos">
+  <div class="filters-bar">
+    <div class="status-pills">
+      <div class="sp sp-all active" onclick="setSt('all')">Todos</div>
+      <div class="sp sp-apr" onclick="setSt('Aprobado')">✔ Aprobados</div>
+      <div class="sp sp-rej" onclick="setSt('Rechazado')">✗ Rechazados</div>
+    </div>
+    <div class="filters-row">
+      <div class="filter-group" style="flex:2">
+        <div class="filter-lbl">Buscar</div>
+        <input class="filter-inp" id="fi-search" type="text" placeholder="Proveedor, código, fundo, pesticida...">
+      </div>
+      <div class="filter-group">
+        <div class="filter-lbl">Laboratorio</div>
+        <select class="filter-sel" id="fi-lab">
+          <option value="">Todos</option>
+          <option value="AGQ">AGQ</option>
+          <option value="GROEN">GROEN</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <div class="filter-lbl">Departamento</div>
+        <select class="filter-sel" id="fi-dept"></select>
+      </div>
+      <div class="filter-group">
+        <div class="filter-lbl">Análisis</div>
+        <select class="filter-sel" id="fi-analisis">
+          <option value="">Todos</option>
+          <option>MP</option><option>LMR</option><option>P y M</option>
+        </select>
+      </div>
+      <button class="btn-apply" onclick="applyFilters()">🔍 Filtrar</button>
+      <button class="btn-clear" onclick="clearFilters()">Limpiar</button>
+    </div>
+  </div>
+
+  <div class="tbl-section">
+    <div class="tbl-hdr">
+      <div class="tbl-title">Registros de Muestras</div>
+      <div class="rec-count" id="rec-count">0 registros</div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Fecha</th><th>Código Informe</th>
+            <th>Proveedor / Productor</th><th>Producto</th>
+            <th>Departamento</th><th>Provincia</th><th>Zona / Fundo</th>
+            <th>Lab</th><th>Análisis</th>
+            <th>Pesticidas</th><th>Cadmio</th><th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="tbl-body"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+
+</main>
+
+<footer class="footer">
+  Grupo Juan Ruiz &mdash; Sistema de Trazabilidad de Muestras de Campo &mdash; Campaña 2025–2026
+</footer>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────
+const RAW = [{"Item": 1.0, "Código de Informe": "AL-25/282073", "Código de Muestra": "PE01-00033595-6", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "Fundo Corregente", "Laboratorio": "AGQ", "Nombre Proveedor": "Gregorio Soto", "Pesticida": "", "LMR": "", "CADMIO": 0.017, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "Fruto de palto", "Fecha de Envío": "2025-12-19"}, {"Item": "", "Código de Informe": "AL-25/281928", "Código de Muestra": "ARP-PR-0007 (GC+LC)", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "Fundo Corregente", "Laboratorio": "AGQ", "Nombre Proveedor": "Gregorio Soto", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "Fruto de palto", "Fecha de Envío": "2025-12-19"}, {"Item": 2.0, "Código de Informe": "AL-25/282077", "Código de Muestra": "PE01-00033595-6", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "Fundo Santa Maria", "Laboratorio": "AGQ", "Nombre Proveedor": "Esther Martinez Espinoza", "Pesticida": "", "LMR": "", "CADMIO": 0.019, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "Fruto de palto", "Fecha de Envío": "2025-12-19"}, {"Item": "", "Código de Informe": "AL-25/282075", "Código de Muestra": "ARP-PR-0007 (GC+LC)", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "Fundo Santa Maria", "Laboratorio": "AGQ", "Nombre Proveedor": "Esther Martinez Espinoza", "Pesticida": "Clotianidina\nTiametoxam\nProcloraz (SP)\nBTS 44595", "LMR": "0.005\n0.005\n0.010\n0.005", "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "Fruto de palto", "Fecha de Envío": "2025-12-19"}, {"Item": 3.0, "Código de Informe": "AL-25/282084", "Código de Muestra": "PE01-00033595-6", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "Fundo San Juan", "Laboratorio": "AGQ", "Nombre Proveedor": "Javier de la Cruz", "Pesticida": "", "LMR": "", "CADMIO": 0.028, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "Fruto de palto", "Fecha de Envío": "2025-12-19"}, {"Item": "", "Código de Informe": "AL-25/282083", "Código de Muestra": "ARP-PR-0007 (GC+LC)", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "Fundo San Juan", "Laboratorio": "AGQ", "Nombre Proveedor": "Javier de la Cruz", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "Fruto de palto", "Fecha de Envío": "2025-12-19"}, {"Item": 4.0, "Código de Informe": "AL-25/282090", "Código de Muestra": "PE01-00033595-6", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "Fundo Jose Torres", "Laboratorio": "AGQ", "Nombre Proveedor": "Jose Torres", "Pesticida": "", "LMR": "", "CADMIO": 0.013, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "Fruto de palto", "Fecha de Envío": "2025-12-19"}, {"Item": "", "Código de Informe": "AL-25/282085", "Código de Muestra": "ARP-PR-0007 (GC+LC)", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "Fundo Jose Torres", "Laboratorio": "AGQ", "Nombre Proveedor": "Jose Torres", "Pesticida": "Etoxazol\nBuprofecina", "LMR": "0.005\n0.010", "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "Fruto de palto", "Fecha de Envío": "2025-12-19"}, {"Item": 5.0, "Código de Informe": "AL-25/282092", "Código de Muestra": "PE01-00033595-6", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "Fundo Gutmes", "Laboratorio": "AGQ", "Nombre Proveedor": "Efraín Gutierrez", "Pesticida": "", "LMR": "", "CADMIO": 0.018, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "Fruto de palto", "Fecha de Envío": "2025-12-19"}, {"Item": "", "Código de Informe": "AL-25/282091", "Código de Muestra": "ARP-PR-0007 (GC+LC)", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "Fundo Gutmes", "Laboratorio": "AGQ", "Nombre Proveedor": "Efraín Gutierrez", "Pesticida": "Boscalida\nProcloraz (Suma)\nProcloraz (SP)", "LMR": "0.005\n0.010\n0.010", "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "Fruto de palto", "Fecha de Envío": "2025-12-19"}, {"Item": 6.0, "Código de Informe": "AL-25/282266", "Código de Muestra": "PE01-00033595-6", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "Fundo Jorge Garcia", "Laboratorio": "AGQ", "Nombre Proveedor": "Guido Gracia", "Pesticida": "LRDP", "LMR": "", "CADMIO": 0.048, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "Fruto de palto", "Fecha de Envío": "2025-12-19"}, {"Item": "", "Código de Informe": "AL-25/282262", "Código de Muestra": "ARP-PR-0007 (GC+LC)", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "Fundo Jorge Garcia", "Laboratorio": "AGQ", "Nombre Proveedor": "Guido Gracia", "Pesticida": "Procloraz (Sum)", "LMR": 0.01, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "Fruto de palto", "Fecha de Envío": "2025-12-19"}, {"Item": 7.0, "Código de Informe": "AL-26/002261", "Código de Muestra": "ARP-PR-0011 (GC+LC)", "Producto": "Mango", "Departamento": "Piura", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": " ", "Laboratorio": "AGQ", "Nombre Proveedor": "", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-01-05"}, {"Item": 11.0, "Código de Informe": "AL-26/005494", "Código de Muestra": "PE01-00033595-6", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "LIMA 1", "Laboratorio": "AGQ", "Nombre Proveedor": "Fundo La Hoyada", "Pesticida": "", "LMR": "", "CADMIO": 0.03, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-09"}, {"Item": 12.0, "Código de Informe": "AL-26/008581", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "FRUTO-PALTA", "Laboratorio": "AGQ", "Nombre Proveedor": "Angel del Pino / Juan Rojas / Oscar Mucosos", "Pesticida": "", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-09"}, {"Item": 14.0, "Código de Informe": "AL-26/011954", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "FRUTO", "Laboratorio": "AGQ", "Nombre Proveedor": "Moises Arteaga", "Pesticida": "", "LMR": "", "CADMIO": 0.011, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-13"}, {"Item": 15.0, "Código de Informe": "AL-26/008578", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "FRUTO-PALTA", "Laboratorio": "AGQ", "Nombre Proveedor": "Julio Venejas / Paulina Tapara", "Pesticida": "", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-14"}, {"Item": 16.0, "Código de Informe": "AL-26/011953", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "FRUTO", "Laboratorio": "AGQ", "Nombre Proveedor": "Marilu", "Pesticida": "", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-14"}, {"Item": 17.0, "Código de Informe": "AL-26/010210", "Código de Muestra": "PE01-00033595-7", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "SAYAN 1", "Laboratorio": "AGQ", "Nombre Proveedor": "Javier Fernando Villegas / Aguinaldo Diego Romero", "Pesticida": "", "LMR": "", "CADMIO": 0.028, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-14"}, {"Item": "", "Código de Informe": "AL-26/010200", "Código de Muestra": "ARP-PR-0007 (GC+LC)", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "SAYAN 1", "Laboratorio": "AGQ", "Nombre Proveedor": "Javier Fernando Villegas / Aguinaldo Diego Romero", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-01-14"}, {"Item": 18.0, "Código de Informe": "AL-26/010181", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "CAJAMARCA 1", "Laboratorio": "AGQ", "Nombre Proveedor": "YASAVILCA BAJO", "Pesticida": "", "LMR": "", "CADMIO": 0.017, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-14"}, {"Item": 19.0, "Código de Informe": "AL-26/010184", "Código de Muestra": "PE01-00033595-7", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "CASMA 1", "Laboratorio": "AGQ", "Nombre Proveedor": "POMA GUEVARA / NEHEMIAS CAYO", "Pesticida": "", "LMR": "", "CADMIO": 0.033, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-14"}, {"Item": "", "Código de Informe": "AL-26/009452", "Código de Muestra": "ARP-PR-0007 (GC+LC)", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "CASMA 1", "Laboratorio": "AGQ", "Nombre Proveedor": "POMA GUEVARA / NEHEMIAS CAYO", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-01-13"}, {"Item": 20.0, "Código de Informe": "AL-26/010468", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "", "Provincia": "", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "FUNDO MARIA PAZ", "Laboratorio": "AGQ", "Nombre Proveedor": "SRA HERMELINDA / JOSE", "Pesticida": "", "LMR": "", "CADMIO": 0.064, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-14"}, {"Item": 21.0, "Código de Informe": "AL-26/011955", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Guido Gracia", "Pesticida": "", "LMR": "", "CADMIO": 0.07, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-14"}, {"Item": 22.0, "Código de Informe": "AL-26/018684", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Apurímac", "Provincia": "Aymaraes", "Distrito": "San Juan de Chacña", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Fundo el Trabajo II", "Pesticida": "", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-19"}, {"Item": "", "Código de Informe": "AL-26/018682", "Código de Muestra": "ARP-PR-0007 (GC+LC)", "Producto": "Palta", "Departamento": "Apurímac", "Provincia": "Aymaraes", "Distrito": "San Juan de Chacña", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Fundo el Trabajo II", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-19"}, {"Item": 23.0, "Código de Informe": "AL-26/017247", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Rita Sotelo Muñoz", "Pesticida": "", "LMR": "", "CADMIO": 0.034, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-21"}, {"Item": 24.0, "Código de Informe": "AL-26/017252", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "San Juan de Yanac", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Rita Sotelo Muñoz", "Pesticida": "", "LMR": "", "CADMIO": 0.049, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-21"}, {"Item": 25.0, "Código de Informe": "AL-26/017250", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Guido Gracia", "Pesticida": "", "LMR": "", "CADMIO": 0.064, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-21"}, {"Item": 26.0, "Código de Informe": "AL-26/017255", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "San Juan de Yanac", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Guido Gracia", "Pesticida": "", "LMR": "", "CADMIO": 0.033, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "analisis para DELFIN ", "Fecha de Envío": "2026-01-21"}, {"Item": 27.0, "Código de Informe": "AL-26/017248", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Renato Ramos Rojas", "Pesticida": "", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-21"}, {"Item": 28.0, "Código de Informe": "AL-26/018685", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Lima", "Provincia": "Huaral ", "Distrito": "San Miguel de Acos", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Monte Loma", "Pesticida": "", "LMR": "", "CADMIO": 0.06, "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-01-21"}, {"Item": "", "Código de Informe": "AL-26/018686", "Código de Muestra": "ARP-PR-0007 (GC+LC)", "Producto": "Palta", "Departamento": "Lima", "Provincia": "Huaral ", "Distrito": "San Miguel de Acos", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Monte Loma", "Pesticida": "LRDP", "LMR": "", "CADMIO": 0.06, "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-01-21"}, {"Item": 29.0, "Código de Informe": "AL-26/023370", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Áncash", "Provincia": "Santa", "Distrito": "Moro", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Elmer Laborio Nunuvero", "Pesticida": "", "LMR": "", "CADMIO": 0.021, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-22"}, {"Item": 30.0, "Código de Informe": "AL-26/021211", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Saul Rondon", "Pesticida": "", "LMR": "", "CADMIO": 0.031, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-24"}, {"Item": 31.0, "Código de Informe": "AL-26/021212", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Elizabeth Rondon", "Pesticida": "", "LMR": "", "CADMIO": 0.055, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-24"}, {"Item": 32.0, "Código de Informe": "AL-26/021213", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Aldo Uribe", "Pesticida": "", "LMR": "", "CADMIO": 0.03, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-24"}, {"Item": 33.0, "Código de Informe": "AL-26/021321", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Concepción ", "Distrito": "Andamarca", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "FUNDO CHICAMAYO", "Pesticida": "", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-26"}, {"Item": 34.0, "Código de Informe": "", "Código de Muestra": "", "Producto": "Palta", "Departamento": "Ayacucho", "Provincia": "Vilcas_Huamán", "Distrito": "Vilcas Huaman", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Joel Rosario", "Pesticida": "", "LMR": "", "CADMIO": "0,010", "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-26"}, {"Item": 35.0, "Código de Informe": "AL-26/025245", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Chanchamayo ", "Distrito": "San Ramón", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Lorenzo Munji", "Pesticida": "", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-28"}, {"Item": 36.0, "Código de Informe": "AL-26/025243", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Lima", "Provincia": "Barranca ", "Distrito": "Barranca", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Monte Loma", "Pesticida": "", "LMR": "", "CADMIO": 0.029, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-28"}, {"Item": 37.0, "Código de Informe": "AL-26/026971", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "La_Libertad", "Provincia": "Virú ", "Distrito": "Chao", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Renato Buenavista", "Pesticida": "", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-31"}, {"Item": "", "Código de Informe": "AL-26/026966", "Código de Muestra": "ARP-PR-0007 (GC+LC)", "Producto": "Palta", "Departamento": "La_Libertad", "Provincia": "Virú ", "Distrito": "Chao", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Renato Buenavista", "Pesticida": "Imidacloprid", "LMR": 0.011, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-01-31"}, {"Item": 38.0, "Código de Informe": " ", "Código de Muestra": "", "Producto": "Palta", "Departamento": "La_Libertad", "Provincia": "Virú ", "Distrito": "Chao", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Joel Gonzales", "Pesticida": "", "LMR": "", "CADMIO": 0.052, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-01-31"}, {"Item": 39.0, "Código de Informe": "AL-26/025244", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Ayacucho", "Provincia": "Vilcas_Huamán", "Distrito": "Vilcas Huaman", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Fundo Misas Pampas", "Pesticida": " ", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-02"}, {"Item": 40.0, "Código de Informe": "", "Código de Muestra": "", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Chanchamayo ", "Distrito": "San Ramón", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Lorenzo Munji", "Pesticida": "", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-03"}, {"Item": "", "Código de Informe": "AL-26/029344", "Código de Muestra": "ARP-PR-0007 (GC+LC)", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Chanchamayo ", "Distrito": "San Ramón", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "AGQ", "Nombre Proveedor": "Lorenzo Munji", "Pesticida": "Metomilo\nProcloraz (Suma)", "LMR": "0.026 / 0.034", "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "REMUESTREO", "Fecha de Envío": "2026-02-03"}, {"Item": 41.0, "Código de Informe": "C9135566", "Código de Muestra": "BST260209031_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Churcampa", "Distrito": "Cosme", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Sintia Rubelo /Joel", "Pesticida": "", "LMR": "", "CADMIO": 0.018, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-06"}, {"Item": 42.0, "Código de Informe": "C9136357", "Código de Muestra": "EZG260212260_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Mollepampa", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Ever Loza", "Pesticida": "", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-10"}, {"Item": 43.0, "Código de Informe": "C9136358", "Código de Muestra": "EZG260212261_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Mollepampa", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Milton Olivares", "Pesticida": "", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-10"}, {"Item": 44.0, "Código de Informe": "C9136359", "Código de Muestra": "EZG260212262_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Mollepampa", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Jenoval Medina", "Pesticida": "", "LMR": "", "CADMIO": 0.012, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "Analisis para Vanesa Chuquispoma", "Fecha de Envío": "2026-02-10"}, {"Item": "", "Código de Informe": "C9136310", "Código de Muestra": "BST260212693_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Mollepampa", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Jenoval Medina", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-02-10"}, {"Item": 45.0, "Código de Informe": "C9136360", "Código de Muestra": "EZG260212263_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Mollepampa", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Laura meza", "Pesticida": " ", "LMR": "", "CADMIO": 0.05, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-10"}, {"Item": 46.0, "Código de Informe": "C9136792", "Código de Muestra": "EZG260214366_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Persi Salvatierra", "Pesticida": "", "LMR": "", "CADMIO": 0.031, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-10"}, {"Item": 47.0, "Código de Informe": "C9136793", "Código de Muestra": "EZG260214367_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Mollepampa", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Lando Espinoza", "Pesticida": "", "LMR": "", "CADMIO": 0.013, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-10"}, {"Item": 48.0, "Código de Informe": "C9136794", "Código de Muestra": "EZG260214368_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Olivia Olivares", "Pesticida": "", "LMR": "", "CADMIO": 0.016, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-14"}, {"Item": "", "Código de Informe": "C9136824", "Código de Muestra": "BST260214930_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Olivia Olivares", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-02-14"}, {"Item": 49.0, "Código de Informe": "C9136795", "Código de Muestra": "EZG260214369_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "San Juan de Yanac", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Luis Auris Soto", "Pesticida": "", "LMR": "", "CADMIO": 0.039, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-14"}, {"Item": 50.0, "Código de Informe": "C9137713", "Código de Muestra": "EZG260220200_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Carolina Ramos", "Pesticida": "", "LMR": "", "CADMIO": 0.025, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-18"}, {"Item": 51.0, "Código de Informe": "C9137714", "Código de Muestra": "EZG260220201_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Ruth Vilcapuma", "Pesticida": " ", "LMR": "", "CADMIO": 0.022, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-18"}, {"Item": 52.0, "Código de Informe": "C9137715", "Código de Muestra": "EZG260220202_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Ida Ramos", "Pesticida": "", "LMR": "", "CADMIO": 0.014, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-18"}, {"Item": 53.0, "Código de Informe": "C9137922", "Código de Muestra": "EZG260221254_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Hugo Arteaga", "Pesticida": "", "LMR": "", "CADMIO": 0.034, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-20"}, {"Item": 54.0, "Código de Informe": "C9137872", "Código de Muestra": "BST260221675_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "San Juan de Yanac", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Delfin Marquez", "Pesticida": "LRDP", "LMR": " ", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-02-20"}, {"Item": 55.0, "Código de Informe": "C9138397", "Código de Muestra": "EZG260225135_P", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Concepción ", "Distrito": "Mariscal Castilla", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Emerson|Moisés A.", "Pesticida": "", "LMR": "", "CADMIO": 0.063, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-23"}, {"Item": 56.0, "Código de Informe": "C9138398", "Código de Muestra": "EZG260225136_P", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Concepción ", "Distrito": "Mariscal Castilla", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Emerson|Royer A.", "Pesticida": "", "LMR": "", "CADMIO": 0.12, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-23"}, {"Item": 57.0, "Código de Informe": "C9138618", "Código de Muestra": "BST260225362_P", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Concepción ", "Distrito": "Mariscal Castilla", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Emreson|Gabaniel O.", "Pesticida": "Cipermetrina Q  Pirimetanil Q", "LMR": "0.065  0.015", "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-02-23"}, {"Item": 58.0, "Código de Informe": "C9138829", "Código de Muestra": "EZG260226223_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Francisca Torres", "Pesticida": "", "LMR": "", "CADMIO": 0.063, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-24"}, {"Item": 59.0, "Código de Informe": "C9138830", "Código de Muestra": "EZG260226224_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Gloria Echacon", "Pesticida": "", "LMR": "", "CADMIO": 0.023, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-24"}, {"Item": 60.0, "Código de Informe": "C9138831", "Código de Muestra": "EZG260226225_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Pisco ", "Distrito": "Independencia", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Sr Poma", "Pesticida": "", "LMR": "", "CADMIO": 0.027, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-24"}, {"Item": 61.0, "Código de Informe": "C9138832", "Código de Muestra": "EZG260226226_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Manzilla Roca", "Pesticida": "", "LMR": "", "CADMIO": 0.07, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-24"}, {"Item": 62.0, "Código de Informe": "C9138769", "Código de Muestra": "BST260226606_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Manzilla Roca", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-02-24"}, {"Item": 63.0, "Código de Informe": "C9138836", "Código de Muestra": "EZG260226230_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "San Juan de Yanac", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Victor Alfredo", "Pesticida": "", "LMR": "", "CADMIO": 0.045, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-24"}, {"Item": 64.0, "Código de Informe": "C9138833", "Código de Muestra": "EZG260226227_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "San Juan de Yanac", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Angel Chavez", "Pesticida": "", "LMR": "", "CADMIO": 0.051, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-24"}, {"Item": "", "Código de Informe": "C9138771", "Código de Muestra": "BST260226607_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "San Juan de Yanac", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Angel Chavez", "Pesticida": "Imidacloprid", "LMR": 0.019, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-02-24"}, {"Item": 65.0, "Código de Informe": "C9138834", "Código de Muestra": "EZG260226228_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "San Juan de Yanac", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Lizana Torres", "Pesticida": "", "LMR": "", "CADMIO": 0.03, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-24"}, {"Item": 66.0, "Código de Informe": "C9138835", "Código de Muestra": "EZG260226229_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Hector Ñañez", "Pesticida": "", "LMR": "", "CADMIO": 0.17, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-24"}, {"Item": 67.0, "Código de Informe": "C9139017", "Código de Muestra": "EZG260227269_P", "Producto": "Palta", "Departamento": "ica", "Provincia": "Pisco ", "Distrito": "Huancano", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Alex Palomino", "Pesticida": "", "LMR": "", "CADMIO": 0.084, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-25"}, {"Item": 68.0, "Código de Informe": "C9139018", "Código de Muestra": "EZG260227270_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Bernardito", "Pesticida": "", "LMR": "", "CADMIO": 0.026, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-25"}, {"Item": "", "Código de Informe": "C9138975", "Código de Muestra": "BST260227744_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Bernardito", "Pesticida": "NC", "LMR": "", "CADMIO": 0.026, "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-02-25"}, {"Item": 69.0, "Código de Informe": "C9139019", "Código de Muestra": "EZG260227271_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Celia Cuchuaygo", "Pesticida": "", "LMR": "", "CADMIO": 0.017, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-25"}, {"Item": "", "Código de Informe": "C9138976", "Código de Muestra": "BST260227745_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Celia Cuchuaygo", "Pesticida": "NC", "LMR": "", "CADMIO": 0.017, "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-02-25"}, {"Item": 70.0, "Código de Informe": "AL-26/025826", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Chanchamayo ", "Distrito": "San Ramón", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Moncho/Lita/Cristian", "Pesticida": "", "LMR": "", "CADMIO": 0.017, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-01"}, {"Item": 71.0, "Código de Informe": "AL-26/025822", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Chanchamayo ", "Distrito": "San Ramón", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Baldeon Emerson", "Pesticida": "", "LMR": "", "CADMIO": 0.026, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-01"}, {"Item": 72.0, "Código de Informe": "C9139211", "Código de Muestra": "EZG260228316_P", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Chanchamayo ", "Distrito": "San Ramón", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Anderson Aquino", "Pesticida": "", "LMR": "", "CADMIO": 0.014, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "OPR 941", "Fecha de Envío": "2026-02-27"}, {"Item": "", "Código de Informe": "C9139229", "Código de Muestra": "EZG260228317_P", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Chanchamayo ", "Distrito": "San Ramón", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Anderson Aquino", "Pesticida": "", "LMR": "", "CADMIO": 0.022, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "OPR 943", "Fecha de Envío": "2026-02-27"}, {"Item": 73.0, "Código de Informe": "C9139383", "Código de Muestra": "BST260303161_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Vanesa Chuquispoma", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "Ramos Garcia Walter Hugo", "Fecha de Envío": "2026-02-28"}, {"Item": 74.0, "Código de Informe": "C9139440", "Código de Muestra": "BST260303162_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Cesar Chupitas", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-02-28"}, {"Item": 75.0, "Código de Informe": "C9139441", "Código de Muestra": "BST260303163_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "La Payano", "Pesticida": "Metomil Q", "LMR": 0.019, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-02-28"}, {"Item": 76.0, "Código de Informe": "C9139442", "Código de Muestra": "BST260303164_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Miguel Mendoza", "Pesticida": "Metomil Q", "LMR": 0.05, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-02-28"}, {"Item": 77.0, "Código de Informe": "C9139443", "Código de Muestra": "BST260303165_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Eduardo Yuya", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-02-28"}, {"Item": 78.0, "Código de Informe": "C9139367", "Código de Muestra": "EZG260303039_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Elizabeth Rondon", "Pesticida": "", "LMR": "", "CADMIO": 0.058, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-02-28"}, {"Item": 79.0, "Código de Informe": "C9139853", "Código de Muestra": "EZG260306198_P", "Producto": "Palta", "Departamento": "Lima", "Provincia": "Yauyos ", "Distrito": "Catahuasi", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Fortunato Rojas", "Pesticida": "", "LMR": "", "CADMIO": 0.031, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-04"}, {"Item": 80.0, "Código de Informe": "C9139881", "Código de Muestra": "BST260306608_P", "Producto": "Palta", "Departamento": "Lima", "Provincia": "Yauyos ", "Distrito": "Catahuasi", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Fortunato Rojas", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-04"}, {"Item": 81.0, "Código de Informe": "C9139854", "Código de Muestra": "EZG260306199_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Dalmiro Choque", "Pesticida": "", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-05"}, {"Item": 82.0, "Código de Informe": "C9139882", "Código de Muestra": "BST260306609_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Dalmiro Choque", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-05"}, {"Item": 83.0, "Código de Informe": "C9140466", "Código de Muestra": "UAX260307242_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Mollepampa", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Saul Espinoza", "Pesticida": "", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-06"}, {"Item": "", "Código de Informe": "C9140115", "Código de Muestra": "BTS260307677_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Mollepampa", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Saul Espinoza", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-06"}, {"Item": 84.0, "Código de Informe": "C9140033", "Código de Muestra": "BST260307678_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Mollepampa", "Acopiador /Productor": "Productor", "Zona/Fundo": "Ciutay", "Laboratorio": "GROEN", "Nombre Proveedor": "Lando Espinoza", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-06"}, {"Item": 85.0, "Código de Informe": "C9140467", "Código de Muestra": "UAX260307243_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Chincha Alta", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Memo Blanco", "Pesticida": "", "LMR": "", "CADMIO": 0.035, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-06"}, {"Item": "", "Código de Informe": "C9140116", "Código de Muestra": "BTS260307679_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Chincha Alta", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Memo Blanco", "Pesticida": "Metomil Q", "LMR": 0.11, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-06"}, {"Item": 86.0, "Código de Informe": "C9140141", "Código de Muestra": "BTS260307680_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "san juan de yanac", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Luis Auris Soto", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-06"}, {"Item": 87.0, "Código de Informe": "C9140468", "Código de Muestra": "UAX260307244_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "alto laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Eduardo Lluya", "Pesticida": "", "LMR": "", "CADMIO": 0.063, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-06"}, {"Item": 88.0, "Código de Informe": "C9140470", "Código de Muestra": "UAX260307245_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Orlando Barrutia", "Pesticida": "", "LMR": "", "CADMIO": 0.021, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-06"}, {"Item": "", "Código de Informe": "C9140034", "Código de Muestra": "BST260307681_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Orlando Barrutia", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-06"}, {"Item": 89.0, "Código de Informe": "C9140100", "Código de Muestra": "EZG260307246_P", "Producto": "Palta", "Departamento": "ica", "Provincia": "Chincha ", "Distrito": "San Juan de Yanac", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Santiago Gregorio", "Pesticida": "", "LMR": "", "CADMIO": 0.064, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-06"}, {"Item": "", "Código de Informe": "C9140035", "Código de Muestra": "BST260307682_P", "Producto": "Palta", "Departamento": "ica", "Provincia": "Chincha ", "Distrito": "San Juan de Yanac", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Santiago Gregorio", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-06"}, {"Item": 90.0, "Código de Informe": "C9140477", "Código de Muestra": "UAX260307247_P", "Producto": "Palta", "Departamento": "ica", "Provincia": "Chincha ", "Distrito": "San Juan de Yanac", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Roberto Chuquispoma/Yuliana Chuquispoma", "Pesticida": "", "LMR": "", "CADMIO": 0.026, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-06"}, {"Item": "", "Código de Informe": "C9140213", "Código de Muestra": "BST260307683_P", "Producto": "Palta", "Departamento": "ica", "Provincia": "Chincha ", "Distrito": "San Juan de Yanac", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Roberto Chuquispoma/Yuliana Chuquispoma", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-06"}, {"Item": 91.0, "Código de Informe": "C9140838", "Código de Muestra": "BST260312523_P", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Chanchamayo ", "Distrito": "San Ramón", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Anderson Aquino", "Pesticida": "Azoxistrobina Q \nImidacloprid\nLambda-cihalotrina", "LMR": "0.011\n0.012\n0.035", "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-06"}, {"Item": 92.0, "Código de Informe": "C9140938", "Código de Muestra": "EZG260312157_P", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Chanchamayo ", "Distrito": "San Ramón", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Jonas Aquino", "Pesticida": "", "LMR": "", "CADMIO": 0.012, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-06"}, {"Item": "", "Código de Informe": "C9141089", "Código de Muestra": "BST260312524_P", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Chanchamayo ", "Distrito": "San Ramón", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Jonas Aquino", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-06"}, {"Item": 93.0, "Código de Informe": "C9141085", "Código de Muestra": "EZG260312185_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Pisco ", "Distrito": "Huancano", "Acopiador /Productor": "Productor", "Zona/Fundo": "San vicente", "Laboratorio": "GROEN", "Nombre Proveedor": "Alex Palomino", "Pesticida": "", "LMR": "", "CADMIO": 0.052, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-10"}, {"Item": "", "Código de Informe": "C9141090", "Código de Muestra": "BST260312589_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Pisco ", "Distrito": "Huancano", "Acopiador /Productor": "Productor", "Zona/Fundo": "San vicente", "Laboratorio": "GROEN", "Nombre Proveedor": "Alex Palomino", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-10"}, {"Item": 94.0, "Código de Informe": "C9140939", "Código de Muestra": "EZG260312186_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Pisco ", "Distrito": "Huancano", "Acopiador /Productor": "Productor", "Zona/Fundo": "San vicente", "Laboratorio": "GROEN", "Nombre Proveedor": "Tomoteo Huaman", "Pesticida": "", "LMR": "", "CADMIO": 0.063, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-10"}, {"Item": "", "Código de Informe": "C9140983", "Código de Muestra": "BST260312590_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Pisco ", "Distrito": "Huancano", "Acopiador /Productor": "Productor", "Zona/Fundo": "San vicente", "Laboratorio": "GROEN", "Nombre Proveedor": "Tomoteo Huaman", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-10"}, {"Item": 95.0, "Código de Informe": "C9140934", "Código de Muestra": "EZG260312187_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "Yauritambo", "Laboratorio": "GROEN", "Nombre Proveedor": "Magda Ramos", "Pesticida": "", "LMR": "", "CADMIO": 0.018, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-10"}, {"Item": "", "Código de Informe": "C9140984", "Código de Muestra": "BST260312591_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "Yauritambo", "Laboratorio": "GROEN", "Nombre Proveedor": "Magda Ramos", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-10"}, {"Item": 96.0, "Código de Informe": "AL-26/059014", "Código de Muestra": "PE01-00033595-4", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "Yauritambo", "Laboratorio": "AGQ", "Nombre Proveedor": "Gregorio Soto", "Pesticida": "", "LMR": "", "CADMIO": 0.03, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-10"}, {"Item": "", "Código de Informe": "C9140935", "Código de Muestra": "EZG260312188_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "Yauritambo", "Laboratorio": "GROEN", "Nombre Proveedor": "Gregorio Soto", "Pesticida": "", "LMR": "", "CADMIO": 0.046, "Estado": "Aprobado", "Análisis": "MP", "Observacion": " ", "Fecha de Envío": "2026-03-10"}, {"Item": 97.0, "Código de Informe": "C9140936", "Código de Muestra": "EZG260312189_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "Piedra Rajada", "Laboratorio": "GROEN", "Nombre Proveedor": "Maricsa Rodrigues", "Pesticida": "", "LMR": "", "CADMIO": 0.069, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-10"}, {"Item": "", "Código de Informe": "C9140985", "Código de Muestra": "BST260312592_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "Piedra Rajada", "Laboratorio": "GROEN", "Nombre Proveedor": "Maricsa Rodrigues", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-10"}, {"Item": 98.0, "Código de Informe": "C9141086", "Código de Muestra": "EZG260312190_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "Huamanpali", "Laboratorio": "GROEN", "Nombre Proveedor": "Elias Magallanes", "Pesticida": "", "LMR": "", "CADMIO": 0.04, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-10"}, {"Item": "", "Código de Informe": "C9141091", "Código de Muestra": "BST260312593_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "Huamanpali", "Laboratorio": "GROEN", "Nombre Proveedor": "Elias Magallanes", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-10"}, {"Item": 99.0, "Código de Informe": "C9140937", "Código de Muestra": "EZG260312191_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "Huamanpali", "Laboratorio": "GROEN", "Nombre Proveedor": "Moises Magallanes", "Pesticida": "", "LMR": "", "CADMIO": 0.033, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-10"}, {"Item": "", "Código de Informe": "C9141093", "Código de Muestra": "BST260312594_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "Huamanpali", "Laboratorio": "GROEN", "Nombre Proveedor": "Moises Magallanes", "Pesticida": "Imidacloprid", "LMR": 0.076, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-10"}, {"Item": 100.0, "Código de Informe": "C9141461", "Código de Muestra": "EZG260314243_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Mollepampa", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Abelardo Arone", "Pesticida": "", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-12"}, {"Item": "", "Código de Informe": "C9141422", "Código de Muestra": "BST260314847_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Mollepampa", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Abelardo Arone", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-12"}, {"Item": 101.0, "Código de Informe": "C9141526", "Código de Muestra": "EZG260314244_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Jorge Garcia", "Pesticida": "", "LMR": "", "CADMIO": 0.019, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-13"}, {"Item": "", "Código de Informe": "C9141638", "Código de Muestra": "BST260314848_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Jorge Garcia", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-13"}, {"Item": 102.0, "Código de Informe": "C9141527", "Código de Muestra": "EZG260314245_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Cristobal Palomino Sonia", "Pesticida": "", "LMR": "", "CADMIO": 0.022, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-13"}, {"Item": "", "Código de Informe": "C9141495", "Código de Muestra": "BST260314849_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Cristobal Palomino Sonia", "Pesticida": "Metomil /\nLufenuron", "LMR": "0.058 /\n0.018", "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-13"}, {"Item": 103.0, "Código de Informe": "C9141528", "Código de Muestra": "EZG260314246_P", "Producto": "Palta", "Departamento": "ica", "Provincia": "Chincha ", "Distrito": "chincha baja", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Claudio Villegas", "Pesticida": "", "LMR": "", "CADMIO": 0.036, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-13"}, {"Item": "", "Código de Informe": "C9141639", "Código de Muestra": "BST260314850_P", "Producto": "", "Departamento": "ica", "Provincia": "Chincha ", "Distrito": "chincha baja", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Claudio Villegas", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-13"}, {"Item": 104.0, "Código de Informe": "C9141462", "Código de Muestra": "EZG260314247_P", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Concepción ", "Distrito": "Mariscal Castilla", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Victor Bejarano", "Pesticida": "", "LMR": "", "CADMIO": 0.031, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-13"}, {"Item": "", "Código de Informe": "C9141565", "Código de Muestra": "BST260314851_P", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Concepción ", "Distrito": "Mariscal Castilla", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Victor Bejarano", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-13"}, {"Item": 105.0, "Código de Informe": "C9141548", "Código de Muestra": "EZG260316024_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Mollepampa", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Abelardo Arone / Fidel Santos Olivares / Nilton Salazar Fernandez", "Pesticida": "", "LMR": "", "CADMIO": 0.085, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "Abelardo Arone fundo 2", "Fecha de Envío": "2026-03-14"}, {"Item": "", "Código de Informe": "C9141564", "Código de Muestra": "BST260316072_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Mollepampa", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Abelardo Arone / Fidel Santos Olivares / Nilton Salazar Fernandez", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "Abelardo Arone fundo 2", "Fecha de Envío": "2026-03-14"}, {"Item": 106.0, "Código de Informe": "C9141471", "Código de Muestra": "EZG260316017_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "Aylloque", "Laboratorio": "GROEN", "Nombre Proveedor": "Gloria Medrano", "Pesticida": "", "LMR": "", "CADMIO": 0.055, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-14"}, {"Item": "", "Código de Informe": "C9141423", "Código de Muestra": "BST260316063_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "Aylloque", "Laboratorio": "GROEN", "Nombre Proveedor": "Gloria Medrano", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-14"}, {"Item": 107.0, "Código de Informe": "C9142598", "Código de Muestra": "EZG260320283_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "Wiracocha", "Laboratorio": "GROEN", "Nombre Proveedor": "Francisco Cochache", "Pesticida": "", "LMR": "", "CADMIO": 0.03, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": "", "Código de Informe": "C9142333", "Código de Muestra": "BST260320809_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "Wiracocha", "Laboratorio": "GROEN", "Nombre Proveedor": "Francisco Cochache", "Pesticida": "Paclobutrazol", "LMR": 0.014, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 108.0, "Código de Informe": "C9142899", "Código de Muestra": "EZG060320284_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "Wiracocha", "Laboratorio": "GROEN", "Nombre Proveedor": "Solan", "Pesticida": "", "LMR": 0.031, "CADMIO": "", "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 109.333333333333, "Código de Informe": "C9142870", "Código de Muestra": "BST260320810_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "Wiracocha", "Laboratorio": "GROEN", "Nombre Proveedor": "Solan", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 109.0, "Código de Informe": "C9142650", "Código de Muestra": "EZG260320285_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "Wiracocha", "Laboratorio": "GROEN", "Nombre Proveedor": "Aurora", "Pesticida": "", "LMR": "", "CADMIO": 0.025, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 110.833333333333, "Código de Informe": "C9142514", "Código de Muestra": "BST260320811_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "Wiracocha", "Laboratorio": "GROEN", "Nombre Proveedor": "Aurora", "Pesticida": "Imidacloprid / Spirotetramat / Spirotetramat^2", "LMR": "0.023 / 0.4 / 0.069", "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 110.0, "Código de Informe": "C9142900", "Código de Muestra": "EZG260320286_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "Wiracocha", "Laboratorio": "GROEN", "Nombre Proveedor": "Choque Arturo", "Pesticida": "", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": "", "Código de Informe": "C9142893", "Código de Muestra": "BST260320812_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "Wiracocha", "Laboratorio": "GROEN", "Nombre Proveedor": "Choque Arturo", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 111.0, "Código de Informe": "C9142901", "Código de Muestra": "EZG260320287_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "ticrapo", "Laboratorio": "GROEN", "Nombre Proveedor": "Elizabeth Bendezu", "Pesticida": "", "LMR": "", "CADMIO": 0.016, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 113.083333333333, "Código de Informe": "C9142972", "Código de Muestra": "BST260320813_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "ticrapo", "Laboratorio": "GROEN", "Nombre Proveedor": "Elizabeth Bendezu", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 112.0, "Código de Informe": "C9142651", "Código de Muestra": "EZG260320288_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Pisco ", "Distrito": "Humay", "Acopiador /Productor": "Productor", "Zona/Fundo": "humay", "Laboratorio": "GROEN", "Nombre Proveedor": "Zambo Palomino", "Pesticida": "", "LMR": "", "CADMIO": 0.081, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 114.583333333333, "Código de Informe": "C9142470", "Código de Muestra": "BST260320288_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Pisco ", "Distrito": "Humay", "Acopiador /Productor": "Productor", "Zona/Fundo": "humay", "Laboratorio": "GROEN", "Nombre Proveedor": "Zambo Palomino", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 113.0, "Código de Informe": "C9142902", "Código de Muestra": "EZG260320289_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "ticrapo", "Laboratorio": "GROEN", "Nombre Proveedor": "Saul Reinoso", "Pesticida": "", "LMR": "", "CADMIO": 0.048, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": "", "Código de Informe": "C9142973", "Código de Muestra": "BST260320815_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "ticrapo", "Laboratorio": "GROEN", "Nombre Proveedor": "Saul Reinoso", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 114.0, "Código de Informe": "C9142644", "Código de Muestra": "EZG260320290_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "ticrapo", "Laboratorio": "GROEN", "Nombre Proveedor": "David mejias", "Pesticida": "", "LMR": "", "CADMIO": 0.032, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 116.833333333333, "Código de Informe": "C9142685", "Código de Muestra": "BST260320816_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Ticrapo", "Acopiador /Productor": "Productor", "Zona/Fundo": "ticrapo", "Laboratorio": "GROEN", "Nombre Proveedor": "David mejias", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 115.0, "Código de Informe": "C9142645", "Código de Muestra": "EZG260320291_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "almacen", "Laboratorio": "GROEN", "Nombre Proveedor": "Gisela Huaman", "Pesticida": "", "LMR": "", "CADMIO": 0.028, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 118.333333333333, "Código de Informe": "C9142686", "Código de Muestra": "BST260320817_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "almacen", "Laboratorio": "GROEN", "Nombre Proveedor": "Gisela Huaman", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 116.0, "Código de Informe": "C9142646", "Código de Muestra": "EZG260320292_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "Wiracocha", "Laboratorio": "GROEN", "Nombre Proveedor": "Solange", "Pesticida": "", "LMR": "", "CADMIO": 0.016, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": "", "Código de Informe": "C9142682", "Código de Muestra": "BST260320818_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "Wiracocha", "Laboratorio": "GROEN", "Nombre Proveedor": "Solange", "Pesticida": "Cihexatin / Cihezatin (suma) / Paclobutrazol / ", "LMR": "0.046 / 0.046 / 0.043", "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 117.0, "Código de Informe": "C9142600", "Código de Muestra": "EZG260320293_P", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Jauja ", "Distrito": "Monobamba", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Leonard  Inga Aquino", "Pesticida": "", "LMR": "", "CADMIO": 0.056, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 120.583333333333, "Código de Informe": "C9142334", "Código de Muestra": "BST260320819_P", "Producto": "Palta", "Departamento": "Junín", "Provincia": "Jauja ", "Distrito": "Monobamba", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Leonard  Inga Aquino", "Pesticida": "Lufenuron", "LMR": 0.11, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 118.0, "Código de Informe": "C914292952", "Código de Muestra": "EZG260321392_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Chincha Baja", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Efrain Gutierrez", "Pesticida": "", "LMR": "", "CADMIO": 0.056, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": "", "Código de Informe": "C9142799", "Código de Muestra": "BST2603211088_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Chincha Baja", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Efrain Gutierrez", "Pesticida": "Imidacloprid", "LMR": 0.12, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 119.0, "Código de Informe": "C9142953", "Código de Muestra": "EZG260321393_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Huaytará", "Distrito": "Huaytara", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Gladys Huaytara", "Pesticida": "", "LMR": "", "CADMIO": 0.019, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 120.583333333333, "Código de Informe": "C9142800", "Código de Muestra": "BST2603211089_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Huaytará", "Distrito": "Huaytara", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Gladys Huaytara", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-19"}, {"Item": 120.0, "Código de Informe": "C9143184", "Código de Muestra": "EZG260323008_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Mollepampa", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Fidel Santos olivares", "Pesticida": "", "LMR": "", "CADMIO": 0.073, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-21"}, {"Item": 120.0, "Código de Informe": "C9143270", "Código de Muestra": "BST260323051_P", "Producto": "Palta", "Departamento": "Huancavelica", "Provincia": "Castrovirreyna", "Distrito": "Mollepampa", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Fidel Santos olivares", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-21"}, {"Item": 121.0, "Código de Informe": "C9142963", "Código de Muestra": "EZG260323009_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Jose Torres de la Cruz", "Pesticida": "", "LMR": "", "CADMIO": 0.031, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-21"}, {"Item": 120.0, "Código de Informe": "C9142874", "Código de Muestra": "BST260323052_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Jose Torres de la Cruz", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-21"}, {"Item": 122.0, "Código de Informe": "C9143455", "Código de Muestra": "EZG260324096_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Isas Rospiliosis", "Pesticida": "", "LMR": "", "CADMIO": 0.024, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-23"}, {"Item": 123.0, "Código de Informe": "C9143275", "Código de Muestra": "BST260324260_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Isas Rospiliosis", "Pesticida": "Paclobutrazol", "LMR": 0.015, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-23"}, {"Item": 123.0, "Código de Informe": "C9143350", "Código de Muestra": "EZG260324092_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "Alloke", "Laboratorio": "GROEN", "Nombre Proveedor": "Jose Carlos Torres ", "Pesticida": "", "LMR": "", "CADMIO": 0.061, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "lote 2", "Fecha de Envío": "2026-03-23"}, {"Item": 120.583333333333, "Código de Informe": "C9143143", "Código de Muestra": "BST260324256_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "alloke", "Laboratorio": "GROEN", "Nombre Proveedor": "Jose Carlos Torres ", "Pesticida": "Metomil", "LMR": 0.011, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "lote 2", "Fecha de Envío": "2026-03-23"}, {"Item": 120.0, "Código de Informe": "C9143453", "Código de Muestra": "EZG260324093_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Luis Lizano Quispe ", "Pesticida": "", "LMR": "", "CADMIO": 0.051, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-23"}, {"Item": 120.0, "Código de Informe": "C9143144", "Código de Muestra": "BST260324257_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Luis Lizano Quispe ", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-23"}, {"Item": 121.0, "Código de Informe": "C9143454", "Código de Muestra": "EZG260324094_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "Huamanpali", "Laboratorio": "GROEN", "Nombre Proveedor": "Bartolo Magallanes", "Pesticida": " ", "LMR": "", "CADMIO": 0.03, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-23"}, {"Item": 120.0, "Código de Informe": "C9143137", "Código de Muestra": "BST260324258_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "Huamanpali", "Laboratorio": "GROEN", "Nombre Proveedor": "Bartolo Magallanes", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-23"}, {"Item": 122.0, "Código de Informe": "C9143383", "Código de Muestra": "EZG260324095_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Chincha Baja", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Carlos Alberto Sanchez Gomez", "Pesticida": "", "LMR": "", "CADMIO": 0.037, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-23"}, {"Item": 123.0, "Código de Informe": "C9143235", "Código de Muestra": "BST260324259_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Chincha Baja", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Alberto Sanchez Gomez", "Pesticida": "Etoxanol / Imidacloprid / Metomil Q / Paclobutrazol ", "LMR": "0.015 / 0.012 / 0.015 / 0.028", "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-23"}, {"Item": 123.0, "Código de Informe": "C9144130", "Código de Muestra": "EZG260326215_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Unga Quispe", "Pesticida": "", "LMR": "", "CADMIO": 0.024, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-25"}, {"Item": 123.0, "Código de Informe": "C9144219", "Código de Muestra": "BST260326686_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Unga Quispe", "Pesticida": "Fenpiroximato", "LMR": 0.022, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-25"}, {"Item": 124.0, "Código de Informe": "C9144153", "Código de Muestra": "EZG260326216_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Chincha Alta", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Edmuendo Mendoza", "Pesticida": "", "LMR": "", "CADMIO": 0.035, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-25"}, {"Item": 123.0, "Código de Informe": "C9144221", "Código de Muestra": "BST260326687_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Chincha Alta", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Edmuendo Mendoza", "Pesticida": "Lufenuron", "LMR": 0.22, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-25"}, {"Item": 125.0, "Código de Informe": "C9143697", "Código de Muestra": "EZG260326217_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Percy Segarra", "Pesticida": "", "LMR": "", "CADMIO": 0.022, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-25"}, {"Item": 123.0, "Código de Informe": "C9143792", "Código de Muestra": "BST260326688_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Percy Segarra", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-25"}, {"Item": 126.0, "Código de Informe": "C9144154", "Código de Muestra": "EZG260326218_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "chincha baja", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Jose Ramos", "Pesticida": "", "LMR": "", "CADMIO": 0.051, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-25"}, {"Item": 123.0, "Código de Informe": "C9144054", "Código de Muestra": "BST260326689_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "chincha baja", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Jose Ramos", "Pesticida": "Lufenuron", "LMR": 0.012, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-25"}, {"Item": 127.0, "Código de Informe": "C9144155", "Código de Muestra": "EZG26032619_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "chincha baja", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "NAVENTA", "Pesticida": "", "LMR": "", "CADMIO": 0.027, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "LOTE 9", "Fecha de Envío": "2026-03-25"}, {"Item": 123.0, "Código de Informe": "C9144289", "Código de Muestra": "BST260326690_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "chincha baja", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "NAVENTA", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "LOTE 9", "Fecha de Envío": "2026-03-25"}, {"Item": 128.0, "Código de Informe": "C9144156", "Código de Muestra": "EZG260326220_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Julia Yancari", "Pesticida": "", "LMR": "", "CADMIO": 0.024, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-25"}, {"Item": 123.0, "Código de Informe": "C9144055", "Código de Muestra": "BST260326691_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Julia Yancari", "Pesticida": "Azoxistrobina Q / Imidacloprid", "LMR": "0.051 / 0.16", "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-25"}, {"Item": 129.0, "Código de Informe": "C9144146", "Código de Muestra": "EZG260328333_P", "Producto": "Palta", "Departamento": "Lima", "Provincia": "Cañete ", "Distrito": "Quilmana", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Eliana Arias", "Pesticida": "", "LMR": "", "CADMIO": 0.054, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-27"}, {"Item": "", "Código de Informe": "C9144198", "Código de Muestra": "BST260328969_P", "Producto": "Palta", "Departamento": "Lima", "Provincia": "Cañete ", "Distrito": "Quilmana", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Eliana Arias", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-27"}, {"Item": 130.0, "Código de Informe": "C9144147", "Código de Muestra": "EZG260328334_P", "Producto": "Palta", "Departamento": "Lima", "Provincia": "Cañete ", "Distrito": "Quilmana", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Julio Arias", "Pesticida": "", "LMR": "", "CADMIO": 0.052, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-27"}, {"Item": "", "Código de Informe": "C9144199", "Código de Muestra": "BST260328970_P", "Producto": "Palta", "Departamento": "Lima", "Provincia": "Cañete ", "Distrito": "Quilmana", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Julio Arias", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-27"}, {"Item": 132.0, "Código de Informe": "C9144393", "Código de Muestra": "EZG260328335_P", "Producto": "Palta", "Departamento": "ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Sergio Espinoza", "Pesticida": "", "LMR": "", "CADMIO": 0.058, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "ATAHUALPA", "Fecha de Envío": "2026-03-27"}, {"Item": "", "Código de Informe": "C9144358", "Código de Muestra": "BST260328971_P", "Producto": "Palta", "Departamento": "ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Sergio Espinoza", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "ATAHUALPA", "Fecha de Envío": "2026-03-27"}, {"Item": 133.0, "Código de Informe": "C9144614", "Código de Muestra": "EZG260328336_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "alto laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Nilver Delfin", "Pesticida": "", "LMR": "", "CADMIO": 0.022, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "HUAÑUPISA", "Fecha de Envío": "2026-03-27"}, {"Item": "", "Código de Informe": "C9144545", "Código de Muestra": "BST260328972_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "alto laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Nilver Delfin", "Pesticida": "Imidacloprid Q", "LMR": 0.013, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "HUAÑUPISA", "Fecha de Envío": "2026-03-27"}, {"Item": 134.0, "Código de Informe": "C9144148", "Código de Muestra": "EZG260328337_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "alto laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Rosmeri Bautista", "Pesticida": "", "LMR": "", "CADMIO": 0.057, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "HUAMANPALY", "Fecha de Envío": "2026-03-27"}, {"Item": "", "Código de Informe": "C9144074", "Código de Muestra": "BST260328973_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "alto laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Rosmeri Bautista", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "HUAMANPALY", "Fecha de Envío": "2026-03-27"}, {"Item": 135.0, "Código de Informe": "C9144555", "Código de Muestra": "EZG260330038_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "alto laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Onorato peres", "Pesticida": "", "LMR": "", "CADMIO": 0.019, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-29"}, {"Item": "", "Código de Informe": "C9144381", "Código de Muestra": "BST260330140_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "alto laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Onorato peres", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-29"}, {"Item": 136.0, "Código de Informe": "C9144580", "Código de Muestra": "EZG260331045_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "chincha baja", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Victor Medina", "Pesticida": "", "LMR": "", "CADMIO": 0.015, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-30"}, {"Item": "", "Código de Informe": "C9144421", "Código de Muestra": "BST260331158_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "chincha baja", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Victor Medina", "Pesticida": "Buprofezin", "LMR": 0.025, "CADMIO": "", "Estado": "", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-30"}, {"Item": 137.0, "Código de Informe": "C9144581", "Código de Muestra": "EZG260331046_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Julio Villa Gomes", "Pesticida": "", "LMR": "", "CADMIO": 0.045, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-30"}, {"Item": "", "Código de Informe": "C9144422", "Código de Muestra": "BST260331159_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Julio Villa Gomes", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-30"}, {"Item": 138.0, "Código de Informe": "C9145271", "Código de Muestra": "BST260401493_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Delfin Marquez", "Pesticida": "Fenpiroximato", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "LOTE 1", "Fecha de Envío": "2026-03-31"}, {"Item": 139.0, "Código de Informe": "C9145272", "Código de Muestra": "BST260401494_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Delfin Marquez", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "LOTE 2", "Fecha de Envío": "2026-03-31"}, {"Item": 140.0, "Código de Informe": "C9145170", "Código de Muestra": "EZG260401174_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Elias Magallanes", "Pesticida": "", "LMR": "", "CADMIO": 0.035, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "LOTE 3", "Fecha de Envío": "2026-03-31"}, {"Item": "", "Código de Informe": "C9145273", "Código de Muestra": "BST260401495_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Elias Magallanes", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "LOTE 3", "Fecha de Envío": "2026-03-31"}, {"Item": 141.0, "Código de Informe": "C9145171", "Código de Muestra": "EZG260401175_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Pisco ", "Distrito": "Pisco", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Jesusu Espirco/Arturo Chicata", "Pesticida": "", "LMR": "", "CADMIO": 0.059, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-03-31"}, {"Item": "", "Código de Informe": "C9145274", "Código de Muestra": "BST260401496_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Pisco ", "Distrito": "Pisco", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Jesusu Espirco/Arturo Chicata", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-03-31"}, {"Item": 142.0, "Código de Informe": "C9145620", "Código de Muestra": "BST260407333_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "chincha baja", "Acopiador /Productor": "Productor", "Zona/Fundo": "cañapay", "Laboratorio": "GROEN", "Nombre Proveedor": "Carlos Alberto Sanchez Gomez", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-04-06"}, {"Item": 143.0, "Código de Informe": "C9145619", "Código de Muestra": "EZG260407134", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "hoja redonda", "Laboratorio": "GROEN", "Nombre Proveedor": "Ingri / Carlos Vicente", "Pesticida": "", "LMR": "", "CADMIO": 0.072, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-04-06"}, {"Item": "", "Código de Informe": "C9145621", "Código de Muestra": "BST260407334_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "hoja redonda", "Laboratorio": "GROEN", "Nombre Proveedor": "Ingri / Carlos Vicente", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-04-06"}, {"Item": 144.0, "Código de Informe": "", "Código de Muestra": "", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "El Carmen", "Laboratorio": "GROEN", "Nombre Proveedor": "Juan Buena Marca", "Pesticida": "", "LMR": "", "CADMIO": 0.069, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-04-07"}, {"Item": "", "Código de Informe": "C9145770", "Código de Muestra": "BST260408400_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "El Carmen", "Laboratorio": "GROEN", "Nombre Proveedor": "Juan Buena Marca", "Pesticida": "Metomil Q", "LMR": 0.017, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-04-07"}, {"Item": 145.0, "Código de Informe": "C9146651", "Código de Muestra": "EZG260413021_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Laura Solano", "Pesticida": "", "LMR": "", "CADMIO": 0.033, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-04-12"}, {"Item": "", "Código de Informe": "C9146595", "Código de Muestra": "BST260413041_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Laura Solano", "Pesticida": "NC", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-04-12"}, {"Item": 146.0, "Código de Informe": "C9146915", "Código de Muestra": "EZG260414120_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Hector Peralta", "Pesticida": "", "LMR": "", "CADMIO": 0.027, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-04-13"}, {"Item": "", "Código de Informe": "C9146845", "Código de Muestra": "BST260414308_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Hector Peralta", "Pesticida": " paclobutrazol", "LMR": 0.025, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-04-13"}, {"Item": 147.0, "Código de Informe": "C9147645", "Código de Muestra": "EZG260417242_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Julio Varilla", "Pesticida": "", "LMR": "", "CADMIO": 0.055, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-04-16"}, {"Item": "", "Código de Informe": "C9147547", "Código de Muestra": "BST260417706_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Julio Varilla", "Pesticida": "Fenpiroximato", "LMR": 0.032, "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-04-16"}, {"Item": 148.0, "Código de Informe": "C9147648", "Código de Muestra": "EZG260417243__P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Jesus Magallanes", "Pesticida": "", "LMR": "", "CADMIO": 0.06, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-04-16"}, {"Item": "", "Código de Informe": "C9147548", "Código de Muestra": "BST260417707_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Jesus Magallanes", "Pesticida": "Azoxistrobina Q /Pirinetanil Q", "LMR": "0.083/0.017", "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-04-16"}, {"Item": 149.0, "Código de Informe": "C9147649", "Código de Muestra": "EZG260417244__P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Gustavo Rojas Flores", "Pesticida": "", "LMR": "", "CADMIO": 0.02, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-04-16"}, {"Item": "", "Código de Informe": "C9147549", "Código de Muestra": "BST260417708_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "Alto Laran", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Gustavo Rojas Flores", "Pesticida": "Imidacloprid Q/Metomil/Paclobutrazol Q", "LMR": "0.098/0.19/0.015", "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-04-16"}, {"Item": 150.0, "Código de Informe": "C9148210", "Código de Muestra": "EZG260421084__P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Natalia  Rodriguez ", "Pesticida": "", "LMR": "", "CADMIO": 0.045, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-04-21"}, {"Item": "", "Código de Informe": "C9148094", "Código de Muestra": "BST260421187_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Natalia  Rodriguez ", "Pesticida": "PIRIPROXIFEN", "LMR": 0.01, "CADMIO": "", "Estado": "Rechazado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-04-21"}, {"Item": 151.0, "Código de Informe": "C9148788", "Código de Muestra": "EZG260424231_P", "Producto": "Palta", "Departamento": "Ayacucho", "Provincia": "Vilcas_Huamán", "Distrito": "Concepción", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Luz Chavez Peralta", "Pesticida": "", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-04-24"}, {"Item": "", "Código de Informe": "C9148715", "Código de Muestra": "BST260424670_P", "Producto": "Palta", "Departamento": "Ayacucho", "Provincia": "Vilcas_Huamán", "Distrito": "Concepción", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Luz Chavez Peralta", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-04-24"}, {"Item": 152.0, "Código de Informe": "C9149134", "Código de Muestra": "EZG260428028_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Alam Humberto", "Pesticida": "", "LMR": "", "CADMIO": 0.087, "Estado": "Rechazado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-04-27"}, {"Item": "", "Código de Informe": "C9149029", "Código de Muestra": "BST260428137_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Alam Humberto", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-04-27"}, {"Item": 153.0, "Código de Informe": "C9149136", "Código de Muestra": "EZG260428029_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Renato Mercado", "Pesticida": "", "LMR": "", "CADMIO": 0.01, "Estado": "Aprobado", "Análisis": "MP", "Observacion": "", "Fecha de Envío": "2026-04-27"}, {"Item": "", "Código de Informe": "C9149030", "Código de Muestra": "BST260428138_P", "Producto": "Palta", "Departamento": "Ica", "Provincia": "Chincha ", "Distrito": "El Carmen", "Acopiador /Productor": "Productor", "Zona/Fundo": "", "Laboratorio": "GROEN", "Nombre Proveedor": "Renato Mercado", "Pesticida": "LRDP", "LMR": "", "CADMIO": "", "Estado": "Aprobado", "Análisis": "LMR", "Observacion": "", "Fecha de Envío": "2026-04-27"}];
+const STATS = {"total": 237, "aprobados": 165, "rechazados": 71, "agq": {"total": 49, "apr": 36, "rej": 13}, "groen": {"total": 188, "apr": 129, "rej": 58}, "dept": {"Sin datos": {"a": 18, "r": 5}, "Piura": {"a": 1, "r": 0}, "Ica": {"a": 87, "r": 48}, "Apurímac": {"a": 2, "r": 0}, "Huancavelica": {"a": 35, "r": 5}, "Lima": {"a": 6, "r": 3}, "Áncash": {"a": 1, "r": 0}, "Junín": {"a": 11, "r": 7}, "Ayacucho": {"a": 3, "r": 1}, "La Libertad": {"a": 1, "r": 2}}, "agq_dept": {"Sin datos": {"a": 18, "r": 5}, "Piura": {"a": 1, "r": 0}, "Ica": {"a": 5, "r": 2}, "Apurímac": {"a": 2, "r": 0}, "Huancavelica": {"a": 2, "r": 1}, "Lima": {"a": 2, "r": 1}, "Áncash": {"a": 1, "r": 0}, "Junín": {"a": 3, "r": 1}, "Ayacucho": {"a": 1, "r": 1}, "La Libertad": {"a": 1, "r": 2}}, "groen_dept": {"Huancavelica": {"a": 33, "r": 4}, "Ica": {"a": 82, "r": 46}, "Junín": {"a": 8, "r": 6}, "Lima": {"a": 4, "r": 2}, "Ayacucho": {"a": 2, "r": 0}}, "pesticides": {"Imidacloprid": 10, "Metomil": 8, "Procloraz": 5, "Paclobutrazol": 5, "Lufenuron": 4, "Azoxistrobina": 3, "(SP)": 2, "(Suma)": 2, "Clotianidina": 1, "Tiametoxam": 1}, "timeline": {"2025-12": {"a": 8, "r": 4}, "2026-01": {"a": 25, "r": 8}, "2026-02": {"a": 34, "r": 13}, "2026-03": {"a": 85, "r": 36}, "2026-04": {"a": 13, "r": 10}}, "analisis": {"MP": {"a": 99, "r": 38}, "LMR": {"a": 66, "r": 33}}};
+
+// ─── HELPERS ──────────────────────────────────────────────────
+function normDept(d){
+  if(!d||d==='nan') return 'Sin datos';
+  d=d.trim();
+  if(d.toLowerCase()==='ica') return 'Ica';
+  if(d==='La_Libertad') return 'La Libertad';
+  return d;
+}
+function labData(lab){ return lab==='ALL'?RAW:RAW.filter(r=>r.Laboratorio===lab); }
+function sOf(arr){ const a=arr.filter(r=>r.Estado==='Aprobado').length, j=arr.filter(r=>r.Estado==='Rechazado').length; return{a,r:j,t:arr.length}; }
+
+// ─── CHARTS REGISTRY ──────────────────────────────────────────
+const charts={};
+function mkChart(id,cfg){
+  if(charts[id]) charts[id].destroy();
+  charts[id]=new Chart(document.getElementById(id).getContext('2d'),cfg);
+}
+
+// ─── NAV ──────────────────────────────────────────────────────
+function showPage(id,tab){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  tab.classList.add('active');
+}
+
+// ─── COLLAPSE ─────────────────────────────────────────────────
+function toggleCol(hdr,bodyId){
+  hdr.classList.toggle('open');
+  document.getElementById(bodyId).classList.toggle('open');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  buildKPIs('ALL'); buildDistBar('ALL'); buildDeptList('ALL'); buildPestList('ALL');
+  buildChartAnalisis('ALL'); buildChartTimeline();
+  buildResumenPage();
+  buildStatsPage();
+  buildLabPage();
+  buildTablePage();
+  setTimeout(()=>{
+    const a=STATS.aprobados/STATS.total*100;
+    document.getElementById('dist-apr').style.width=a+'%';
+    document.getElementById('dist-rej').style.width=(100-a)+'%';
+  },300);
+});
+
+// ─── KPIs ─────────────────────────────────────────────────────
+function buildKPIs(lab){
+  const d=labData(lab); const s=sOf(d);
+  const pa=s.t>0?(s.a/s.t*100).toFixed(1):0;
+  const pr=s.t>0?(s.r/s.t*100).toFixed(1):0;
+  document.getElementById('kpi-grid').innerHTML=`
+    <div class="kpi-card c-total"><div class="kpi-label">Total Muestras</div><div class="kpi-val">${s.t}</div><div class="kpi-sub">Registros analizados</div></div>
+    <div class="kpi-card c-apr"><div class="kpi-label">Aprobados</div><div class="kpi-val">${s.a}</div><div class="kpi-sub">Dentro de parámetros</div></div>
+    <div class="kpi-card c-rej"><div class="kpi-label">Rechazados</div><div class="kpi-val">${s.r}</div><div class="kpi-sub">Fuera de límites</div></div>
+    <div class="kpi-card c-ta"><div class="kpi-label">Tasa Aprobación</div><div class="kpi-val">${pa}%</div><div class="kpi-sub">Del total analizado</div></div>
+    <div class="kpi-card c-tr"><div class="kpi-label">Tasa Rechazo</div><div class="kpi-val">${pr}%</div><div class="kpi-sub">Del total analizado</div></div>`;
+}
+
+// ─── DIST BAR ─────────────────────────────────────────────────
+function buildDistBar(lab){
+  const d=labData(lab); const s=sOf(d);
+  const a=s.t>0?(s.a/s.t*100).toFixed(1):0;
+  const r=s.t>0?(s.r/s.t*100).toFixed(1):0;
+  document.getElementById('dl-a-pct').textContent=a+'%';
+  document.getElementById('dl-r-pct').textContent=r+'%';
+  document.getElementById('dist-apr').style.width=a+'%';
+  document.getElementById('dist-rej').style.width=r+'%';
+}
+
+// ─── DEPT LIST ────────────────────────────────────────────────
+function buildDeptList(lab){
+  const d=labData(lab); const map={};
+  d.forEach(r=>{ const k=normDept(r.Departamento); if(!map[k])map[k]={a:0,r:0}; if(r.Estado==='Aprobado')map[k].a++; else if(r.Estado==='Rechazado')map[k].r++; });
+  const sorted=Object.entries(map).sort((a,b)=>(b[1].a+b[1].r)-(a[1].a+a[1].r));
+  document.getElementById('dept-list').innerHTML=sorted.map(([n,v])=>`
+    <div class="dept-row"><span class="dept-name">${n}</span><div class="dept-badges"><span class="db-a">✔ ${v.a}</span><span class="db-r">✗ ${v.r}</span></div></div>`).join('');
+}
+
+// ─── PEST LIST ────────────────────────────────────────────────
+function buildPestList(lab){
+  const d=labData(lab).filter(r=>r.Estado==='Rechazado');
+  const ctr={};
+  d.forEach(r=>{ if(!r.Pesticida||r.Pesticida==='NC'||r.Pesticida==='LRDP') return;
+    r.Pesticida.split(/[\n/,]/).forEach(p=>{ p=p.replace(/Q\s*$/,'').replace(/\s*\(.*\)/,'').trim(); if(p&&p.length>2)ctr[p]=(ctr[p]||0)+1; });});
+  const sorted=Object.entries(ctr).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const max=sorted[0]?sorted[0][1]:1;
+  document.getElementById('pest-list').innerHTML=sorted.map(([n,c])=>`
+    <div class="pest-row"><span class="pest-name">${n}</span>
+    <div class="pest-bar-track"><div class="pest-bar-fill" style="width:${c/max*100}%"></div></div>
+    <span class="pest-count">${c}</span></div>`).join('');
+}
+
+// ─── CHART ANALISIS ───────────────────────────────────────────
+function buildChartAnalisis(lab){
+  const d=labData(lab);
+  const mp=d.filter(r=>r['Análisis']==='MP'), lmr=d.filter(r=>r['Análisis']==='LMR');
+  mkChart('chartAnalisis',{type:'bar',data:{
+    labels:['MP – Metales Pesados','LMR – Pesticidas'],
+    datasets:[
+      {label:'Aprobados',data:[mp.filter(r=>r.Estado==='Aprobado').length,lmr.filter(r=>r.Estado==='Aprobado').length],backgroundColor:'#52b788',borderRadius:6},
+      {label:'Rechazados',data:[mp.filter(r=>r.Estado==='Rechazado').length,lmr.filter(r=>r.Estado==='Rechazado').length],backgroundColor:'#c0392b',borderRadius:6}
+    ]},options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},
+      scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'#f0f0f0'}}}}});
+}
+
+// ─── CHART TIMELINE ───────────────────────────────────────────
+function buildChartTimeline(){
+  const tl=STATS.timeline; const keys=Object.keys(tl).sort();
+  mkChart('chartTimeline',{type:'line',data:{labels:keys,datasets:[
+    {label:'Aprobados',data:keys.map(k=>tl[k].a),borderColor:'#52b788',backgroundColor:'rgba(82,183,136,.1)',fill:true,tension:.4,pointRadius:4},
+    {label:'Rechazados',data:keys.map(k=>tl[k].r),borderColor:'#c0392b',backgroundColor:'rgba(192,57,43,.08)',fill:true,tension:.4,pointRadius:4}
+  ]},options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},
+    scales:{x:{grid:{color:'#f5f5f5'}},y:{beginAtZero:true,grid:{color:'#f5f5f5'}}}}});
+}
+
+// ─── FILTER OVERVIEW ──────────────────────────────────────────
+let curLab='ALL';
+function filterOverview(lab,btn){
+  curLab=lab;
+  document.querySelectorAll('#lab-filter .lab-btn').forEach(b=>{b.className='lab-btn';});
+  if(lab==='ALL') btn.classList.add('sel-all');
+  else if(lab==='AGQ') btn.classList.add('sel-agq');
+  else btn.classList.add('sel-groen');
+  buildKPIs(lab); buildDistBar(lab); buildDeptList(lab); buildPestList(lab); buildChartAnalisis(lab);
+}
+
+// ─── RESUMEN PAGE ─────────────────────────────────────────────
+function buildResumenPage(){
+  const s=STATS;
+  const uProveedores=new Set(RAW.map(r=>r['Nombre Proveedor']).filter(Boolean)).size;
+  const uFundos=new Set(RAW.map(r=>r['Zona/Fundo']).filter(Boolean)).size;
+  const uDepts=new Set(RAW.map(r=>normDept(r.Departamento))).size;
+  document.getElementById('resumen-cards').innerHTML=`
+    <div class="res-card"><div class="res-icon">🧪</div><div class="res-val">${s.total}</div><div class="res-lbl">Total Muestras</div></div>
+    <div class="res-card"><div class="res-icon">👤</div><div class="res-val">${uProveedores}</div><div class="res-lbl">Proveedores / Productores</div></div>
+    <div class="res-card"><div class="res-icon">🏡</div><div class="res-val">${uFundos}</div><div class="res-lbl">Fundos / Zonas</div></div>
+    <div class="res-card"><div class="res-icon">📍</div><div class="res-val">${uDepts}</div><div class="res-lbl">Departamentos</div></div>`;
+
+  document.getElementById('lab-resumen-list').innerHTML=`
+    <div class="dept-row"><span class="dept-name" style="font-weight:700;font-size:14px">AGQ</span><div class="dept-badges"><span class="db-a">✔ ${s.agq.apr} Aprobados</span><span class="db-r">✗ ${s.agq.rej} Rechazados</span></div></div>
+    <div class="dept-row"><span class="dept-name"><small style="color:#aaa">Total:</small> ${s.agq.total} muestras — Aprobación: <b>${(s.agq.apr/s.agq.total*100).toFixed(1)}%</b></span></div>
+    <div class="dept-row" style="margin-top:10px"><span class="dept-name" style="font-weight:700;font-size:14px">GROEN</span><div class="dept-badges"><span class="db-a">✔ ${s.groen.apr} Aprobados</span><span class="db-r">✗ ${s.groen.rej} Rechazados</span></div></div>
+    <div class="dept-row"><span class="dept-name"><small style="color:#aaa">Total:</small> ${s.groen.total} muestras — Aprobación: <b>${(s.groen.apr/s.groen.total*100).toFixed(1)}%</b></span></div>`;
+
+  const prods={};
+  RAW.forEach(r=>{ if(r.Producto){prods[r.Producto]=(prods[r.Producto]||0)+1;}});
+  mkChart('chartProductoResumen',{type:'doughnut',data:{labels:Object.keys(prods),datasets:[{data:Object.values(prods),backgroundColor:['#2d6a4f','#e67e22'],borderWidth:4,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:12}}}}}});
+
+  // Compact table (first 30 items with proveedor+estado)
+  const rows=RAW.slice(0,60).map((r,i)=>`<tr class="${r.Estado==='Rechazado'?'row-rej':''}">
+    <td style="color:#ccc;font-size:11px">${i+1}</td>
+    <td style="white-space:nowrap;font-size:11.5px;color:#777">${r['Fecha de Envío']||'—'}</td>
+    <td style="font-size:11.5px;font-weight:600;color:var(--verde-oscuro)">${r['Código de Informe']||'—'}</td>
+    <td style="font-size:12px">${r['Nombre Proveedor']||'—'}</td>
+    <td style="font-size:11.5px">${normDept(r.Departamento)}</td>
+    <td><span class="lab-chip ${r.Laboratorio}">${r.Laboratorio}</span></td>
+    <td><span class="badge-an">${r['Análisis']||'—'}</span></td>
+    <td style="font-size:11px;color:var(--rojo)">${(r.Pesticida&&r.Pesticida!=='NC'&&r.Pesticida!=='LRDP')?r.Pesticida.substring(0,30):'—'}</td>
+    <td>${r.Estado==='Aprobado'?'<span class="badge-e apr"><span class="bdot"></span>Aprobado</span>':'<span class="badge-e rej"><span class="bdot"></span>Rechazado</span>'}</td>
+  </tr>`).join('');
+  document.getElementById('resumen-table-wrap').innerHTML=`<div style="overflow-x:auto"><table>
+    <thead><tr><th>#</th><th>Fecha</th><th>Código</th><th>Proveedor</th><th>Departamento</th><th>Lab</th><th>Análisis</th><th>Pesticida</th><th>Estado</th></tr></thead>
+    <tbody>${rows}</tbody></table><p style="text-align:center;padding:12px;color:#aaa;font-size:11.5px">Mostrando primeros 60 registros. Ver todos en la pestaña <b>Datos</b>.</p></div>`;
+}
+
+// ─── STATS PAGE ───────────────────────────────────────────────
+function buildStatsPage(){
+  const s=STATS;
+  mkChart('chartEstado',{type:'doughnut',data:{labels:['Aprobado','Rechazado'],datasets:[{data:[s.aprobados,s.rechazados],backgroundColor:['#52b788','#c0392b'],borderWidth:4,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:12}}}}}});
+  mkChart('chartLab',{type:'bar',data:{labels:['AGQ','GROEN'],datasets:[
+    {label:'Aprobados',data:[s.agq.apr,s.groen.apr],backgroundColor:['rgba(21,101,192,.8)','rgba(45,106,79,.8)'],borderRadius:7},
+    {label:'Rechazados',data:[s.agq.rej,s.groen.rej],backgroundColor:['rgba(21,101,192,.35)','rgba(45,106,79,.35)'],borderRadius:7}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true}}}});
+  const dMap=s.dept; const dsorted=Object.entries(dMap).filter(([,v])=>v.r>0).sort((a,b)=>b[1].r-a[1].r).slice(0,8);
+  mkChart('chartDeptRej',{type:'bar',data:{labels:dsorted.map(x=>x[0]),datasets:[{label:'Rechazados',data:dsorted.map(x=>x[1].r),backgroundColor:'rgba(192,57,43,.75)',borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true},y:{grid:{display:false}}}}});
+  const tl=s.timeline; const keys=Object.keys(tl).sort();
+  mkChart('chartTimelineFull',{type:'bar',data:{labels:keys,datasets:[
+    {label:'Aprobados',data:keys.map(k=>tl[k].a),backgroundColor:'rgba(82,183,136,.75)',borderRadius:5,stack:'s'},
+    {label:'Rechazados',data:keys.map(k=>tl[k].r),backgroundColor:'rgba(192,57,43,.7)',borderRadius:5,stack:'s'}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,stacked:true,grid:{color:'#f0f0f0'}}}}});
+  const pests=s.pesticides; const pkeys=Object.keys(pests).filter(k=>!k.startsWith('(')).slice(0,8);
+  mkChart('chartPestTop',{type:'bar',data:{labels:pkeys,datasets:[{label:'Detecciones',data:pkeys.map(k=>pests[k]),backgroundColor:'rgba(192,57,43,.72)',borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true},y:{grid:{display:false}}}}});
+  // Per-lab analisis
+  ['AGQ','GROEN'].forEach(lab=>{
+    const d=RAW.filter(r=>r.Laboratorio===lab);
+    const mp=d.filter(r=>r['Análisis']==='MP'), lmr=d.filter(r=>r['Análisis']==='LMR');
+    mkChart('chartAnalisis'+lab,{type:'bar',data:{labels:['MP','LMR'],datasets:[
+      {label:'Aprobados',data:[mp.filter(r=>r.Estado==='Aprobado').length,lmr.filter(r=>r.Estado==='Aprobado').length],backgroundColor:lab==='AGQ'?'rgba(21,101,192,.75)':'rgba(45,106,79,.75)',borderRadius:5},
+      {label:'Rechazados',data:[mp.filter(r=>r.Estado==='Rechazado').length,lmr.filter(r=>r.Estado==='Rechazado').length],backgroundColor:'rgba(192,57,43,.65)',borderRadius:5}
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true}}}});
+  });
+}
+
+// ─── LAB PAGE ─────────────────────────────────────────────────
+function buildLabPage(){
+  const s=STATS;
+  const labs=[{key:'AGQ',cls:'agq',full:'Laboratorio AGQ España',col:'#1565c0'},{key:'GROEN',cls:'groen',full:'Groen Agro Control',col:'#2d7a35'}];
+  document.getElementById('lab-cards-row').innerHTML=labs.map(l=>{
+    const ls=s[l.key.toLowerCase()];
+    const pct=(ls.apr/ls.total*100).toFixed(1);
+    return `<div class="lab-card ${l.cls}">
+      <div class="lab-card-name">${l.key}</div>
+      <div class="lab-card-desc">${l.full}</div>
+      <div class="lab-stats-row">
+        <div class="ls"><div class="ls-val t">${ls.total}</div><div class="ls-lbl">Total</div></div>
+        <div class="ls"><div class="ls-val g">${ls.apr}</div><div class="ls-lbl">Aprobados</div></div>
+        <div class="ls"><div class="ls-val r">${ls.rej}</div><div class="ls-lbl">Rechazados</div></div>
+      </div>
+      <div class="lab-pct-bar">
+        <div class="lp-track"><div class="lp-fill" style="width:${pct}%"></div></div>
+        <div class="lp-txt">${pct}% de aprobación</div>
+      </div>
+    </div>`;
+  }).join('');
+  buildLabDeptDetail('AGQ','dept-agq'); buildLabDeptDetail('GROEN','dept-groen');
+  buildLabDoughnut('AGQ','chartAGQ','#1565c0','rgba(21,101,192,.35)');
+  buildLabDoughnut('GROEN','chartGROEN','#2d7a35','rgba(45,106,79,.35)');
+}
+function buildLabDeptDetail(lab,el){
+  const m=STATS[lab.toLowerCase()+'_dept'];
+  const sorted=Object.entries(m).sort((a,b)=>(b[1].a+b[1].r)-(a[1].a+a[1].r));
+  document.getElementById(el).innerHTML=sorted.map(([n,v])=>`
+    <div class="dept-row"><span class="dept-name">${n}</span><div class="dept-badges"><span class="db-a">✔ ${v.a}</span><span class="db-r">✗ ${v.r}</span></div></div>`).join('');
+}
+function buildLabDoughnut(lab,id,c1,c2){
+  const ls=STATS[lab.toLowerCase()];
+  mkChart(id,{type:'doughnut',data:{labels:['Aprobado','Rechazado'],datasets:[{data:[ls.apr,ls.rej],backgroundColor:[c1,c2],borderWidth:4,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:12}}}}}});
+}
+
+// ─── TABLE PAGE ───────────────────────────────────────────────
+let filtered=[...RAW], stFilter='all', curPage=1;
+const PG=30;
+function buildTablePage(){
+  const depts=[...new Set(RAW.map(r=>normDept(r.Departamento)))].sort();
+  const sel=document.getElementById('fi-dept');
+  sel.innerHTML='<option value="">Todos</option>'+depts.map(d=>`<option>${d}</option>`).join('');
+  applyFilters();
+}
+function setSt(s){
+  stFilter=s;
+  document.querySelectorAll('.sp').forEach(p=>p.classList.remove('active'));
+  document.querySelector(s==='all'?'.sp-all':s==='Aprobado'?'.sp-apr':'.sp-rej').classList.add('active');
+  applyFilters();
+}
+function applyFilters(){
+  const q=document.getElementById('fi-search').value.toLowerCase();
+  const lab=document.getElementById('fi-lab').value;
+  const dept=document.getElementById('fi-dept').value;
+  const an=document.getElementById('fi-analisis').value;
+  filtered=RAW.filter(r=>{
+    if(stFilter!=='all'&&r.Estado!==stFilter) return false;
+    if(lab&&r.Laboratorio!==lab) return false;
+    if(dept&&normDept(r.Departamento)!==dept) return false;
+    if(an&&r['Análisis']!==an) return false;
+    if(q){const h=[r['Nombre Proveedor'],r['Código de Informe'],r['Zona/Fundo'],r.Pesticida,r.Departamento].join(' ').toLowerCase();if(!h.includes(q))return false;}
+    return true;
+  });
+  curPage=1; renderTable();
+}
+function clearFilters(){
+  document.getElementById('fi-search').value='';
+  document.getElementById('fi-lab').value='';
+  document.getElementById('fi-dept').value='';
+  document.getElementById('fi-analisis').value='';
+  stFilter='all';
+  document.querySelectorAll('.sp').forEach(p=>p.classList.remove('active'));
+  document.querySelector('.sp-all').classList.add('active');
+  applyFilters();
+}
+function renderTable(){
+  const start=(curPage-1)*PG, slice=filtered.slice(start,start+PG);
+  document.getElementById('rec-count').textContent=filtered.length+' registros';
+  document.getElementById('tbl-body').innerHTML=slice.map((r,i)=>{
+    const apr=r.Estado==='Aprobado';
+    const pest=(r.Pesticida&&r.Pesticida!=='NC'&&r.Pesticida!=='LRDP')?r.Pesticida.replace(/\n/g,'\n'):'';
+    const cad=parseFloat(r.CADMIO);
+    return`<tr class="${apr?'':'row-rej'}">
+      <td style="color:#ccc;font-size:11px">${start+i+1}</td>
+      <td style="white-space:nowrap;color:#888;font-size:11.5px">${r['Fecha de Envío']||'—'}</td>
+      <td style="font-size:11px;font-weight:600;color:var(--verde-oscuro)">${r['Código de Informe']||'—'}</td>
+      <td style="font-size:12.5px">${r['Nombre Proveedor']||'<span class="no-data">—</span>'}</td>
+      <td><span style="background:#f0f8e8;color:#2d6a4f;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700">${r.Producto||'—'}</span></td>
+      <td style="font-size:12px">${normDept(r.Departamento)}</td>
+      <td style="font-size:11.5px;color:#777">${r.Provincia||'—'}</td>
+      <td style="font-size:11px;color:#777">${r['Zona/Fundo']||'—'}</td>
+      <td><span class="lab-chip ${r.Laboratorio}">${r.Laboratorio}</span></td>
+      <td><span class="badge-an">${r['Análisis']||'—'}</span></td>
+      <td><div class="pest-cell">${pest||'<span class="no-data">NC</span>'}</div></td>
+      <td style="text-align:right;font-weight:${cad>0.05?700:400};color:${cad>0.05?'var(--rojo)':'inherit'}">${r.CADMIO||'—'}</td>
+      <td><span class="badge-e ${apr?'apr':'rej'}"><span class="bdot"></span>${r.Estado}</span></td>
+    </tr>`;
+  }).join('');
+  renderPagination();
+}
+function renderPagination(){
+  const tot=Math.ceil(filtered.length/PG);
+  if(tot<=1){document.getElementById('pagination').innerHTML='';return;}
+  let h=`<button class="pg-btn" onclick="goPage(${curPage-1})" ${curPage<=1?'disabled':''}>‹</button>`;
+  for(let p=1;p<=tot;p++){
+    if(p===1||p===tot||Math.abs(p-curPage)<=2) h+=`<button class="pg-btn ${p===curPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+    else if(Math.abs(p-curPage)===3) h+='<span style="color:#ccc">…</span>';
+  }
+  h+=`<button class="pg-btn" onclick="goPage(${curPage+1})" ${curPage>=tot?'disabled':''}>›</button>`;
+  h+=`<span class="pg-info">Pág. ${curPage} / ${tot}</span>`;
+  document.getElementById('pagination').innerHTML=h;
+}
+function goPage(p){const t=Math.ceil(filtered.length/PG);if(p<1||p>t)return;curPage=p;renderTable();document.querySelector('.tbl-section').scrollIntoView({behavior:'smooth',block:'start'});}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('fi-search').addEventListener('keydown',e=>{if(e.key==='Enter')applyFilters();});
+});
+</script>
+</body>
+</html>
