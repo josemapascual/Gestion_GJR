@@ -3146,19 +3146,14 @@ showComPreview=function(){
 // ═══════════════════════════════════════════════════════
 async function initStorageOnLoad(){
   try{
-    const savedUrl=localStorage.getItem('sb_url');
-    const savedKey=localStorage.getItem('sb_key');
-    const useSb=localStorage.getItem('sb_use');
-    if(savedUrl&&savedKey&&useSb!=='0'){
-      setSbStatus('offline','Conectando...');
-      await initSupabase(savedUrl,savedKey);
-    } else if(useSb==='0'){
-      setSbStatus('offline','Solo local');
-    } else {
-      setSbStatus('offline','Sin BD');
-    }
+    // Credenciales GJR hardcodeadas
+    const SB_URL = 'https://riidmxztyxldnojjkncx.supabase.co';
+    const SB_KEY = 'sb_publishable_ZbMZbTdBcYnGceF_woayjQ_CCCEHRYS';
+    setSbStatus('offline','Conectando...');
+    await initSupabase(SB_URL, SB_KEY);
   }catch(e){
     setSbStatus('offline','Sin BD');
+    console.error('Supabase init error:', e);
   }
 }
 
