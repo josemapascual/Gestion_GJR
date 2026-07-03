@@ -340,6 +340,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--gris-bg);color:var(--gris
         <div class="mod-link">Abrir módulo <span class="mod-arrow">→</span></div>
       </a>
 
+      <a class="module-card comercial" id="card-viaticos" href="viaticos.html">
+        <div class="mod-icon dorado">🧳</div>
+        <div class="mod-title">Viáticos</div>
+        <div class="mod-desc">Rendición de gastos de viaje con lectura automática de comprobantes. Exportación a Excel y PDF.</div>
+        <div class="mod-link">Abrir módulo <span class="mod-arrow">→</span></div>
+      </a>
+
     </div>
 
     <!-- MÓDULOS DE CALIDAD -->
@@ -382,35 +389,35 @@ const USUARIOS = {
     nombre: 'José María',
     avatar: 'J',
     rol: 'Administrador',
-    acceso: ['liquidaciones','facturacion','trazabilidad','defectos']
+    acceso: ['liquidaciones','facturacion','viaticos','trazabilidad','defectos']
   },
   renato: {
     pass: 'renato123',
     nombre: 'Renato',
     avatar: 'R',
     rol: 'Operaciones',
-    acceso: ['liquidaciones','facturacion','trazabilidad','defectos']
+    acceso: ['liquidaciones','facturacion','viaticos','trazabilidad','defectos']
   },
   diana: {
     pass: 'diana123',
     nombre: 'Diana',
     avatar: 'D',
     rol: 'Liquidaciones',
-    acceso: ['liquidaciones']
+    acceso: ['liquidaciones','viaticos']
   },
   reynaldo: {
     pass: 'reynaldo123',
     nombre: 'Reynaldo',
     avatar: 'Ry',
     rol: 'Calidad',
-    acceso: ['trazabilidad','defectos']
+    acceso: ['trazabilidad','defectos','viaticos']
   },
   paola: {
     pass: 'paola123',
     nombre: 'Paola',
     avatar: 'P',
     rol: 'Facturación',
-    acceso: ['facturacion']
+    acceso: ['facturacion','viaticos']
   }
 };
 
@@ -418,6 +425,7 @@ const USUARIOS = {
 const MODULO_CARD = {
   liquidaciones: 'card-liquidaciones',
   facturacion:   'card-facturacion',
+  viaticos:      'card-viaticos',
   trazabilidad:  'card-trazabilidad',
   defectos:      'card-defectos'
 };
