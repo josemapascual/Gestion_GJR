@@ -226,7 +226,7 @@ const todayISO = () => new Date().toISOString().slice(0,10);
 /* ---------------- configuración ---------------- */
 const SUPABASE_URL = 'https://riidmxztyxldnojjkncx.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_ZbMZbTdBcYnGceF_woayjQ_CCCEHRYS';
-const AI_PROXY_URL = ''; // ← pegar aquí la URL del Cloudflare Worker (ver guía). Vacío = solo funciona en vista previa de Claude.
+const AI_PROXY_URL = 'https://viaticos-ia.gjr-viaticos-jm.workers.dev'; // Cloudflare Worker (proxy seguro hacia la API de Anthropic)
 const ADMINS = ['jose maria', 'jose maría', 'josé maría', 'josé maria', 'jose', 'renato'];
 
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
