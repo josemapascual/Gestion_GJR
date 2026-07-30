@@ -383,6 +383,7 @@ function handleFileUpload(event) {
       const parsed = parseExcelData(wb);
       if (parsed && parsed.length > 0) {
         RAW_DATA = parsed;
+        try{ localStorage.setItem('gjr_defectos_dataset', JSON.stringify(parsed)); }catch(e){}
         clearFilter();
         showToast('✅ ' + parsed.length + ' registros cargados');
       } else {
@@ -722,5 +723,134 @@ function showToast(msg) {
 // INIT
 clearFilter();
 </script>
+
+<script>
+/* ═══ GJR CLOUD SYNC — sincronización total multi-usuario (gjr_kv) ═══ */
+(function(){
+  var SB_URL='https://riidmxztyxldnojjkncx.supabase.co';
+  var SB_KEY='sb_publishable_ZbMZbTdBcYnGceF_woayjQ_CCCEHRYS';
+  var PREFIXES=[];
+  var EXACT=["gjr_defectos_dataset"];
+  var EXCLUDE=[];
+  var REFRESH=function(changed, meta){ 
+    if(changed.indexOf('gjr_defectos_dataset')>=0){
+      try{
+        var d=JSON.parse(localStorage.getItem('gjr_defectos_dataset'));
+        if(Array.isArray(d)&&d.length){
+          RAW_DATA=d;
+          if(typeof clearFilter==='function') clearFilter();
+          var m=meta['gjr_defectos_dataset'];
+          if(m&&typeof showToast==='function') showToast('\u2601 Datos de '+m.by+' \u00b7 '+new Date(m.at).toLocaleString('es-PE'));
+        }
+      }catch(e){}
+    }
+ };
+  var HDRS={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
+  var origSet=localStorage.setItem.bind(localStorage);
+  var origGet=localStorage.getItem.bind(localStorage);
+  function syncable(k){
+    if(!k) return false;
+    if(k.indexOf('__kvat_')===0) return false;
+    if(EXCLUDE.indexOf(k)>=0) return false;
+    if(EXACT.indexOf(k)>=0) return true;
+    for(var i=0;i<PREFIXES.length;i++){ if(k.indexOf(PREFIXES[i])===0) return true; }
+    return false;
+  }
+  function who(){ try{ return sessionStorage.getItem('gjr_nombre')||'Equipo GJR'; }catch(e){ return 'Equipo GJR'; } }
+  var badge=null;
+  function setBadge(state,txt){
+    try{
+      if(!badge){
+        badge=document.createElement('span');
+        badge.id='gjr-cloud-badge';
+        var h=document.querySelector('.gjr-header');
+        if(h){
+          badge.style.cssText='display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;padding:4px 10px;border-radius:14px;margin-left:8px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.28);color:rgba(255,255,255,0.9);font-family:sans-serif;white-space:nowrap';
+          h.appendChild(badge);
+        } else {
+          badge.style.cssText='position:fixed;bottom:10px;right:10px;z-index:99999;display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;padding:5px 12px;border-radius:14px;background:#1B5E20;color:#fff;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3)';
+          document.body.appendChild(badge);
+        }
+      }
+      var dot = state==='ok' ? '#7CFC9B' : (state==='sync' ? '#FFD54F' : '#EF9A9A');
+      badge.innerHTML='<span style="width:7px;height:7px;border-radius:50%;background:'+dot+';display:inline-block"></span>'+txt;
+    }catch(e){}
+  }
+  var timers={};
+  function queuePush(k){ if(timers[k]) clearTimeout(timers[k]); timers[k]=setTimeout(function(){ push(k); }, 1500); }
+  function push(k){
+    var v=origGet(k); if(v===null) return;
+    setBadge('sync','Guardando\u2026');
+    var at=new Date().toISOString();
+    fetch(SB_URL+'/rest/v1/gjr_kv?on_conflict=id',{
+      method:'POST',
+      headers:Object.assign({},HDRS,{'Prefer':'resolution=merge-duplicates,return=minimal'}),
+      body:JSON.stringify({id:k, datos:{value:v, by:who(), at:at}, updated_at:at})
+    }).then(function(r){
+      if(r.ok){ origSet('__kvat_'+k, at); setBadge('ok','Nube \u2713'); }
+      else { setBadge('err','Sin conexi\u00f3n'); }
+    }).catch(function(){ setBadge('err','Sin conexi\u00f3n'); });
+  }
+  try{
+    localStorage.setItem=function(k,v){ origSet(k,v); try{ if(syncable(k)) queuePush(k); }catch(e){} };
+  }catch(e){}
+  function mergeVals(localStr, cloudStr){
+    try{
+      var L=JSON.parse(localStr), C=JSON.parse(cloudStr);
+      if(Array.isArray(L)&&Array.isArray(C)){
+        var hasId=function(x){return x&&typeof x==='object'&&x.id!==undefined;};
+        var okL=(L.length===0)||L.every(hasId);
+        var okC=(C.length===0)||C.every(hasId);
+        if(okL&&okC){
+          var m={}, order=[];
+          L.forEach(function(o){ var id=String(o.id); if(!(id in m)) order.push(id); m[id]=o; });
+          C.forEach(function(o){ var id=String(o.id); if(!(id in m)) order.push(id); m[id]=o; });
+          return JSON.stringify(order.map(function(id){ return m[id]; }));
+        }
+      }
+    }catch(e){}
+    return cloudStr;
+  }
+  function pull(){
+    setBadge('sync','Sincronizando\u2026');
+    fetch(SB_URL+'/rest/v1/gjr_kv?select=id,datos,updated_at',{headers:HDRS})
+      .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+      .then(function(rows){
+        var changed=[], meta={}, cloudKeys={};
+        rows.forEach(function(row){
+          var k=row.id; cloudKeys[k]=1;
+          if(!syncable(k)) return;
+          var cloudVal=(row.datos && row.datos.value!==undefined)? row.datos.value : null;
+          if(cloudVal===null) return;
+          if(row.datos){ meta[k]={by:row.datos.by||'Equipo GJR', at:row.datos.at||row.updated_at}; }
+          var localAt=origGet('__kvat_'+k);
+          var localVal=origGet(k);
+          if(!localAt){
+            var merged=(localVal!==null)? mergeVals(localVal, cloudVal) : cloudVal;
+            if(merged!==localVal){ origSet(k,merged); changed.push(k); }
+            origSet('__kvat_'+k, row.updated_at||new Date().toISOString());
+            if(merged!==cloudVal){ queuePush(k); }
+          } else if(row.updated_at && row.updated_at>localAt){
+            if(cloudVal!==localVal){ origSet(k,cloudVal); changed.push(k); }
+            origSet('__kvat_'+k, row.updated_at);
+          }
+        });
+        try{
+          for(var i=0;i<localStorage.length;i++){
+            var lk=localStorage.key(i);
+            if(syncable(lk) && !cloudKeys[lk] && !origGet('__kvat_'+lk)){ queuePush(lk); }
+          }
+        }catch(e){}
+        setBadge('ok','Nube \u2713');
+        if(changed.length){ try{ REFRESH(changed, meta); }catch(e){} }
+      })
+      .catch(function(){ setBadge('err','Sin conexi\u00f3n'); });
+  }
+  window.addEventListener('load', function(){ setTimeout(pull, 600); });
+  document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') pull(); });
+  window.gjrKvPush=push; window.gjrKvPull=pull; window.gjrKvQueue=queuePush;
+})();
+</script>
+
 </body>
 </html>
