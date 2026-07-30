@@ -494,6 +494,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--gris-bg);color:var(--gris
         <div class="mod-link">Abrir módulo <span class="mod-arrow">→</span></div>
       </a>
 
+      <a class="module-card calidad" id="card-descarte" href="descarte.html">
+        <div class="mod-icon azul">📦</div>
+        <div class="mod-title">Descarte</div>
+        <div class="mod-desc">Seguimiento semanal de kilos ingresados, kilos de descarte y precio de venta por guía de recepción.</div>
+        <div class="mod-link">Abrir módulo <span class="mod-arrow">→</span></div>
+      </a>
+
     </div>
 
     <!-- Info de acceso -->
@@ -516,14 +523,14 @@ const USUARIOS = {
     nombre: 'José María',
     avatar: 'J',
     rol: 'Administrador',
-    acceso: ['liquidaciones','facturacion','trazabilidad','defectos']
+    acceso: ['liquidaciones','facturacion','trazabilidad','defectos','descarte']
   },
   renato: {
     pass: 'renato123',
     nombre: 'Renato',
     avatar: 'R',
     rol: 'Operaciones',
-    acceso: ['liquidaciones','facturacion','trazabilidad','defectos']
+    acceso: ['liquidaciones','facturacion','trazabilidad','defectos','descarte']
   },
   diana: {
     pass: 'diana123',
@@ -537,7 +544,7 @@ const USUARIOS = {
     nombre: 'Reynaldo',
     avatar: 'Ry',
     rol: 'Calidad',
-    acceso: ['trazabilidad','defectos']
+    acceso: ['trazabilidad','defectos','descarte']
   },
   paola: {
     pass: 'paola123',
@@ -553,7 +560,8 @@ const MODULO_CARD = {
   liquidaciones: 'card-liquidaciones',
   facturacion:   'card-facturacion',
   trazabilidad:  'card-trazabilidad',
-  defectos:      'card-defectos'
+  defectos:      'card-defectos',
+  descarte:      'card-descarte'
 };
 
 // ══ LOGIN ══
@@ -611,7 +619,8 @@ function mostrarDashboard(u){
     liquidaciones: 'Liquidaciones',
     facturacion:   'Facturación',
     trazabilidad:  'Trazabilidad',
-    defectos:      'Defectos Críticos'
+    defectos:      'Defectos Críticos',
+    descarte:      'Descarte'
   };
   const lista = u.acceso.map(m => nombres[m]).join(', ');
   const esAdmin = u.acceso.length === 4;
