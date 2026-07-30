@@ -8,55 +8,113 @@
   body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 20px; background: #fafbfa; color: #1a1d1a; }
   h1 { font-size: 20px; color: #1B5E20; }
   .box { background: white; border: 1px solid #e3e6e3; border-radius: 12px; padding: 24px; margin-top: 16px; }
-  .estado { font-size: 15px; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; }
+  .prueba { padding: 12px 16px; border-radius: 8px; margin-bottom: 10px; font-size: 14px; }
   .cargando { background: #FFF8E1; color: #7A5C00; }
   .ok { background: #E8F5E9; color: #1B5E20; }
   .error { background: #FFEBEE; color: #C62828; }
-  .rate { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f2f0; font-size: 16px; }
+  .rate { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f2f0; font-size: 16px; }
   .rate:last-child { border: none; }
   .rate b { font-family: 'Courier New', monospace; font-size: 20px; }
   .par { color: #6b7280; }
-  pre { background: #1a1d1a; color: #7CFC9B; padding: 14px; border-radius: 8px; font-size: 12px; overflow-x: auto; margin-top: 16px; }
+  h2 { font-size: 14px; margin: 20px 0 10px; color: #6b7280; }
+  .final { margin-top: 20px; padding: 16px; border-radius: 10px; font-size: 15px; font-weight: 600; }
+  .final.ok { background: #E8F5E9; color: #1B5E20; }
+  .final.error { background: #FFEBEE; color: #C62828; }
 </style>
 </head>
 <body>
-  <h1>Prueba de conexión — Tipo de cambio en vivo</h1>
-  <p>Esta página prueba si el sistema puede traer el tipo de cambio real del mercado. Si ves números abajo, funciona.</p>
-
+  <h1>Prueba de conexion - Tipo de cambio en vivo</h1>
+  <p>Probando dos fuentes de datos. La que funcione se usara en el sistema.</p>
   <div class="box">
-    <div class="estado cargando" id="estado">⏳ Conectando con el mercado…</div>
+    <div class="prueba cargando" id="p1">Probando fuente 1 (Banco Central Europeo)...</div>
+    <div class="prueba cargando" id="p2">Probando fuente 2 (ExchangeRate)...</div>
     <div id="resultados"></div>
-    <pre id="detalle" style="display:none"></pre>
+    <div id="final"></div>
   </div>
-
 <script>
-async function probar(){
-  const estado = document.getElementById('estado');
-  const resultados = document.getElementById('resultados');
-  const detalle = document.getElementById('detalle');
+function fetchTimeout(url, ms){
+  return Promise.race([
+    fetch(url),
+    new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('tardo mas de ' + (ms/1000) + 's')); }, ms); })
+  ]);
+}
+var funcionoAlguna = false;
+async function prueba1(){
+  var el = document.getElementById('p1');
   try {
-    const [rEur, rUsd] = await Promise.all([
-      fetch('https://api.frankfurter.dev/v1/latest?base=EUR&symbols=USD,PEN').then(r=>r.json()),
-      fetch('https://api.frankfurter.dev/v1/latest?base=USD&symbols=PEN').then(r=>r.json())
-    ]);
-    const usdpen = rUsd.rates.PEN;
-    const eurusd = rEur.rates.USD;
-    const eurpen = rEur.rates.PEN;
-    estado.className = 'estado ok';
-    estado.textContent = '✓ ¡Funciona! Datos reales del Banco Central Europeo (' + rUsd.date + ')';
-    resultados.innerHTML =
-      '<div class="rate"><span class="par">USD → PEN (dólar a sol)</span> <b>' + usdpen.toFixed(4) + '</b></div>' +
-      '<div class="rate"><span class="par">EUR → USD (euro a dólar)</span> <b>' + eurusd.toFixed(4) + '</b></div>' +
-      '<div class="rate"><span class="par">EUR → PEN (euro a sol)</span> <b>' + eurpen.toFixed(4) + '</b></div>';
-    detalle.style.display = 'block';
-    detalle.textContent = 'Respuesta cruda:\n' + JSON.stringify(rUsd, null, 2) + '\n' + JSON.stringify(rEur, null, 2);
+    var r = await fetchTimeout('https://api.frankfurter.dev/v1/latest?base=USD&symbols=PEN', 8000);
+    var d = await r.json();
+    if(d && d.rates && d.rates.PEN){
+      el.className = 'prueba ok';
+      el.textContent = 'OK Fuente 1 (BCE): USD/PEN = ' + d.rates.PEN.toFixed(4);
+      mostrarResultados('frankfurter');
+      funcionoAlguna = true;
+      return true;
+    }
+    throw new Error('respuesta sin datos');
   } catch(e){
-    estado.className = 'estado error';
-    estado.textContent = '✗ No se pudo conectar: ' + e.message;
-    resultados.innerHTML = '<p>Si ves esto en el sistema real (no en la vista previa), avísame para probar una alternativa.</p>';
+    el.className = 'prueba error';
+    el.textContent = 'X Fuente 1 (BCE) fallo: ' + e.message;
+    return false;
   }
 }
-probar();
+async function prueba2(){
+  var el = document.getElementById('p2');
+  try {
+    var r = await fetchTimeout('https://open.er-api.com/v6/latest/USD', 8000);
+    var d = await r.json();
+    if(d && d.rates && d.rates.PEN){
+      el.className = 'prueba ok';
+      el.textContent = 'OK Fuente 2 (ExchangeRate): USD/PEN = ' + d.rates.PEN.toFixed(4);
+      if(!funcionoAlguna) mostrarResultados('erapi', d);
+      funcionoAlguna = true;
+      return true;
+    }
+    throw new Error('respuesta sin datos');
+  } catch(e){
+    el.className = 'prueba error';
+    el.textContent = 'X Fuente 2 (ExchangeRate) fallo: ' + e.message;
+    return false;
+  }
+}
+async function mostrarResultados(fuente, dataYa){
+  var res = document.getElementById('resultados');
+  try {
+    var usdpen, eurusd, eurpen, fecha;
+    if(fuente === 'frankfurter'){
+      var arr = await Promise.all([
+        fetchTimeout('https://api.frankfurter.dev/v1/latest?base=EUR&symbols=USD,PEN', 8000).then(function(r){return r.json();}),
+        fetchTimeout('https://api.frankfurter.dev/v1/latest?base=USD&symbols=PEN', 8000).then(function(r){return r.json();})
+      ]);
+      usdpen = arr[1].rates.PEN; eurusd = arr[0].rates.USD; eurpen = arr[0].rates.PEN; fecha = arr[1].date;
+    } else {
+      var d = dataYa || await fetchTimeout('https://open.er-api.com/v6/latest/USD', 8000).then(function(r){return r.json();});
+      var dEur = await fetchTimeout('https://open.er-api.com/v6/latest/EUR', 8000).then(function(r){return r.json();});
+      usdpen = d.rates.PEN; eurusd = dEur.rates.USD; eurpen = dEur.rates.PEN;
+      fecha = d.time_last_update_utc ? d.time_last_update_utc.slice(0,16) : 'hoy';
+    }
+    res.innerHTML =
+      '<h2>Tipos de cambio reales de hoy (' + fecha + ')</h2>' +
+      '<div class="rate"><span class="par">USD a PEN (dolar a sol)</span> <b>' + usdpen.toFixed(4) + '</b></div>' +
+      '<div class="rate"><span class="par">EUR a USD (euro a dolar)</span> <b>' + eurusd.toFixed(4) + '</b></div>' +
+      '<div class="rate"><span class="par">EUR a PEN (euro a sol)</span> <b>' + eurpen.toFixed(4) + '</b></div>';
+  } catch(e){
+    res.innerHTML = '<h2>Error al traer detalles: ' + e.message + '</h2>';
+  }
+}
+async function correr(){
+  var r1 = await prueba1();
+  var r2 = await prueba2();
+  var final = document.getElementById('final');
+  if(r1 || r2){
+    final.className = 'final ok';
+    final.textContent = 'FUNCIONA! El sistema puede traer el tipo de cambio real. Avisame y dejo el modulo conectado a la fuente que funciono.';
+  } else {
+    final.className = 'final error';
+    final.textContent = 'Ninguna fuente respondio desde esta red. Puede ser un bloqueo de la red de tu oficina. Avisame y busco otra solucion.';
+  }
+}
+correr();
 </script>
 </body>
 </html>
