@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prueba API tipo de cambio</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 20px; background: #fafbfa; color: #1a1d1a; }
+  h1 { font-size: 20px; color: #1B5E20; }
+  .box { background: white; border: 1px solid #e3e6e3; border-radius: 12px; padding: 24px; margin-top: 16px; }
+  .estado { font-size: 15px; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; }
+  .cargando { background: #FFF8E1; color: #7A5C00; }
+  .ok { background: #E8F5E9; color: #1B5E20; }
+  .error { background: #FFEBEE; color: #C62828; }
+  .rate { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f2f0; font-size: 16px; }
+  .rate:last-child { border: none; }
+  .rate b { font-family: 'Courier New', monospace; font-size: 20px; }
+  .par { color: #6b7280; }
+  pre { background: #1a1d1a; color: #7CFC9B; padding: 14px; border-radius: 8px; font-size: 12px; overflow-x: auto; margin-top: 16px; }
+</style>
+</head>
+<body>
+  <h1>Prueba de conexión — Tipo de cambio en vivo</h1>
+  <p>Esta página prueba si el sistema puede traer el tipo de cambio real del mercado. Si ves números abajo, funciona.</p>
+
+  <div class="box">
+    <div class="estado cargando" id="estado">⏳ Conectando con el mercado…</div>
+    <div id="resultados"></div>
+    <pre id="detalle" style="display:none"></pre>
+  </div>
+
+<script>
+async function probar(){
+  const estado = document.getElementById('estado');
+  const resultados = document.getElementById('resultados');
+  const detalle = document.getElementById('detalle');
+  try {
+    const [rEur, rUsd] = await Promise.all([
+      fetch('https://api.frankfurter.dev/v1/latest?base=EUR&symbols=USD,PEN').then(r=>r.json()),
+      fetch('https://api.frankfurter.dev/v1/latest?base=USD&symbols=PEN').then(r=>r.json())
+    ]);
+    const usdpen = rUsd.rates.PEN;
+    const eurusd = rEur.rates.USD;
+    const eurpen = rEur.rates.PEN;
+    estado.className = 'estado ok';
+    estado.textContent = '✓ ¡Funciona! Datos reales del Banco Central Europeo (' + rUsd.date + ')';
+    resultados.innerHTML =
+      '<div class="rate"><span class="par">USD → PEN (dólar a sol)</span> <b>' + usdpen.toFixed(4) + '</b></div>' +
+      '<div class="rate"><span class="par">EUR → USD (euro a dólar)</span> <b>' + eurusd.toFixed(4) + '</b></div>' +
+      '<div class="rate"><span class="par">EUR → PEN (euro a sol)</span> <b>' + eurpen.toFixed(4) + '</b></div>';
+    detalle.style.display = 'block';
+    detalle.textContent = 'Respuesta cruda:\n' + JSON.stringify(rUsd, null, 2) + '\n' + JSON.stringify(rEur, null, 2);
+  } catch(e){
+    estado.className = 'estado error';
+    estado.textContent = '✗ No se pudo conectar: ' + e.message;
+    resultados.innerHTML = '<p>Si ves esto en el sistema real (no en la vista previa), avísame para probar una alternativa.</p>';
+  }
+}
+probar();
+</script>
+</body>
+</html>
