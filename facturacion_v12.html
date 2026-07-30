@@ -1101,26 +1101,25 @@ function setEmp(e){
   document.getElementById('sw-tb').classList.toggle('on',e==='tb');
   document.getElementById('top-name').textContent=EMPS[e].nombre;
   const h=e==='tb'?'34px':'36px';
-  document.getElementById('top-logo').innerHTML=`<img class="tb-logo" src="${logoSrc(e)  // Actualizar header GJR
-  var titulo = document.getElementById('fac-titulo');
-  var subtitulo = document.getElementById('fac-subtitulo');
-  var logo = document.getElementById('fac-logo');
-  var btnGjr = document.getElementById('btn-gjr');
-  var btnTb = document.getElementById('btn-tb');
-  if(titulo && subtitulo){
+  document.getElementById('top-logo').innerHTML=`<img class="tb-logo" src="${logoSrc(e)}" alt="${EMPS[e].nombre}" style="height:${h};object-fit:contain">`;
+  // Actualizar header GJR (si existe)
+  var _fTit = document.getElementById('fac-titulo');
+  var _fSub = document.getElementById('fac-subtitulo');
+  var _btnGjr = document.getElementById('btn-gjr');
+  var _btnTb = document.getElementById('btn-tb');
+  if(_fTit && _fSub){
     if(e==='gjr'){
-      titulo.textContent = 'Sistema de Facturación';
-      subtitulo.textContent = 'Grupo Juan Ruiz SAC';
-      if(btnGjr){ btnGjr.classList.add('active'); }
-      if(btnTb){ btnTb.classList.remove('active'); }
+      _fTit.textContent = 'Sistema de Facturación';
+      _fSub.textContent = 'Grupo Juan Ruiz SAC';
+      if(_btnGjr){ _btnGjr.classList.add('active'); }
+      if(_btnTb){ _btnTb.classList.remove('active'); }
     } else {
-      titulo.textContent = 'Sistema de Facturación';
-      subtitulo.textContent = 'Tropical Báez, S.L.';
-      if(btnTb){ btnTb.classList.add('active'); }
-      if(btnGjr){ btnGjr.classList.remove('active'); }
+      _fTit.textContent = 'Sistema de Facturación';
+      _fSub.textContent = 'Tropical Báez, S.L.';
+      if(_btnTb){ _btnTb.classList.add('active'); }
+      if(_btnGjr){ _btnGjr.classList.remove('active'); }
     }
   }
-}" alt="${EMPS[e].nombre}" style="height:${h};object-fit:contain">`;
   const usdBtn=document.getElementById('cur-usd');
   if(e==='tb'){usdBtn.disabled=true;if(cur==='USD'){cur='EUR';document.getElementById('cur-eur').classList.add('on');usdBtn.classList.remove('on');}
     // TB: white/light topbar + white app bg
