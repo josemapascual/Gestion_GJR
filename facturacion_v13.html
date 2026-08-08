@@ -440,12 +440,14 @@ tbody tr:hover{background:#FAFCF9}
   </div>
 
   <div class="card" id="bloque-servicios" style="display:none">
-    <div class="card-title">Concepto</div>
-    <label for="e-concepto">Descripción del servicio</label>
-    <textarea id="e-concepto" rows="3" placeholder="Comisión por gestión de exportación: Cliente - Producto - Nº de contenedor"></textarea>
-    <div style="margin-top:12px">
-      <label for="e-refs">Detalle por contenedor (uno por coma, sale numerado en la factura)</label>
-      <input id="e-refs" placeholder="BRATZLER - MANGO - CGMU5784253, TERRA - MANGO - ZMOU8825765">
+    <div class="card-title">Concepto
+      <span class="aside"><button class="btn btn-outline btn-sm" onclick="anadirRef()">Añadir línea</button></span>
+    </div>
+    <label for="e-concepto">Encabezado del concepto</label>
+    <textarea id="e-concepto" rows="2" placeholder="Comisión por gestión de exportación: Cliente - Producto - Nº de contenedor"></textarea>
+    <div style="margin-top:14px">
+      <label>Detalle — sale numerado bajo el concepto</label>
+      <div class="tbl-wrap"><table><tbody id="tb-refs"></tbody></table></div>
     </div>
   </div>
 
@@ -704,7 +706,7 @@ const TIPOS = {PROFORMA:'Proforma', FACTURA:'Factura', ALBARAN:'Albarán'};
 let sb = null, sesion = null;
 let EMPRESA = 'GJR';
 let empresasDB = [], clientes = [], documentos = [], cobros = [];
-let docActual = null, lineas = [], bancoRows = [], clienteEditando = null, cobroDoc = null;
+let docActual = null, lineas = [], refsLista = [''], bancoRows = [], clienteEditando = null, cobroDoc = null;
 
 /* ── UTILIDADES ─────────────────────────────────────────────── */
 const $ = id => document.getElementById(id);
@@ -913,8 +915,9 @@ function nuevoDocumento(){
   docActual = null; lineas = [];
   setv('e-tipo','FACTURA'); setv('e-serie','A'); setv('e-fecha', hoy()); setv('e-venc','');
   setv('e-inco','FOB'); setv('e-moneda', EMPRESA === 'TB' ? 'EUR' : 'USD');
-  ['e-pago','e-cont','e-bl','e-pneto','e-pbruto','e-sif','e-obs','e-concepto','e-refs']
+  ['e-pago','e-cont','e-bl','e-pneto','e-pbruto','e-sif','e-obs','e-concepto']
     .forEach(i => setv(i,''));
+  refsLista = [''];
   setv('e-desc','0'); setv('e-modalidad','EXPORTACION');
   setv('e-iva','0|Exenta / Intracom.');
   $('ed-ref').textContent = 'Nuevo';
@@ -942,7 +945,8 @@ function editar(id){
   setv('e-desc', d.descuento);
   setv('e-modalidad', d.modalidad || 'EXPORTACION');
   setv('e-concepto', d.concepto);
-  setv('e-refs', (d.refs_contenedores || []).join(', '));
+  refsLista = (d.refs_contenedores && d.refs_contenedores.length)
+    ? d.refs_contenedores.slice() : [''];
   setv('e-iva', num(d.iva_pct) + '|' + (d.iva_label || 'Exenta / Intracom.'));
 
   refrescarClientesSelect(d.cliente_id);
@@ -979,11 +983,29 @@ function alElegirCliente(){
 
 function modalidad(){ return val('e-modalidad') || 'EXPORTACION'; }
 
+/* Detalle de la factura de servicios: una línea por concepto */
+function anadirRef(){ refsLista.push(''); pintarRefs();
+  const c = document.querySelectorAll('#tb-refs input');
+  if(c.length) c[c.length-1].focus(); }
+function quitarRef(i){ refsLista.splice(i,1); if(!refsLista.length) refsLista.push(''); pintarRefs(); }
+function setRef(i,v){ refsLista[i] = v; }
+function pintarRefs(){
+  if(!refsLista.length) refsLista = [''];
+  $('tb-refs').innerHTML = refsLista.map((r,i) =>
+    '<tr><td style="width:26px;color:var(--texto-suave);font-size:12px;padding-right:0">' + (i+1) + '.</td>'
+    + '<td style="padding:5px 4px"><input value="' + esc(r) + '" oninput="setRef(' + i + ',this.value)"'
+      + ' placeholder="BRATZLER - MANGO - CGMU5784253"></td>'
+    + '<td style="width:34px"><button class="del-linea" title="Quitar línea"'
+      + ' onclick="quitarRef(' + i + ')">×</button></td></tr>').join('');
+}
+function refsLimpias(){ return refsLista.map(r => r.trim()).filter(Boolean); }
+
 function alCambiarModalidad(){
   const serv = modalidad() === 'SERVICIOS';
   $('bloque-export').style.display    = serv ? 'none' : 'grid';
   $('bloque-servicios').style.display = serv ? 'block' : 'none';
   document.querySelectorAll('.col-export').forEach(c => c.style.display = serv ? 'none' : '');
+  if(serv) pintarRefs();
   pintarLineas(); pintarTotales();
 }
 
@@ -1091,8 +1113,7 @@ async function guardar(emitir){
     peso_neto_kg: (!serv && val('e-pneto')) ? num(val('e-pneto')) : null,
     peso_bruto_kg: (!serv && val('e-pbruto')) ? num(val('e-pbruto')) : null,
     concepto: serv ? (val('e-concepto') || null) : null,
-    refs_contenedores: serv && val('e-refs')
-      ? val('e-refs').split(',').map(x => x.trim()).filter(Boolean) : null,
+    refs_contenedores: (serv && refsLimpias().length) ? refsLimpias() : null,
     iva_pct: iva.pct,
     iva_label: iva.label,
     sif_referencia: val('e-sif') || null,
@@ -1317,7 +1338,7 @@ function previsualizar(){
   const total = base + cuota;
   const banco = leerBanco(), bancoTtl = $('banco-label').textContent;
   const obs = val('e-obs');
-  const refs = val('e-refs').split(',').map(x => x.trim()).filter(Boolean);
+  const refs = refsLimpias();
   const etiqueta = tipo === 'PROFORMA' ? 'Factura Proforma'
                  : tipo === 'ALBARAN'  ? 'Albarán de Entrega'
                  : serv ? 'Factura de Servicios' : 'Factura Comercial';
