@@ -383,13 +383,6 @@ tbody tr:hover{background:#FAFCF9}
         </select>
       </div>
       <div>
-        <label for="e-modalidad">Contenido</label>
-        <select id="e-modalidad" onchange="alCambiarModalidad()">
-          <option value="EXPORTACION">Exportación de fruta</option>
-          <option value="SERVICIOS">Comisión o servicios</option>
-        </select>
-      </div>
-      <div>
         <label for="e-serie">Serie</label>
         <input id="e-serie" value="A" maxlength="6">
       </div>
@@ -405,24 +398,20 @@ tbody tr:hover{background:#FAFCF9}
   </div>
 
   <div class="card">
-    <div class="card-title">Cliente</div>
+    <div class="card-title">Cliente<span class="aside" id="regimen-chip"></span></div>
     <div class="grid g2" style="margin-bottom:12px">
       <div>
         <label for="e-cliente">Cliente</label>
         <select id="e-cliente" onchange="alElegirCliente()"></select>
       </div>
-      <div style="display:flex;align-items:flex-end">
+      <div style="display:flex;align-items:flex-end;gap:8px">
         <button class="btn btn-outline btn-sm" onclick="abrirCliente()">Añadir cliente</button>
+        <button class="btn btn-outline btn-sm" onclick="editarClienteActual()">Editar ficha</button>
       </div>
     </div>
     <div class="grid g4">
-      <div><label for="e-inco">Incoterm</label>
-        <select id="e-inco">
-          <option>FOB PRECIO FIJO</option><option>FOB</option><option>CIF</option>
-          <option>CFR</option><option>DAP</option><option>EXW</option><option>FCA</option>
-        </select></div>
       <div><label for="e-moneda">Moneda</label>
-        <select id="e-moneda" onchange="pintarTotales();cargarBanco()">
+        <select id="e-moneda" onchange="pintarLineas();pintarTotales();cargarBanco()">
           <option>EUR</option><option>USD</option>
         </select></div>
       <div><label for="e-pago">Forma de pago</label><input id="e-pago" placeholder="30 días fecha factura"></div>
@@ -431,17 +420,44 @@ tbody tr:hover{background:#FAFCF9}
         <input id="e-sif" placeholder="Nº de la factura emitida en el SIF">
       </div>
     </div>
-    <div class="grid g4" style="margin-top:12px" id="bloque-export">
-      <div><label for="e-cont">Contenedor</label><input id="e-cont" placeholder="MSKU1234567"></div>
-      <div><label for="e-bl">Bill of Lading</label><input id="e-bl"></div>
-      <div><label for="e-pneto">Peso neto (kg)</label><input id="e-pneto" type="number" step="0.01"></div>
-      <div><label for="e-pbruto">Peso bruto (kg)</label><input id="e-pbruto" type="number" step="0.01"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Líneas
+      <span class="aside">
+        <button class="btn btn-outline btn-sm" onclick="anadirLinea('MERCANCIA')">Añadir mercancía</button>
+        <button class="btn btn-outline btn-sm" onclick="anadirLinea('SERVICIO')">Añadir servicio</button>
+      </span>
+    </div>
+    <div class="tbl-wrap">
+      <table id="lineas">
+        <thead><tr>
+          <th style="width:96px">Tipo</th>
+          <th style="min-width:190px">Descripción</th>
+          <th style="width:78px">Calibre</th>
+          <th style="width:86px" class="num">Cantidad</th>
+          <th style="width:86px">Unidad</th>
+          <th style="width:94px" class="num">Precio</th>
+          <th style="width:62px" class="num">Dto %</th>
+          <th style="width:78px" class="num">IVA %</th>
+          <th style="width:100px" class="num">Importe</th>
+          <th style="width:34px"></th>
+        </tr></thead>
+        <tbody id="tb-lineas"></tbody>
+      </table>
+    </div>
+    <div class="totales" style="margin-top:14px">
+      <div class="row"><span>Base imponible</span><span class="mono" id="t-sub">0,00</span></div>
+      <div id="desglose-iva"></div>
+      <div class="row final"><span>Total</span><span id="t-tot">0,00</span></div>
     </div>
   </div>
 
-  <div class="card" id="bloque-servicios" style="display:none">
-    <div class="card-title">Concepto
-      <span class="aside"><button class="btn btn-outline btn-sm" onclick="anadirRef()">Añadir línea</button></span>
+  <div class="card">
+    <div class="card-title">Concepto y detalle
+      <span class="aside">Opcional
+        <button class="btn btn-outline btn-sm" onclick="anadirRef()">Añadir línea de detalle</button>
+      </span>
     </div>
     <label for="e-concepto">Encabezado del concepto</label>
     <textarea id="e-concepto" rows="2" placeholder="Comisión por gestión de exportación: Cliente - Producto - Nº de contenedor"></textarea>
@@ -452,36 +468,32 @@ tbody tr:hover{background:#FAFCF9}
   </div>
 
   <div class="card">
-    <div class="card-title">Líneas
-      <span class="aside"><button class="btn btn-outline btn-sm" onclick="anadirLinea()">Añadir línea</button></span>
+    <div class="card-title">Datos de embarque
+      <span class="aside">
+        <label style="display:inline-flex;align-items:center;gap:7px;margin:0;text-transform:none;
+                      letter-spacing:0;font-size:13px;color:var(--texto);cursor:pointer">
+          <input type="checkbox" id="e-embarque" onchange="alCambiarEmbarque()"
+                 style="width:auto;margin:0"> Lleva embarque
+        </label>
+      </span>
     </div>
-    <div class="tbl-wrap">
-      <table id="lineas">
-        <thead><tr>
-          <th style="min-width:220px">Descripción</th><th style="width:90px" class="col-export">Calibre</th>
-          <th style="width:90px" class="num">Cantidad</th><th style="width:90px" class="col-export">Unidad</th>
-          <th style="width:100px" class="num">Precio</th><th style="width:70px" class="num">Dto %</th>
-          <th style="width:110px" class="num">Importe</th><th style="width:34px"></th>
-        </tr></thead>
-        <tbody id="tb-lineas"></tbody>
-      </table>
+    <div id="bloque-export" style="display:none">
+      <div class="grid g4">
+        <div><label for="e-inco">Incoterm</label>
+          <select id="e-inco">
+            <option>FOB PRECIO FIJO</option><option>FOB</option><option>CIF</option>
+            <option>CFR</option><option>DAP</option><option>EXW</option><option>FCA</option>
+          </select></div>
+        <div><label for="e-cont">Contenedor</label><input id="e-cont" placeholder="MSKU1234567"></div>
+        <div><label for="e-bl">Bill of Lading</label><input id="e-bl"></div>
+        <div><label for="e-pneto">Peso neto (kg)</label><input id="e-pneto" type="number" step="0.01"></div>
+      </div>
+      <div class="grid g4" style="margin-top:12px">
+        <div><label for="e-pbruto">Peso bruto (kg)</label><input id="e-pbruto" type="number" step="0.01"></div>
+      </div>
     </div>
-    <div class="totales" style="margin-top:14px">
-      <div class="row"><span>Subtotal</span><span class="mono" id="t-sub">0,00</span></div>
-      <div class="row"><span>Descuento</span>
-        <input id="e-desc" type="number" step="0.01" value="0" class="num"
-               style="width:110px;padding:4px 8px" oninput="pintarTotales()"></div>
-      <div class="row"><span>IVA</span>
-        <select id="e-iva" style="width:170px;padding:4px 8px" onchange="pintarTotales()">
-          <option value="0|Exenta / Intracom.">Exenta / Intracomunitaria</option>
-          <option value="0|Sin IVA">Sin IVA (0 %)</option>
-          <option value="4|4 %">4 %</option>
-          <option value="10|10 %">10 %</option>
-          <option value="21|21 %">21 %</option>
-        </select></div>
-      <div class="row" id="row-cuota" style="display:none"><span>Cuota de IVA</span>
-        <span class="mono" id="t-iva">0,00</span></div>
-      <div class="row final"><span>Total</span><span id="t-tot">0,00</span></div>
+    <div id="embarque-vacio" class="vacio" style="padding:14px">
+      Marca la casilla si esta factura corresponde a un contenedor embarcado.
     </div>
   </div>
 
@@ -533,8 +545,8 @@ tbody tr:hover{background:#FAFCF9}
     <div class="tbl-wrap">
       <table>
         <thead><tr>
-          <th>Razón social</th><th>CIF / VAT</th><th>País</th><th>Contacto</th>
-          <th>Incoterm</th><th>Pago</th><th class="num">Facturado</th><th></th>
+          <th>Razón social</th><th>CIF / VAT</th><th>País</th><th>Régimen fiscal</th>
+          <th>Contacto</th><th>Pago</th><th class="num">Facturado</th><th></th>
         </tr></thead>
         <tbody id="tb-clientes"></tbody>
       </table>
@@ -567,6 +579,17 @@ tbody tr:hover{background:#FAFCF9}
       <div><label for="c-cif">CIF / VAT</label><input id="c-cif"></div>
       <div><label for="c-moneda">Moneda</label>
         <select id="c-moneda"><option>EUR</option><option>USD</option></select></div>
+    </div>
+    <div class="grid g2" style="margin-top:12px">
+      <div><label for="c-regimen">Régimen fiscal</label>
+        <select id="c-regimen">
+          <option value="NACIONAL">Nacional — IVA o IGV del país</option>
+          <option value="INTRACOMUNITARIO">Intracomunitario — exenta</option>
+          <option value="EXPORTACION">Exportación fuera de la UE — exenta</option>
+          <option value="CANARIAS_CEUTA_MELILLA">Canarias, Ceuta o Melilla — exenta</option>
+        </select></div>
+      <div style="display:flex;align-items:flex-end;font-size:12px;color:var(--texto-suave);
+                  padding-bottom:9px">Determina el IVA de todas sus facturas.</div>
     </div>
     <div class="grid g3" style="margin-top:12px">
       <div><label for="c-contacto">Persona de contacto</label><input id="c-contacto"></div>
@@ -655,7 +678,7 @@ const SB_KEY = 'sb_publishable_ZbMZbTdBcYnGceF_woayjQ_CCCEHRYS';
 
 const EMPS = {
   GJR:{nombre:'GRUPO JUAN RUIZ SAC', idLbl:'RUC', id:'20609313162',
-    acento:'#002C23', soft:'#f4f8f5', softBorde:'#c0d9cb', logoAlto:'72px',
+    acento:'#002C23', soft:'#f4f8f5', softBorde:'#c0d9cb', logoAlto:'72px', pais:'PE',
     dir:'JR. PEZET Y MONEL 1715 DPTO 804, Lince', ciudad:'Lima, Perú',
     tel:'+51 967 964 189', email:'jmpascual@jruizgrupo.com',
     bancos:{
@@ -676,7 +699,7 @@ const EMPS = {
         ['Beneficiario','GRUPO JUAN RUIZ SAC'],['N° de Cuenta','6000038529']]}
     }},
   TB:{nombre:'TROPICAL BÁEZ, S.L.', idLbl:'CIF', id:'B02989630',
-    acento:'#007851', soft:'#f0faf5', softBorde:'#b2ddc8', logoAlto:'58px',
+    acento:'#007851', soft:'#f0faf5', softBorde:'#b2ddc8', logoAlto:'58px', pais:'ES',
     dir:'Calle Martínez Falero 23', ciudad:'29018 Málaga, España',
     tel:'+34 618 911 872', email:'',
     bancos:{
@@ -702,10 +725,14 @@ const ESTADOS = {
   ENVIADO:['chip-ambar','Enviado'],       ENTREGADO:['chip-verde','Entregado']
 };
 const TIPOS = {PROFORMA:'Proforma', FACTURA:'Factura', ALBARAN:'Albarán'};
+const REGIMENES = {
+  NACIONAL:'Nacional', INTRACOMUNITARIO:'Intracomunitario',
+  EXPORTACION:'Exportación', CANARIAS_CEUTA_MELILLA:'Canarias, Ceuta o Melilla'
+};
 
 let sb = null, sesion = null;
 let EMPRESA = 'GJR';
-let empresasDB = [], clientes = [], documentos = [], cobros = [];
+let empresasDB = [], clientes = [], documentos = [], cobros = [], regimenIva = [];
 let docActual = null, lineas = [], refsLista = [''], bancoRows = [], clienteEditando = null, cobroDoc = null;
 
 /* ── UTILIDADES ─────────────────────────────────────────────── */
@@ -805,18 +832,20 @@ document.addEventListener('keydown', e => {
 
 /* ── CARGA DE DATOS ─────────────────────────────────────────── */
 async function cargarTodo(){
-  const [e, c, d, k] = await Promise.all([
-    sb.from('erp_empresa').select('id,codigo,razon_social,regimen'),
+  const [e, c, d, k, r] = await Promise.all([
+    sb.from('erp_empresa').select('id,codigo,razon_social,regimen,pais'),
     sb.from('erp_cliente').select('*').order('razon_social'),
     sb.from('erp_documento').select('*, erp_cliente(razon_social), erp_documento_linea(*)')
       .order('created_at',{ascending:false}).limit(500),
-    sb.from('erp_v_cobros').select('*').order('fecha_vencimiento')
+    sb.from('erp_v_cobros').select('*').order('fecha_vencimiento'),
+    sb.from('erp_regimen_iva').select('*')
   ]);
   if(e.error){ aviso('No se pudieron cargar los datos: ' + e.error.message, true); return; }
   empresasDB = e.data || [];
   clientes   = c.data || [];
   documentos = d.data || [];
   cobros     = (k.data || []).filter(x => num(x.pendiente) > 0.004);
+  regimenIva = r.data || [];
   pintarDocumentos(); pintarClientes(); pintarCobros(); pintarKpis();
 }
 
@@ -863,7 +892,7 @@ function pintarDocumentos(){
     if(fe && d.estado !== fe) return false;
     if(fb){
       const heno = [d.codigo, d.erp_cliente && d.erp_cliente.razon_social,
-                    d.contenedor_ref, d.bl_ref, d.observaciones].join(' ').toLowerCase();
+                    d.contenedor_ref, d.bl_ref, d.concepto, d.observaciones].join(' ').toLowerCase();
       if(heno.indexOf(fb) < 0) return false;
     }
     return true;
@@ -910,20 +939,45 @@ function pintarKpis(){
   $('k-borr').textContent = ds.filter(d => d.estado === 'BORRADOR').length;
 }
 
+/* ── RÉGIMEN FISCAL ─────────────────────────────────────────── */
+function clienteActual(){ return clientes.find(c => c.id === val('e-cliente')) || null; }
+
+// Resuelve el IVA cruzando el país del emisor, el régimen del cliente
+// y el tipo de línea. La tabla vive en la base de datos, no aquí.
+function ivaPara(tipoLinea){
+  const cli = clienteActual();
+  const pais = EMPS[EMPRESA].pais;
+  const reg = cli ? (cli.regimen_fiscal || 'NACIONAL') : 'NACIONAL';
+  const r = regimenIva.find(x => x.pais_emisor === pais
+              && x.regimen === reg && x.tipo_linea === tipoLinea);
+  return r || {iva_pct:0, etiqueta:'Sin IVA', nota_legal:null};
+}
+
+function pintarRegimenChip(){
+  const cli = clienteActual();
+  const c = $('regimen-chip');
+  if(!cli){ c.innerHTML = ''; return; }
+  const reg = cli.regimen_fiscal || 'NACIONAL';
+  const r = ivaPara('MERCANCIA');
+  c.innerHTML = '<span class="chip ' + (num(r.iva_pct) > 0 ? 'chip-verde' : 'chip-ambar') + '">'
+    + esc(REGIMENES[reg] || reg) + ' · ' + esc(r.etiqueta) + '</span>';
+}
+
 /* ── EDITOR ─────────────────────────────────────────────────── */
 function nuevoDocumento(){
-  docActual = null; lineas = [];
+  docActual = null; lineas = []; refsLista = [''];
   setv('e-tipo','FACTURA'); setv('e-serie','A'); setv('e-fecha', hoy()); setv('e-venc','');
   setv('e-inco','FOB'); setv('e-moneda', EMPRESA === 'TB' ? 'EUR' : 'USD');
   ['e-pago','e-cont','e-bl','e-pneto','e-pbruto','e-sif','e-obs','e-concepto']
     .forEach(i => setv(i,''));
-  refsLista = [''];
-  setv('e-desc','0'); setv('e-modalidad','EXPORTACION');
-  setv('e-iva','0|Exenta / Intracom.');
+  $('e-embarque').checked = false;
   $('ed-ref').textContent = 'Nuevo';
+  $('btn-emitir').disabled = false;
   aviso('');
   refrescarClientesSelect();
-  anadirLinea(); alCambiarTipo(); alCambiarModalidad(); cargarBanco(); pintarTotales();
+  pintarRegimenChip(); pintarRefs();
+  anadirLinea('MERCANCIA');
+  alCambiarTipo(); alCambiarEmbarque(); cargarBanco();
   irA('editor');
 }
 
@@ -932,9 +986,13 @@ function editar(id){
   if(!d) return;
   docActual = d;
   lineas = (d.erp_documento_linea || []).slice().sort((a,b) => a.orden - b.orden)
-    .map(l => ({descripcion:l.descripcion, calibre:l.calibre, cantidad:l.cantidad,
-                unidad:l.unidad, precio_unitario:l.precio_unitario, descuento_pct:l.descuento_pct}));
-  if(!lineas.length) lineas = [nuevaLinea()];
+    .map(l => ({tipo_linea:l.tipo_linea || 'MERCANCIA', descripcion:l.descripcion,
+                calibre:l.calibre, cantidad:l.cantidad, unidad:l.unidad,
+                precio_unitario:l.precio_unitario, descuento_pct:l.descuento_pct,
+                iva_pct:num(l.iva_pct)}));
+  if(!lineas.length) lineas = [nuevaLinea('MERCANCIA')];
+  refsLista = (d.refs_contenedores && d.refs_contenedores.length)
+    ? d.refs_contenedores.slice() : [''];
 
   setv('e-tipo', d.tipo); setv('e-serie', d.serie); setv('e-fecha', String(d.fecha).slice(0,10));
   setv('e-venc', d.fecha_vencimiento ? String(d.fecha_vencimiento).slice(0,10) : '');
@@ -942,21 +1000,18 @@ function editar(id){
   setv('e-pago', d.forma_pago); setv('e-cont', d.contenedor_ref); setv('e-bl', d.bl_ref);
   setv('e-pneto', d.peso_neto_kg); setv('e-pbruto', d.peso_bruto_kg);
   setv('e-sif', d.sif_referencia); setv('e-obs', d.observaciones);
-  setv('e-desc', d.descuento);
-  setv('e-modalidad', d.modalidad || 'EXPORTACION');
   setv('e-concepto', d.concepto);
-  refsLista = (d.refs_contenedores && d.refs_contenedores.length)
-    ? d.refs_contenedores.slice() : [''];
-  setv('e-iva', num(d.iva_pct) + '|' + (d.iva_label || 'Exenta / Intracom.'));
+  $('e-embarque').checked = !!d.con_embarque;
 
   refrescarClientesSelect(d.cliente_id);
-  $('ed-ref').textContent = (d.codigo || 'Borrador') + ' · ' + (ESTADOS[d.estado] || ['','' ])[1];
+  $('ed-ref').textContent = (d.codigo || 'Borrador') + ' · ' + (ESTADOS[d.estado] || ['',''])[1];
   const bloqueado = (d.estado === 'PAGADA' || d.estado === 'ANULADA' || d.estado === 'CONVERTIDA');
   $('btn-emitir').disabled = bloqueado;
   aviso(bloqueado ? 'Este documento ya no admite cambios de estado. Duplícalo si necesitas otro.' : '');
 
   bancoRows = (d.banco_datos && d.banco_datos.length) ? d.banco_datos : null;
-  alCambiarTipo(); alCambiarModalidad(); cargarBanco(); pintarLineas(); pintarTotales();
+  pintarRegimenChip(); pintarRefs();
+  alCambiarTipo(); alCambiarEmbarque(); cargarBanco();
   irA('editor');
 }
 
@@ -968,25 +1023,138 @@ function refrescarClientesSelect(sel){
 }
 
 function alElegirCliente(){
-  const c = clientes.find(x => x.id === val('e-cliente'));
-  if(!c) return;
-  if(c.incoterm_habitual) setv('e-inco', c.incoterm_habitual);
+  const c = clienteActual();
+  pintarRegimenChip();
+  if(!c){ pintarLineas(); pintarTotales(); return; }
   if(c.moneda) setv('e-moneda', c.moneda);
   if(c.forma_pago && !val('e-pago')) setv('e-pago', c.forma_pago);
+  if(c.incoterm_habitual) setv('e-inco', c.incoterm_habitual);
   if(num(c.dias_pago) > 0 && !val('e-venc')){
     const f = new Date(val('e-fecha') || hoy());
     f.setDate(f.getDate() + num(c.dias_pago));
     setv('e-venc', f.toISOString().slice(0,10));
   }
-  cargarBanco();
+  // El cambio de régimen recalcula el IVA de todas las líneas
+  lineas.forEach(l => { l.iva_pct = num(ivaPara(l.tipo_linea).iva_pct); });
+  cargarBanco(); pintarLineas(); pintarTotales();
 }
 
-function modalidad(){ return val('e-modalidad') || 'EXPORTACION'; }
+function editarClienteActual(){
+  const c = clienteActual();
+  if(!c){ aviso('Elige primero un cliente.', true); return; }
+  abrirCliente(c.id);
+}
 
-/* Detalle de la factura de servicios: una línea por concepto */
-function anadirRef(){ refsLista.push(''); pintarRefs();
+function alCambiarTipo(){
+  const necesitaSif = (val('e-tipo') === 'FACTURA' && esEspanola());
+  $('wrap-sif').style.display = necesitaSif ? 'block' : 'none';
+  $('btn-emitir').textContent = val('e-tipo') === 'PROFORMA' ? 'Enviar'
+                              : val('e-tipo') === 'ALBARAN'  ? 'Confirmar' : 'Emitir';
+}
+
+function conEmbarque(){ return $('e-embarque').checked; }
+function alCambiarEmbarque(){
+  const on = conEmbarque();
+  $('bloque-export').style.display  = on ? 'block' : 'none';
+  $('embarque-vacio').style.display = on ? 'none' : 'block';
+}
+
+/* ── LÍNEAS ─────────────────────────────────────────────────── */
+function nuevaLinea(tipo){
+  return {tipo_linea:tipo || 'MERCANCIA', descripcion:'', calibre:'', cantidad:0,
+          unidad:(tipo === 'SERVICIO' ? 'SERVICIO' : 'CAJA'),
+          precio_unitario:0, descuento_pct:0, iva_pct:num(ivaPara(tipo || 'MERCANCIA').iva_pct)};
+}
+function anadirLinea(tipo){
+  lineas.push(nuevaLinea(tipo)); pintarLineas(); pintarTotales();
+  const c = document.querySelectorAll('#tb-lineas tr');
+  if(c.length){ const inp = c[c.length-1].querySelector('input'); if(inp) inp.focus(); }
+}
+function quitarLinea(i){
+  lineas.splice(i,1);
+  if(!lineas.length) lineas.push(nuevaLinea('MERCANCIA'));
+  pintarLineas(); pintarTotales();
+}
+function importeLinea(l){
+  return Math.round(num(l.cantidad) * num(l.precio_unitario) * (1 - num(l.descuento_pct)/100) * 100) / 100;
+}
+function cuotaLinea(l){ return Math.round(importeLinea(l) * num(l.iva_pct)) / 100; }
+
+function pintarLineas(){
+  const m = val('e-moneda');
+  $('tb-lineas').innerHTML = lineas.map((l,i) => {
+    const srv = l.tipo_linea === 'SERVICIO';
+    return '<tr>'
+    + '<td><select onchange="cambiarTipoLinea(' + i + ',this.value)">'
+      + '<option value="MERCANCIA"' + (srv ? '' : ' selected') + '>Mercancía</option>'
+      + '<option value="SERVICIO"' + (srv ? ' selected' : '') + '>Servicio</option>'
+      + '</select></td>'
+    + '<td><input value="' + esc(l.descripcion) + '" oninput="setLinea(' + i + ',\'descripcion\',this.value)"'
+      + ' placeholder="' + (srv ? 'Comisión de agencia' : 'Palta Hass calibre 18') + '"></td>'
+    + '<td><input value="' + esc(l.calibre) + '"' + (srv ? ' disabled' : '')
+      + ' oninput="setLinea(' + i + ',\'calibre\',this.value)"></td>'
+    + '<td><input type="number" step="0.01" class="num" value="' + num(l.cantidad)
+      + '" oninput="setLinea(' + i + ',\'cantidad\',this.value)"></td>'
+    + '<td><select onchange="setLinea(' + i + ',\'unidad\',this.value)">'
+      + ['CAJA','KG','PALLET','SERVICIO'].map(u =>
+          '<option' + (l.unidad === u ? ' selected' : '') + '>' + u + '</option>').join('')
+      + '</select></td>'
+    + '<td><input type="number" step="0.0001" class="num" value="' + num(l.precio_unitario)
+      + '" oninput="setLinea(' + i + ',\'precio_unitario\',this.value)"></td>'
+    + '<td><input type="number" step="0.01" class="num" value="' + num(l.descuento_pct)
+      + '" oninput="setLinea(' + i + ',\'descuento_pct\',this.value)"></td>'
+    + '<td><input type="number" step="0.01" class="num" value="' + num(l.iva_pct)
+      + '" oninput="setLinea(' + i + ',\'iva_pct\',this.value)"></td>'
+    + '<td class="num mono" id="imp-' + i + '">' + fmt(importeLinea(l), m) + '</td>'
+    + '<td><button class="del-linea" title="Quitar línea" onclick="quitarLinea(' + i + ')">×</button></td>'
+    + '</tr>';
+  }).join('');
+}
+
+function cambiarTipoLinea(i, tipo){
+  lineas[i].tipo_linea = tipo;
+  lineas[i].iva_pct = num(ivaPara(tipo).iva_pct);
+  if(tipo === 'SERVICIO'){ lineas[i].calibre = ''; lineas[i].unidad = 'SERVICIO'; }
+  pintarLineas(); pintarTotales();
+}
+function setLinea(i, campo, v){
+  const texto = (campo === 'descripcion' || campo === 'calibre' || campo === 'unidad');
+  lineas[i][campo] = texto ? v : num(v);
+  const c = $('imp-' + i);
+  if(c) c.textContent = fmt(importeLinea(lineas[i]), val('e-moneda'));
+  pintarTotales();
+}
+
+function pintarTotales(){
+  const m = val('e-moneda');
+  const base = lineas.reduce((a,l) => a + importeLinea(l), 0);
+  $('t-sub').textContent = fmt(base, m);
+
+  // Un renglón por cada tipo impositivo presente
+  const grupos = {};
+  lineas.forEach(l => {
+    const et = ivaPara(l.tipo_linea).etiqueta;
+    const k = num(l.iva_pct) + '|' + et;
+    grupos[k] = grupos[k] || {pct:num(l.iva_pct), etiqueta:et, base:0, cuota:0};
+    grupos[k].base  += importeLinea(l);
+    grupos[k].cuota += cuotaLinea(l);
+  });
+  $('desglose-iva').innerHTML = Object.keys(grupos).map(k => {
+    const g = grupos[k];
+    return '<div class="row"><span>' + (g.pct > 0 ? 'IVA ' + g.pct + ' %' : esc(g.etiqueta))
+      + '</span><span class="mono">' + fmt(g.cuota, m) + '</span></div>';
+  }).join('');
+
+  const cuota = lineas.reduce((a,l) => a + cuotaLinea(l), 0);
+  $('t-tot').textContent = fmt(base + cuota, m);
+}
+
+/* ── DETALLE DEL CONCEPTO ───────────────────────────────────── */
+function anadirRef(){
+  refsLista.push(''); pintarRefs();
   const c = document.querySelectorAll('#tb-refs input');
-  if(c.length) c[c.length-1].focus(); }
+  if(c.length) c[c.length-1].focus();
+}
 function quitarRef(i){ refsLista.splice(i,1); if(!refsLista.length) refsLista.push(''); pintarRefs(); }
 function setRef(i,v){ refsLista[i] = v; }
 function pintarRefs(){
@@ -1000,79 +1168,13 @@ function pintarRefs(){
 }
 function refsLimpias(){ return refsLista.map(r => r.trim()).filter(Boolean); }
 
-function alCambiarModalidad(){
-  const serv = modalidad() === 'SERVICIOS';
-  $('bloque-export').style.display    = serv ? 'none' : 'grid';
-  $('bloque-servicios').style.display = serv ? 'block' : 'none';
-  document.querySelectorAll('.col-export').forEach(c => c.style.display = serv ? 'none' : '');
-  if(serv) pintarRefs();
-  pintarLineas(); pintarTotales();
-}
-
-function alCambiarTipo(){
-  const tipo = val('e-tipo');
-  const necesitaSif = (tipo === 'FACTURA' && esEspanola());
-  $('wrap-sif').style.display = necesitaSif ? 'block' : 'none';
-  $('btn-emitir').textContent = tipo === 'PROFORMA' ? 'Enviar'
-                              : tipo === 'ALBARAN'  ? 'Confirmar' : 'Emitir';
-}
-
-/* ── LÍNEAS ─────────────────────────────────────────────────── */
-function nuevaLinea(){
-  return {descripcion:'', calibre:'', cantidad:0, unidad:'CAJA', precio_unitario:0, descuento_pct:0};
-}
-function anadirLinea(){ lineas.push(nuevaLinea()); pintarLineas(); pintarTotales(); }
-function quitarLinea(i){ lineas.splice(i,1); if(!lineas.length) lineas.push(nuevaLinea());
-  pintarLineas(); pintarTotales(); }
-
-function pintarLineas(){
-  const serv = modalidad() === 'SERVICIOS';
-  $('tb-lineas').innerHTML = lineas.map((l,i) =>
-    '<tr>'
-    + '<td><input value="' + esc(l.descripcion) + '" oninput="setLinea(' + i + ',\'descripcion\',this.value)" placeholder="Palta Hass calibre 18"></td>'
-    + '<td class="col-export"' + (serv ? ' style="display:none"' : '') + '><input value="' + esc(l.calibre) + '" oninput="setLinea(' + i + ',\'calibre\',this.value)"></td>'
-    + '<td><input type="number" step="0.01" class="num" value="' + num(l.cantidad) + '" oninput="setLinea(' + i + ',\'cantidad\',this.value)"></td>'
-    + '<td class="col-export"' + (serv ? ' style="display:none"' : '') + '><select onchange="setLinea(' + i + ',\'unidad\',this.value)">'
-      + ['CAJA','KG','PALLET','SERVICIO'].map(u => '<option' + (l.unidad === u ? ' selected' : '') + '>' + u + '</option>').join('')
-      + '</select></td>'
-    + '<td><input type="number" step="0.0001" class="num" value="' + num(l.precio_unitario) + '" oninput="setLinea(' + i + ',\'precio_unitario\',this.value)"></td>'
-    + '<td><input type="number" step="0.01" class="num" value="' + num(l.descuento_pct) + '" oninput="setLinea(' + i + ',\'descuento_pct\',this.value)"></td>'
-    + '<td class="num mono" id="imp-' + i + '">' + fmt(importeLinea(l), val('e-moneda')) + '</td>'
-    + '<td><button class="del-linea" title="Quitar línea" onclick="quitarLinea(' + i + ')">×</button></td>'
-    + '</tr>').join('');
-}
-function setLinea(i, campo, v){
-  lineas[i][campo] = (campo === 'descripcion' || campo === 'calibre' || campo === 'unidad') ? v : num(v);
-  const c = $('imp-' + i);
-  if(c) c.textContent = fmt(importeLinea(lineas[i]), val('e-moneda'));
-  pintarTotales();
-}
-function importeLinea(l){
-  return Math.round(num(l.cantidad) * num(l.precio_unitario) * (1 - num(l.descuento_pct)/100) * 100) / 100;
-}
-function ivaActual(){
-  const p = (val('e-iva') || '0|Exenta / Intracom.').split('|');
-  return {pct:num(p[0]), label:p[1] || 'Exenta / Intracom.'};
-}
-function pintarTotales(){
-  const m = val('e-moneda');
-  const sub = lineas.reduce((a,l) => a + importeLinea(l), 0);
-  const base = sub - num(val('e-desc'));
-  const iva = ivaActual();
-  const cuota = Math.round(base * iva.pct) / 100;
-  $('t-sub').textContent = fmt(sub, m);
-  $('t-iva').textContent = fmt(cuota, m);
-  $('row-cuota').style.display = iva.pct > 0 ? 'flex' : 'none';
-  $('t-tot').textContent = fmt(base + cuota, m);
-}
-
 /* ── BANCO ──────────────────────────────────────────────────── */
 function cargarBanco(){
   const b = EMPS[EMPRESA].bancos[val('e-moneda')] || EMPS[EMPRESA].bancos.EUR;
   const rows = bancoRows || b.rows;
   bancoRows = null;
   $('banco-label').textContent = b.label;
-  $('tb-banco').innerHTML = rows.map((r,i) =>
+  $('tb-banco').innerHTML = rows.map(r =>
     '<tr><td style="width:38%;color:var(--texto-suave);font-size:12px">' + esc(r[0]) + '</td>'
     + '<td><input value="' + esc(r[1]) + '" data-bk="' + esc(r[0]) + '"></td></tr>').join('');
 }
@@ -1089,39 +1191,43 @@ async function guardar(emitir){
   const conContenido = lineas.filter(l => l.descripcion.trim());
   if(!conContenido.length){ aviso('Añade al menos una línea con descripción.', true); return; }
 
-  const tipo = val('e-tipo');
+  const tipo = val('e-tipo'), emb = conEmbarque();
   if(emitir && tipo === 'FACTURA' && esEspanola() && !val('e-sif')){
     aviso('Escribe la referencia de la factura emitida en el SIF antes de emitirla aquí.', true);
     $('e-sif').focus(); return;
   }
 
-  const iva = ivaActual();
-  const serv = modalidad() === 'SERVICIOS';
+  const notaLegal = (function(){
+    const notas = [];
+    conContenido.forEach(l => {
+      const n = ivaPara(l.tipo_linea).nota_legal;
+      if(n && notas.indexOf(n) < 0) notas.push(n);
+    });
+    return notas.join(' ') || null;
+  })();
+
   const cab = {
     tipo: tipo,
-    modalidad: modalidad(),
     empresa_id: empresaId(),
     cliente_id: cliente,
     serie: val('e-serie') || 'A',
     fecha: val('e-fecha') || hoy(),
     fecha_vencimiento: val('e-venc') || null,
     moneda: val('e-moneda'),
-    incoterm: val('e-inco'),
     forma_pago: val('e-pago') || null,
-    contenedor_ref: serv ? null : (val('e-cont') || null),
-    bl_ref: serv ? null : (val('e-bl') || null),
-    peso_neto_kg: (!serv && val('e-pneto')) ? num(val('e-pneto')) : null,
-    peso_bruto_kg: (!serv && val('e-pbruto')) ? num(val('e-pbruto')) : null,
-    concepto: serv ? (val('e-concepto') || null) : null,
-    refs_contenedores: (serv && refsLimpias().length) ? refsLimpias() : null,
-    iva_pct: iva.pct,
-    iva_label: iva.label,
+    con_embarque: emb,
+    incoterm: emb ? val('e-inco') : null,
+    contenedor_ref: emb ? (val('e-cont') || null) : null,
+    bl_ref: emb ? (val('e-bl') || null) : null,
+    peso_neto_kg: (emb && val('e-pneto')) ? num(val('e-pneto')) : null,
+    peso_bruto_kg: (emb && val('e-pbruto')) ? num(val('e-pbruto')) : null,
+    concepto: val('e-concepto') || null,
+    refs_contenedores: refsLimpias().length ? refsLimpias() : null,
+    nota_fiscal: notaLegal,
     sif_referencia: val('e-sif') || null,
     banco_label: $('banco-label').textContent,
     banco_datos: leerBanco(),
-    observaciones: val('e-obs') || null,
-    descuento: num(val('e-desc')),
-    impuestos: 0
+    observaciones: val('e-obs') || null
   };
 
   try{
@@ -1140,16 +1246,13 @@ async function guardar(emitir){
     }
 
     const filas = conContenido.map((l,i) => ({
-      documento_id:id, orden:i+1, descripcion:l.descripcion, calibre:l.calibre || null,
-      cantidad:num(l.cantidad), unidad:l.unidad,
-      precio_unitario:num(l.precio_unitario), descuento_pct:num(l.descuento_pct)
+      documento_id:id, orden:i+1, tipo_linea:l.tipo_linea, descripcion:l.descripcion,
+      calibre:l.calibre || null, cantidad:num(l.cantidad), unidad:l.unidad,
+      precio_unitario:num(l.precio_unitario), descuento_pct:num(l.descuento_pct),
+      iva_pct:num(l.iva_pct)
     }));
     const insLin = await sb.from('erp_documento_linea').insert(filas);
     if(insLin.error) throw insLin.error;
-
-    // Recalcular el total de cabecera con el descuento e impuestos actuales
-    await sb.from('erp_documento')
-      .update({descuento:cab.descuento, iva_pct:cab.iva_pct}).eq('id', id);
 
     if(emitir){
       const nuevo = tipo === 'FACTURA' ? 'EMITIDA' : tipo === 'PROFORMA' ? 'ENVIADA' : 'PENDIENTE';
@@ -1221,11 +1324,12 @@ function pintarClientes(){
   $('tb-clientes').innerHTML = clientes.map(c => {
     const facturado = documentos.filter(d => d.cliente_id === c.id && d.tipo === 'FACTURA'
       && d.estado !== 'BORRADOR' && d.estado !== 'ANULADA').reduce((a,d) => a + num(d.total), 0);
+    const reg = c.regimen_fiscal || 'NACIONAL';
     return '<tr><td><strong>' + esc(c.razon_social) + '</strong></td>'
       + '<td class="mono">' + esc(c.cif_vat || '') + '</td>'
       + '<td>' + esc(c.pais || '') + '</td>'
+      + '<td><span class="chip chip-gris">' + esc(REGIMENES[reg] || reg) + '</span></td>'
       + '<td>' + esc(c.persona_contacto || '') + '</td>'
-      + '<td>' + esc(c.incoterm_habitual || '') + '</td>'
       + '<td>' + esc(c.forma_pago || '') + '</td>'
       + '<td class="num mono">' + fmt(facturado, c.moneda) + '</td>'
       + '<td><button class="btn btn-outline btn-sm" onclick="abrirCliente(\'' + c.id + '\')">Editar</button></td></tr>';
@@ -1242,6 +1346,7 @@ function abrirCliente(id){
     'c-pago':'forma_pago','c-dias':'dias_pago','c-banco':'banco','c-aseg':'aseguradora',
     'c-limite':'limite_asegurado','c-obs':'observaciones'};
   Object.keys(m).forEach(k => setv(k, c[m[k]]));
+  setv('c-regimen', c.regimen_fiscal || 'NACIONAL');
   setv('c-seguro', c.seguro_credito ? 'true' : 'false');
   if(!id){ setv('c-moneda','EUR'); setv('c-dias','0'); }
   abrir('ov-cliente');
@@ -1258,6 +1363,7 @@ async function guardarCliente(){
     direccion_fiscal:val('c-dir') || null, ciudad:val('c-ciudad') || null,
     codigo_postal:val('c-cp') || null, pais:val('c-pais').toUpperCase() || null,
     cif_vat:val('c-cif') || null, moneda:val('c-moneda'),
+    regimen_fiscal:val('c-regimen'),
     persona_contacto:val('c-contacto') || null, email:val('c-email') || null,
     telefono:val('c-tel') || null, incoterm_habitual:val('c-inco') || null,
     forma_pago:val('c-pago') || null, dias_pago:num(val('c-dias')),
@@ -1275,8 +1381,16 @@ async function guardarCliente(){
     return;
   }
   cerrar('ov-cliente');
+  const eraActual = clienteEditando && clienteEditando.id === val('e-cliente');
   await cargarTodo();
-  if($('v-editor').style.display !== 'none') refrescarClientesSelect(val('e-cliente'));
+  if($('v-editor').style.display !== 'none'){
+    refrescarClientesSelect(val('e-cliente'));
+    pintarRegimenChip();
+    if(eraActual){
+      lineas.forEach(l => { l.iva_pct = num(ivaPara(l.tipo_linea).iva_pct); });
+      pintarLineas(); pintarTotales();
+    }
+  }
 }
 
 /* ── COBROS ─────────────────────────────────────────────────── */
@@ -1324,38 +1438,45 @@ async function guardarCobro(){
 
 /* ── VISTA PREVIA E IMPRESIÓN ───────────────────────────────── */
 function previsualizar(){
-  const cli = clientes.find(c => c.id === val('e-cliente'));
+  const cli = clienteActual();
   if(!cli){ aviso('Elige un cliente para ver la vista previa.', true); return; }
 
   const e = EMPS[EMPRESA], m = val('e-moneda'), tipo = val('e-tipo');
-  const serv = modalidad() === 'SERVICIOS';
-  const iva = ivaActual();
+  const emb = conEmbarque();
   const filas = lineas.filter(l => l.descripcion.trim());
-  const sub = filas.reduce((a,l) => a + importeLinea(l), 0);
-  const desc = num(val('e-desc'));
-  const base = sub - desc;
-  const cuota = Math.round(base * iva.pct) / 100;
+  const base = filas.reduce((a,l) => a + importeLinea(l), 0);
+  const cuota = filas.reduce((a,l) => a + cuotaLinea(l), 0);
   const total = base + cuota;
+  const soloServicios = filas.length > 0 && filas.every(l => l.tipo_linea === 'SERVICIO');
   const banco = leerBanco(), bancoTtl = $('banco-label').textContent;
-  const obs = val('e-obs');
-  const refs = refsLimpias();
+  const obs = val('e-obs'), concepto = val('e-concepto'), refs = refsLimpias();
+
+  const notas = [];
+  filas.forEach(l => { const n = ivaPara(l.tipo_linea).nota_legal;
+    if(n && notas.indexOf(n) < 0) notas.push(n); });
+
   const etiqueta = tipo === 'PROFORMA' ? 'Factura Proforma'
                  : tipo === 'ALBARAN'  ? 'Albarán de Entrega'
-                 : serv ? 'Factura de Servicios' : 'Factura Comercial';
+                 : emb ? 'Factura Comercial'
+                 : soloServicios ? 'Factura de Servicios' : 'Factura';
+  const lblEmisor   = emb ? 'Exportador' : 'Emisor';
+  const lblReceptor = emb ? 'Consignatario' : 'Cliente';
+
   const fFmt = val('e-fecha')
     ? new Date(val('e-fecha') + 'T12:00').toLocaleDateString('es-ES',
         {day:'2-digit', month:'2-digit', year:'numeric'}) : '—';
+  const etIva = ivaPara(soloServicios ? 'SERVICIO' : 'MERCANCIA').etiqueta;
 
   const raiz = document.documentElement;
   raiz.style.setProperty('--inv-accent', e.acento);
   raiz.style.setProperty('--inv-soft', e.soft);
   raiz.style.setProperty('--inv-soft-border', e.softBorde);
 
-  const kvK = serv ? 'Fecha<br>Moneda<br>IVA' : 'Fecha<br>Contenedor<br>BL<br>Moneda';
-  const kvV = serv
-    ? fFmt + '<br>' + (m === 'USD' ? 'USD $' : 'EUR €') + '<br>' + esc(iva.label)
-    : fFmt + '<br>' + esc(val('e-cont') || '—') + '<br>' + esc(val('e-bl') || '—')
-      + '<br>' + (m === 'USD' ? 'USD $' : 'EUR €');
+  const kvK = emb ? 'Fecha<br>Contenedor<br>BL<br>Moneda' : 'Fecha<br>Moneda<br>IVA';
+  const kvV = emb
+    ? fFmt + '<br>' + esc(val('e-cont') || '—') + '<br>' + esc(val('e-bl') || '—')
+      + '<br>' + (m === 'USD' ? 'USD $' : 'EUR €')
+    : fFmt + '<br>' + (m === 'USD' ? 'USD $' : 'EUR €') + '<br>' + esc(etIva);
 
   const cabecera =
     '<div class="inv-header">'
@@ -1370,87 +1491,84 @@ function previsualizar(){
 
   const partes =
     '<div class="inv-parties">'
-    + '<div class="inv-party from"><div class="inv-pty-lbl">' + (serv ? 'Emisor' : 'Exportador') + '</div>'
+    + '<div class="inv-party from"><div class="inv-pty-lbl">' + lblEmisor + '</div>'
       + '<div class="inv-pty-name">' + esc(e.nombre) + '</div>'
       + '<div class="inv-pty-det">' + esc(e.idLbl) + ': ' + esc(e.id) + '<br>'
       + esc(e.dir) + '<br>' + esc(e.ciudad) + '<br>Tel: ' + esc(e.tel) + '</div></div>'
-    + '<div class="inv-party to"><div class="inv-pty-lbl">' + (serv ? 'Facturado a' : 'Consignatario') + '</div>'
+    + '<div class="inv-party to"><div class="inv-pty-lbl">' + lblReceptor + '</div>'
       + '<div class="inv-pty-name">' + esc(cli.razon_social) + '</div>'
       + '<div class="inv-pty-det">' + esc(cli.direccion_fiscal || '') + '<br>'
       + esc([cli.codigo_postal, cli.ciudad, cli.pais].filter(Boolean).join(' '))
       + (cli.cif_vat ? '<br>CIF / VAT: ' + esc(cli.cif_vat) : '') + '</div></div>'
     + '</div>';
 
-  const bancoCaja =
-    '<div class="inv-bank"><div class="inv-bank-ttl">' + esc(bancoTtl) + '</div>'
-    + banco.map(r => '<div class="inv-bank-row"><span class="bk">' + esc(r[0])
-        + '</span><span class="bv">' + esc(r[1]) + '</span></div>').join('') + '</div>';
+  const franja =
+    '<div class="inv-strip">'
+    + (emb ? '<span><span class="sk">Incoterms&nbsp;</span>' + esc(val('e-inco') || '—') + '</span>' : '')
+    + '<span><span class="sk">Forma de pago&nbsp;</span>' + esc(val('e-pago') || '—') + '</span>'
+    + (val('e-venc') ? '<span><span class="sk">Vencimiento&nbsp;</span>' + fecha(val('e-venc')) + '</span>' : '')
+    + '</div>';
 
-  let cuerpo;
-  if(serv){
-    cuerpo =
-      '<div class="inv-concepto"><div class="lbl">Concepto</div>'
-      + '<div class="txt">' + esc(val('e-concepto') || filas.map(l => l.descripcion).join('\n') || '—') + '</div>'
+  const bloqueConcepto = (concepto || refs.length)
+    ? '<div class="inv-concepto"><div class="lbl">Concepto</div>'
+      + '<div class="txt">' + esc(concepto || '') + '</div>'
       + (refs.length ? '<ol class="inv-refs">' + refs.map(r =>
           '<li>' + esc(r) + '</li>').join('') + '</ol>' : '')
       + '</div>'
-      + (filas.length > 1 ? '<table class="inv-table"><thead><tr>'
-          + '<th style="width:64%">Detalle</th><th style="width:12%">Cantidad</th>'
-          + '<th style="width:12%">Precio</th><th style="width:12%">Importe</th></tr></thead><tbody>'
-          + filas.map((l,i) => '<tr><td>' + (i+1) + '. ' + esc(l.descripcion) + '</td>'
-              + '<td>' + num(l.cantidad).toLocaleString('es-ES') + '</td>'
-              + '<td>' + fmt(l.precio_unitario, m) + '</td>'
-              + '<td class="bold">' + fmt(importeLinea(l), m) + '</td></tr>').join('')
-          + '</tbody></table>' : '')
-      + '<div class="inv-foot"><div>' + bancoCaja
-        + (iva.pct === 0 ? '<div class="inv-exenta">Operación intracomunitaria de servicios, '
-            + 'exenta de IVA conforme a los artículos 69 y 70 de la Ley del IVA.</div>' : '')
-        + (obs ? '<div class="inv-obs">' + esc(obs).replace(/\n/g,'<br>') + '</div>' : '')
-        + '<div style="margin-top:10px;font-size:10px;color:#bbb;font-weight:300">Forma de pago: '
-        + esc(val('e-pago') || '—') + '</div></div>'
-      + '<div><div class="inv-cajatot">'
-        + '<div class="r"><span>Base imponible</span><span>' + fmt(base, m) + '</span></div>'
-        + '<div class="r"><span style="font-size:11px">IVA</span><span style="font-size:11px">'
-          + esc(iva.label) + (iva.pct > 0 ? ' · ' + fmt(cuota, m) : '') + '</span></div>'
-        + '<div class="r"><span>TOTAL</span><span>' + fmt(total, m) + '</span></div>'
-      + '</div></div></div>';
-  }else{
-    cuerpo =
-      '<div class="inv-strip">'
-      + '<span><span class="sk">Incoterms&nbsp;</span>' + esc(val('e-inco') || '—') + '</span>'
-      + '<span><span class="sk">Forma de pago&nbsp;</span>' + esc(val('e-pago') || '—') + '</span>'
-      + (val('e-venc') ? '<span><span class="sk">Vencimiento&nbsp;</span>' + fecha(val('e-venc')) + '</span>' : '')
-      + '</div>'
-      + '<table class="inv-table"><thead><tr>'
-        + '<th style="width:50%">Descripción</th><th style="width:12%">Unidades</th>'
-        + '<th style="width:18%">Precio unitario</th><th style="width:16%">Importe</th></tr></thead><tbody>'
-      + filas.map((l,i) => '<tr>'
-          + '<td>' + (i+1) + '. ' + esc(l.descripcion)
-          + (l.calibre ? ' · calibre ' + esc(l.calibre) : '') + '</td>'
-          + '<td>' + num(l.cantidad).toLocaleString('es-ES') + '</td>'
-          + '<td>' + fmt(l.precio_unitario, m) + '</td>'
-          + '<td class="bold">' + fmt(importeLinea(l), m) + '</td></tr>').join('')
-      + '</tbody></table>'
-      + '<div class="inv-foot"><div>' + bancoCaja
-        + (obs ? '<div class="inv-obs">' + esc(obs).replace(/\n/g,'<br>') + '</div>' : '')
-        + (val('e-sif') ? '<div class="inv-exenta">Factura registrada en el sistema de facturación '
-            + 'certificado con la referencia ' + esc(val('e-sif')) + '.</div>' : '')
-        + '</div>'
-      + '<div><div class="inv-tr"><span>Subtotal</span><span>' + fmt(sub, m) + '</span></div>'
-        + (desc ? '<div class="inv-tr"><span>Descuento</span><span>−' + fmt(desc, m) + '</span></div>' : '')
-        + (iva.pct > 0 ? '<div class="inv-tr"><span>IVA ' + esc(iva.label) + '</span><span>'
-            + fmt(cuota, m) + '</span></div>' : '')
-        + '<div class="inv-final"><span class="l">TOTAL</span><span class="v">' + fmt(total, m) + '</span></div>'
-        + '<div class="inv-wts"><span>Peso neto <strong>'
-          + num(val('e-pneto')).toLocaleString('es-ES') + ' kg</strong></span>'
-          + '<span>Peso bruto <strong>' + num(val('e-pbruto')).toLocaleString('es-ES')
-          + ' kg</strong></span></div>'
-      + '</div></div>';
-  }
+    : '';
+
+  const tabla =
+    '<table class="inv-table"><thead><tr>'
+    + '<th style="width:52%">Descripción</th><th style="width:12%">Cantidad</th>'
+    + '<th style="width:18%">Precio unitario</th><th style="width:18%">Importe</th>'
+    + '</tr></thead><tbody>'
+    + filas.map((l,i) => '<tr>'
+        + '<td>' + (i+1) + '. ' + esc(l.descripcion)
+        + (l.calibre ? ' · calibre ' + esc(l.calibre) : '') + '</td>'
+        + '<td>' + num(l.cantidad).toLocaleString('es-ES')
+        + (l.tipo_linea === 'SERVICIO' ? '' : ' ' + esc(String(l.unidad).toLowerCase())) + '</td>'
+        + '<td>' + fmt(l.precio_unitario, m) + '</td>'
+        + '<td class="bold">' + fmt(importeLinea(l), m) + '</td></tr>').join('')
+    + '</tbody></table>';
+
+  // Un renglón por tipo impositivo
+  const grupos = {};
+  filas.forEach(l => {
+    const k = num(l.iva_pct);
+    grupos[k] = grupos[k] || {pct:k, etiqueta:ivaPara(l.tipo_linea).etiqueta, cuota:0};
+    grupos[k].cuota += cuotaLinea(l);
+  });
+  const filasIva = Object.keys(grupos).map(k => {
+    const g = grupos[k];
+    return '<div class="r"><span style="font-size:11px">'
+      + (g.pct > 0 ? 'IVA ' + g.pct + ' %' : esc(g.etiqueta)) + '</span>'
+      + '<span style="font-size:11px">' + (g.pct > 0 ? fmt(g.cuota, m) : '—') + '</span></div>';
+  }).join('');
+
+  const pie =
+    '<div class="inv-foot"><div>'
+    + '<div class="inv-bank"><div class="inv-bank-ttl">' + esc(bancoTtl) + '</div>'
+      + banco.map(r => '<div class="inv-bank-row"><span class="bk">' + esc(r[0])
+          + '</span><span class="bv">' + esc(r[1]) + '</span></div>').join('') + '</div>'
+    + notas.map(n => '<div class="inv-exenta">' + esc(n) + '</div>').join('')
+    + (obs ? '<div class="inv-obs">' + esc(obs).replace(/\n/g,'<br>') + '</div>' : '')
+    + (val('e-sif') ? '<div class="inv-exenta">Factura registrada en el sistema de facturación '
+        + 'certificado con la referencia ' + esc(val('e-sif')) + '.</div>' : '')
+    + '</div>'
+    + '<div><div class="inv-cajatot">'
+      + '<div class="r"><span>Base imponible</span><span>' + fmt(base, m) + '</span></div>'
+      + filasIva
+      + '<div class="r"><span>TOTAL</span><span>' + fmt(total, m) + '</span></div>'
+    + '</div>'
+    + (emb ? '<div class="inv-wts"><span>Peso neto <strong>'
+        + num(val('e-pneto')).toLocaleString('es-ES') + ' kg</strong></span>'
+        + '<span>Peso bruto <strong>' + num(val('e-pbruto')).toLocaleString('es-ES')
+        + ' kg</strong></span></div>' : '')
+    + '</div></div>';
 
   $('prev-t').textContent = etiqueta + ' — ' + cli.razon_social;
   $('hoja').innerHTML = '<div class="inv">' + cabecera + '<div class="inv-body">'
-    + partes + cuerpo
+    + partes + franja + bloqueConcepto + tabla + pie
     + '<div class="inv-contact">' + esc(e.nombre) + ' &nbsp;·&nbsp; ' + esc(e.idLbl) + ': '
       + esc(e.id) + ' &nbsp;·&nbsp; Tel: ' + esc(e.tel)
       + (e.email ? ' &nbsp;·&nbsp; ' + esc(e.email) : '') + '</div>'
