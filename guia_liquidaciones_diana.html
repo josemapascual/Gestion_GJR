@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Liquidaciones — Guía de uso</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --verde:#1B5E20; --verde-medio:#2E7D32; --verde-claro:#43A047;
+  --verde-pale:#E8F5E9; --verde-border:#C8E6C9; --acento:#F9A825;
+  --texto:#1A1A1A; --texto-suave:#5C6060; --fondo:#F7F8F5; --blanco:#FFFFFF;
+  --error:#C62828; --error-bg:#FFEBEE; --error-border:#FFCDD2;
+  --sombra:0 2px 12px rgba(27,94,32,.10); --radio:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fondo);color:var(--texto);
+  font-family:'DM Sans',system-ui,sans-serif;font-size:15px;line-height:1.65}
+h1,h2,h3{font-family:'DM Serif Display',Georgia,serif;font-weight:400}
+.topbar{background:var(--verde);color:#fff;padding:16px 22px;display:flex;
+  align-items:center;gap:13px}
+.topbar h1{font-size:19px;margin:0;line-height:1.1}
+.topbar .sub{font-size:11.5px;opacity:.72;margin-top:2px}
+main{max-width:760px;margin:0 auto;padding:26px 18px 70px}
+.card{background:var(--blanco);border:1px solid var(--verde-border);
+  border-radius:var(--radio);box-shadow:var(--sombra);padding:22px;margin-bottom:18px}
+.card-title{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.09em;color:var(--verde);margin:0 0 15px}
+.card-title::before{content:'';width:3px;height:15px;background:var(--acento);border-radius:2px}
+p{margin:0 0 13px}
+p:last-child{margin-bottom:0}
+ol{margin:0;padding-left:0;list-style:none;counter-reset:paso}
+ol li{counter-increment:paso;position:relative;padding:0 0 20px 44px;margin:0}
+ol li::before{content:counter(paso);position:absolute;left:0;top:-1px;width:29px;height:29px;
+  background:var(--verde-pale);border:1.5px solid var(--verde-border);border-radius:50%;
+  color:var(--verde);font-weight:600;font-size:13.5px;display:flex;
+  align-items:center;justify-content:center}
+ol li:last-child{padding-bottom:0}
+ol li strong{display:block;margin-bottom:3px}
+ul{margin:0 0 13px;padding-left:20px}
+ul li{margin-bottom:6px}
+.aviso{background:var(--verde-pale);border:1px solid var(--verde-border);
+  border-radius:var(--radio);padding:13px 16px;font-size:14px;color:var(--verde);margin:14px 0}
+.alerta{background:var(--error-bg);border:1px solid var(--error-border);
+  border-radius:var(--radio);padding:13px 16px;font-size:14px;color:var(--error);margin:14px 0}
+code{background:#F2F4F1;border:1px solid var(--verde-border);border-radius:4px;
+  padding:1px 6px;font-size:13.5px;font-family:'DM Sans',sans-serif;font-weight:500}
+.pie{text-align:center;font-size:12.5px;color:var(--texto-suave);margin-top:26px}
+@media print{.topbar{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff} .card{box-shadow:none;break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <h1>Liquidaciones</h1>
+    <div class="sub">Grupo Juan Ruiz — Guía de uso</div>
+  </div>
+</div>
+
+<main>
+
+  <div class="card">
+    <div class="card-title">Para qué sirve</div>
+    <p>Este módulo calcula lo que hay que pagarle a cada productor por la fruta que
+    entregó. Tú subes dos archivos, eliges el lote y el sistema hace las cuentas.</p>
+    <p>No hay que calcular nada a mano ni tocar fórmulas.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Los dos archivos</div>
+    <p><strong>Plantilla de Operaciones</strong> — lleva los precios de cada semana y
+    los datos de los productores. Es siempre el mismo archivo; se actualiza cuando
+    Gerencia fija los precios de una semana nueva.</p>
+    <p><strong>Reporte de planta</strong> — lo manda la planta procesadora con los
+    kilos de cada lote. Hay dos plantas y cada una manda su archivo con un formato
+    distinto. Da igual: el sistema reconoce solo cuál es cuál.</p>
+    <div class="aviso">Sube siempre la Plantilla de Operaciones primero, y después el
+    reporte de planta.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Paso a paso</div>
+    <ol>
+      <li><strong>Entra en el sistema</strong>
+        Abre <code>josemapascual.github.io/Gestion_GJR</code> y pulsa el módulo
+        Liquidaciones. Comprueba que arriba, junto a "Grupo Juan Ruiz SAC", ponga
+        <code>build 2026-08-10-A</code>. Si no lo pone, recarga la página con
+        Ctrl+Mayúsculas+R.</li>
+
+      <li><strong>Ve a la pestaña Liquidaciones</strong>
+        Arriba del todo verás un recuadro llamado Archivos con dos zonas para
+        soltar documentos.</li>
+
+      <li><strong>Sube la Plantilla de Operaciones</strong>
+        Es la zona de la izquierda, la que pone "Productores · Precios". Arrastra el
+        archivo o haz clic para buscarlo. Aparecerá una marca de confirmación.</li>
+
+      <li><strong>Sube el reporte de planta</strong>
+        Es la zona de la derecha. Al terminar te dirá cuántos lotes ha leído y de
+        cuántas semanas. Si el número te choca, avisa antes de seguir.</li>
+
+      <li><strong>Filtra y elige el lote</strong>
+        Debajo tienes filtros por semana, por productor y por fecha de proceso, más
+        un buscador. Filtra por la semana que estés liquidando y pulsa el lote. La
+        liquidación se genera al elegirlo.</li>
+
+      <li><strong>Revisa el precio</strong>
+        El sistema aplica el precio de esa semana. Si ese productor tiene un precio
+        negociado aparte, usa el suyo y lo marca. Comprueba que el precio que ves es
+        el que esperabas.</li>
+
+      <li><strong>Completa los datos del pago</strong>
+        En Ajustes de liquidación escribe los adelantos y descuentos en soles, si los
+        hay, y pon tu nombre en Responsable. Ahí también puedes corregir precios o
+        kilos de ese lote concreto si hiciera falta.</li>
+
+      <li><strong>Imprime o exporta</strong>
+        Puedes imprimir la liquidación, guardarla en PDF o exportar a Excel. La
+        exportación saca una hoja de resumen y una hoja por cada lote.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Qué mirar antes de dar una liquidación por buena</div>
+    <ul>
+      <li>Que la semana del lote sea la que toca.</li>
+      <li>Que el precio por calibre coincida con lo acordado esa semana.</li>
+      <li>Que los kilos cuadren con el reporte que mandó la planta.</li>
+      <li>Que los adelantos estén puestos. Si se olvidan, se paga de más.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Si algo va mal</div>
+    <p><strong>No aparece ningún lote después de subir el reporte.</strong> Casi
+    siempre es que se subió el archivo equivocado, o que el archivo está abierto en
+    Excel al mismo tiempo. Ciérralo y vuelve a intentarlo.</p>
+    <p><strong>El precio sale en cero.</strong> Esa semana no tiene precios cargados
+    en la Plantilla de Operaciones. Hay que pedirlos a Gerencia; no los inventes.</p>
+    <p><strong>Falta un productor.</strong> No está dado de alta en la hoja
+    PRODUCTORES de la plantilla.</p>
+    <div class="alerta">Ante cualquier duda con un importe, para y pregunta antes de
+    emitir. Corregir una liquidación ya entregada al productor es mucho más
+    engorroso que revisarla a tiempo.</div>
+  </div>
+
+  <div class="pie">Grupo Juan Ruiz — Sistema de Liquidaciones</div>
+
+</main>
+</body>
+</html>
