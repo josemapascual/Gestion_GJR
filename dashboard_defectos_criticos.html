@@ -417,7 +417,12 @@ function parseExcelData(wb) {
   const ingresoSheet = getSheet('INGRESO MP');
 
   if (!clientesSheet || !prodSheet || !ingresoSheet) {
-    showToast('⚠️ No se encontraron las hojas requeridas');
+    const faltan = [];
+    if (!clientesSheet) faltan.push('REPORTE DE CLIENTES');
+    if (!prodSheet)     faltan.push('PRODUCCIÓN');
+    if (!ingresoSheet)  faltan.push('INGRESO MP');
+    showToast('Falta en el archivo: ' + faltan.join(', ') +
+              '. El archivo trae: ' + sheetNames.join(', '));
     return null;
   }
 
