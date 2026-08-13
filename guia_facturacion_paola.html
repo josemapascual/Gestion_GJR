@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Facturar con Tropical Báez — Guía completa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --verde:#1B5E20; --verde-medio:#2E7D32; --verde-claro:#43A047;
+  --verde-pale:#E8F5E9; --verde-border:#C8E6C9; --acento:#F9A825;
+  --texto:#1A1A1A; --texto-suave:#5C6060; --fondo:#F7F8F5; --blanco:#FFFFFF;
+  --error:#C62828; --error-bg:#FFEBEE; --error-border:#FFCDD2;
+  --sombra:0 2px 12px rgba(27,94,32,.10); --radio:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fondo);color:var(--texto);
+  font-family:'DM Sans',system-ui,sans-serif;font-size:15px;line-height:1.65}
+h1,h2,h3{font-family:'DM Serif Display',Georgia,serif;font-weight:400}
+.topbar{background:var(--verde);color:#fff;padding:18px 22px}
+.topbar h1{font-size:21px;margin:0;line-height:1.15}
+.topbar .sub{font-size:12px;opacity:.72;margin-top:3px}
+main{max-width:790px;margin:0 auto;padding:24px 18px 70px}
+
+.indice{background:var(--blanco);border:1px solid var(--verde-border);
+  border-radius:var(--radio);box-shadow:var(--sombra);padding:18px 22px;margin-bottom:22px}
+.indice a{display:block;color:var(--verde-medio);text-decoration:none;
+  padding:5px 0;font-weight:500;font-size:14.5px}
+.indice a:hover{text-decoration:underline}
+.indice span{color:var(--texto-suave);font-weight:400;font-size:13px}
+
+h2.sec{font-size:23px;color:var(--verde);margin:36px 0 4px;
+  padding-bottom:8px;border-bottom:2px solid var(--verde-border)}
+h2.sec:first-of-type{margin-top:8px}
+.sec-sub{color:var(--texto-suave);font-size:13.5px;margin:0 0 16px}
+
+.card{background:var(--blanco);border:1px solid var(--verde-border);
+  border-radius:var(--radio);box-shadow:var(--sombra);padding:22px;margin-bottom:16px}
+.card-title{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.09em;color:var(--verde);margin:0 0 15px}
+.card-title::before{content:'';width:3px;height:15px;background:var(--acento);border-radius:2px}
+p{margin:0 0 13px}
+p:last-child{margin-bottom:0}
+ul{margin:0 0 13px;padding-left:20px}
+ul li{margin-bottom:7px}
+ul li:last-child{margin-bottom:0}
+
+ol.pasos{margin:0;padding-left:0;list-style:none;counter-reset:paso}
+ol.pasos li{counter-increment:paso;position:relative;padding:0 0 20px 44px}
+ol.pasos li::before{content:counter(paso);position:absolute;left:0;top:-1px;
+  width:29px;height:29px;background:var(--verde-pale);border:1.5px solid var(--verde-border);
+  border-radius:50%;color:var(--verde);font-weight:600;font-size:13.5px;
+  display:flex;align-items:center;justify-content:center}
+ol.pasos li:last-child{padding-bottom:0}
+ol.pasos li strong{display:block;margin-bottom:2px}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:0 0 8px}
+th{text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--texto-suave);padding:8px 10px;
+  border-bottom:1.5px solid var(--verde-border)}
+td{padding:8px 10px;border-bottom:1px solid #EDF1EC;vertical-align:top}
+td.col{font-weight:600;white-space:nowrap}
+
+.aviso{background:var(--verde-pale);border:1px solid var(--verde-border);
+  border-radius:var(--radio);padding:13px 16px;font-size:14px;color:var(--verde);margin:14px 0}
+.alerta{background:var(--error-bg);border:1px solid var(--error-border);
+  border-radius:var(--radio);padding:13px 16px;font-size:14px;color:var(--error);margin:14px 0}
+.aviso:last-child,.alerta:last-child{margin-bottom:0}
+code{background:#F2F4F1;border:1px solid var(--verde-border);border-radius:4px;
+  padding:1px 6px;font-size:13px;font-weight:500}
+.boton{display:inline-block;background:var(--acento);color:var(--verde);
+  border-radius:14px;padding:2px 11px;font-size:12.5px;font-weight:600}
+.pie{text-align:center;font-size:12.5px;color:var(--texto-suave);margin-top:30px}
+
+@media print{
+  .topbar{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff}
+  .card,.indice{box-shadow:none;break-inside:avoid}
+  h2.sec{break-after:avoid}
+  .indice{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Facturar con Tropical Báez</h1>
+  <div class="sub">Guía completa — Grupo Juan Ruiz · Tropical Báez S.L.</div>
+</div>
+
+<main>
+
+<div class="indice">
+  <a href="#antes">Antes de empezar <span>— qué necesitas tener a mano</span></a>
+  <a href="#entrar">1. Entrar y ponerte en Tropical Báez</a>
+  <a href="#cliente">2. Dar de alta al cliente</a>
+  <a href="#factura">3. Crear la factura</a>
+  <a href="#packing">4. Cargar el packing list y facturar por kilo</a>
+  <a href="#embarque">5. Datos de embarque</a>
+  <a href="#emitir">6. Revisar y emitir</a>
+  <a href="#cobros">7. Registrar el cobro</a>
+  <a href="#proformas">Proformas y albaranes</a>
+  <a href="#dudas">Errores frecuentes</a>
+</div>
+
+<h2 class="sec" id="antes">Antes de empezar</h2>
+<p class="sec-sub">Cinco minutos de contexto que te ahorran media hora de dudas.</p>
+
+<div class="card">
+  <div class="card-title">Qué es cada cosa</div>
+  <p><strong>Hay dos empresas en el mismo sistema.</strong> Grupo Juan Ruiz es la peruana:
+  compra la fruta al productor y la exporta. Tropical Báez es la española: compra a Grupo
+  Juan Ruiz y revende al cliente final en Europa.</p>
+  <p>La mercancía sale siempre de Perú y va directa al cliente. Lo que cambia según el caso
+  es qué empresa emite la factura. <strong>Un embarque, una sola empresa factura.</strong>
+  Nunca las dos por la misma mercancía.</p>
+  <p>Tú vas a facturar con <strong>Tropical Báez</strong>: la venta al cliente europeo.</p>
+</div>
+
+<div class="card">
+  <div class="card-title">Lo que necesitas tener delante</div>
+  <ul>
+    <li>El <strong>packing list</strong> del embarque, el Excel que manda la planta.</li>
+    <li>El <strong>precio por kilo</strong> acordado con el cliente.</li>
+    <li>Los datos fiscales del cliente si es la primera vez que le facturas: razón social,
+    dirección, país y número de VAT.</li>
+    <li>El <strong>número de contenedor</strong> y el <strong>booking</strong>. Vienen en el
+    propio packing list, así que normalmente no hay que buscarlos.</li>
+  </ul>
+</div>
+
+<h2 class="sec" id="entrar">1. Entrar y ponerte en Tropical Báez</h2>
+
+<div class="card">
+  <div class="card-title">Paso a paso</div>
+  <ol class="pasos">
+    <li><strong>Abre el sistema</strong>
+      Ve a <code>josemapascual.github.io/Gestion_GJR</code> y pulsa el módulo
+      <strong>Facturación</strong>.</li>
+    <li><strong>Entra con tu correo y contraseña</strong>
+      Te los da José. Si no tienes usuario todavía, pídeselo: sin usuario no se ve nada.</li>
+    <li><strong>Cambia a TB</strong>
+      Arriba a la derecha hay dos botones, <strong>GJR</strong> y <strong>TB</strong>. Pulsa
+      <strong>TB</strong>. Se pondrá en amarillo.</li>
+  </ol>
+  <div class="alerta">Este paso es el más importante de toda la guía. Si te olvidas y creas
+  la factura con GJR seleccionado, la factura sale con los datos de la empresa peruana, con
+  su RUC y su banco. Comprueba siempre que TB está en amarillo antes de empezar.</div>
+</div>
+
+<h2 class="sec" id="cliente">2. Dar de alta al cliente</h2>
+<p class="sec-sub">Solo la primera vez. Después ya está guardado.</p>
+
+<div class="card">
+  <div class="card-title">Paso a paso</div>
+  <ol class="pasos">
+    <li><strong>Ve a la pestaña Clientes</strong>
+      Mira si ya está en la lista. Si está, sáltate este apartado.</li>
+    <li><strong>Pulsa Añadir cliente</strong>
+      Se abre la ficha.</li>
+    <li><strong>Rellena los datos fiscales</strong>
+      Razón social, dirección, ciudad, código postal, país en dos letras
+      (<code>NL</code> para Holanda, <code>ES</code> para España) y el número de VAT.</li>
+    <li><strong>Elige el régimen fiscal</strong>
+      Es el campo que decide el IVA de todas sus facturas. Lee el cuadro de abajo antes de
+      elegirlo.</li>
+    <li><strong>Completa las condiciones comerciales</strong>
+      Moneda, forma de pago y días de pago. Si pones 30 días, el vencimiento se calculará
+      solo en cada factura.</li>
+    <li><strong>Guardar cliente</strong></li>
+  </ol>
+</div>
+
+<div class="card">
+  <div class="card-title">El régimen fiscal, campo a campo</div>
+  <table>
+    <thead><tr><th>Cuándo se usa</th><th>Qué elegir</th></tr></thead>
+    <tbody>
+      <tr><td>El cliente compra la fruta cuando todavía va en el barco y él la despacha en
+      destino</td><td class="col">Venta en tránsito — no sujeta</td></tr>
+      <tr><td>Cliente de otro país de la UE, con mercancía que ya está despachada en la
+      Unión</td><td class="col">Intracomunitario — exenta</td></tr>
+      <tr><td>Cliente español</td><td class="col">Nacional</td></tr>
+      <tr><td>Cliente de fuera de la UE, con mercancía que sale desde España</td>
+      <td class="col">Exportación fuera de la UE</td></tr>
+    </tbody>
+  </table>
+  <div class="aviso">Para la operación habitual de Tropical Báez —la fruta se vende mientras
+  navega y el cliente holandés la despacha en Rotterdam— la opción correcta es
+  <strong>Venta en tránsito</strong>. Si tienes cualquier duda con un cliente nuevo,
+  pregunta a José antes de emitir: cambiar el régimen después de emitir obliga a rectificar
+  la factura.</div>
+</div>
+
+<h2 class="sec" id="factura">3. Crear la factura</h2>
+
+<div class="card">
+  <div class="card-title">Paso a paso</div>
+  <ol class="pasos">
+    <li><strong>Pulsa Nuevo</strong>
+      En la barra de pestañas. Se abre el editor en blanco.</li>
+    <li><strong>Deja el tipo en Factura</strong>
+      Y la serie tal como venga. La numeración la pone el sistema al emitir: tú no escribes
+      el número.</li>
+    <li><strong>Elige el cliente</strong>
+      Al elegirlo se rellenan solos la moneda, la forma de pago y el vencimiento. Al lado
+      del título aparece una etiqueta con el régimen fiscal y el IVA que va a aplicar.</li>
+    <li><strong>Revisa el régimen de esta operación</strong>
+      Debajo del cliente hay un desplegable. Déjalo en la primera opción para usar el de su
+      ficha. Solo cámbialo si esta factura en concreto es distinta de lo habitual con ese
+      cliente. Si lo cambias, aparecerá una etiqueta que pone "solo esta factura".</li>
+    <li><strong>Comprueba la moneda</strong>
+      Tropical Báez factura en euros. Los datos bancarios cambian solos según la moneda.</li>
+  </ol>
+</div>
+
+<h2 class="sec" id="packing">4. Cargar el packing list y facturar por kilo</h2>
+<p class="sec-sub">Esta es la parte que te ahorra el trabajo de teclear calibre por calibre.</p>
+
+<div class="card">
+  <div class="card-title">Paso a paso</div>
+  <ol class="pasos">
+    <li><strong>En la tarjeta Líneas, pulsa <span class="boton">Cargar packing list</span></strong></li>
+    <li><strong>Suelta el Excel de la planta</strong>
+      O haz clic para buscarlo. Cierra el Excel antes: si está abierto a veces no se puede
+      leer.</li>
+    <li><strong>Revisa el resumen</strong>
+      Verás contenedor, destino, pallets, cajas, kilos, booking y precinto.
+      <strong>Comprueba que los kilos coinciden con el packing list</strong> antes de seguir.</li>
+    <li><strong>Elige cómo agrupar</strong>
+      Por defecto agrupa por calibre y formato de caja. Si vendes al mismo precio la caja de
+      4 y la de 10 kilos, cambia a "Solo calibre" y salen menos líneas.</li>
+    <li><strong>Escribe el precio por kilo</strong>
+      La tabla de abajo te muestra el importe de cada línea y el total al momento. Si el
+      precio cambia según el calibre, deja este campo en cero y los ajustas luego uno a uno
+      en el editor.</li>
+    <li><strong>Pulsa Añadir a las líneas</strong>
+      Usa "Reemplazar" solo si ya habías cargado otro packing por error.</li>
+  </ol>
+  <div class="aviso">Las líneas entran <strong>en kilos</strong>, no en cajas. La cantidad
+  que ves es el peso neto de cada calibre y el precio es por kilo.</div>
+</div>
+
+<div class="card">
+  <div class="card-title">Si necesitas añadir algo a mano</div>
+  <p>Los dos botones de al lado sirven para eso. <strong>Añadir mercancía</strong> para fruta
+  que no venga en el packing. <strong>Añadir servicio</strong> para una comisión, un flete
+  refacturado o cualquier gasto. Puedes mezclar fruta y servicios en la misma factura: cada
+  línea lleva su propio IVA.</p>
+  <p>La <strong>×</strong> del final de cada fila la borra.</p>
+</div>
+
+<h2 class="sec" id="embarque">5. Datos de embarque</h2>
+
+<div class="card">
+  <div class="card-title">Qué hacer</div>
+  <p>Si cargaste el packing list, esto ya está hecho: la casilla queda marcada y el
+  contenedor, el peso neto y el booking se rellenan solos. Solo tienes que
+  <strong>comprobar el Incoterm</strong>.</p>
+  <p>Si no cargaste packing, marca la casilla <strong>Lleva embarque</strong> y escribe a
+  mano el contenedor, el B/L y los pesos.</p>
+  <div class="aviso">El Incoterm habitual de Tropical Báez con el cliente holandés es
+  <strong>CFR Rotterdam</strong>. Si en tu caso es otro, cámbialo: sale impreso en la
+  factura y es lo que fija hasta dónde llega la responsabilidad de cada parte.</div>
+</div>
+
+<h2 class="sec" id="emitir">6. Revisar y emitir</h2>
+
+<div class="card">
+  <div class="card-title">Paso a paso</div>
+  <ol class="pasos">
+    <li><strong>Pulsa Vista previa</strong>
+      Se abre la factura tal como la va a recibir el cliente, con el logo de Tropical Báez.
+      Desde ahí puedes imprimirla o guardarla en PDF.</li>
+    <li><strong>Repasa estos cinco puntos</strong>
+      Están en la lista de abajo. Es un minuto y evita tener que rectificar.</li>
+    <li><strong>Guarda el borrador si aún no está cerrada</strong>
+      Un borrador no consume número. Puedes dejarlo y seguir mañana.</li>
+    <li><strong>Escribe la referencia del SIF</strong>
+      Es un campo que solo aparece en las facturas de Tropical Báez. Pregunta a José qué
+      poner ahí la primera vez.</li>
+    <li><strong>Pulsa Emitir</strong>
+      El sistema asigna el número, la factura pasa a estado Emitida y ya aparece en Cobros.</li>
+  </ol>
+</div>
+
+<div class="card">
+  <div class="card-title">Los cinco puntos de repaso</div>
+  <ul>
+    <li>Que arriba pone <strong>Tropical Báez</strong> y no Grupo Juan Ruiz.</li>
+    <li>Que los <strong>kilos totales</strong> coinciden con el packing list.</li>
+    <li>Que el <strong>precio por kilo</strong> es el acordado con ese cliente.</li>
+    <li>Que la <strong>mención fiscal</strong> del pie es la que corresponde. En una venta en
+    tránsito debe decir que la operación no está sujeta al IVA español.</li>
+    <li>Que el <strong>contenedor y el B/L</strong> son los del embarque correcto.</li>
+  </ul>
+  <div class="alerta">Una factura emitida ya no se puede modificar libremente: queda con
+  número asignado y registrada. Si detectas un error después, no la borres ni la edites por
+  tu cuenta: avisa a José, porque lo correcto es emitir una rectificativa.</div>
+</div>
+
+<h2 class="sec" id="cobros">7. Registrar el cobro</h2>
+
+<div class="card">
+  <div class="card-title">Paso a paso</div>
+  <ol class="pasos">
+    <li><strong>Ve a la pestaña Cobros</strong>
+      Salen todas las facturas emitidas pendientes, con lo cobrado, lo pendiente y los días
+      de retraso si los hay.</li>
+    <li><strong>Pulsa Cobrar en la factura que toque</strong></li>
+    <li><strong>Rellena fecha, importe, medio y referencia</strong>
+      El importe viene puesto con lo que queda pendiente. Si es un cobro parcial, cámbialo:
+      la factura seguirá apareciendo con el resto.</li>
+    <li><strong>Guarda</strong>
+      Cuando el cobro completa el total, la factura pasa sola a Pagada y desaparece de la
+      lista.</li>
+  </ol>
+</div>
+
+<h2 class="sec" id="proformas">Proformas y albaranes</h2>
+
+<div class="card">
+  <div class="card-title">Cuándo usar cada uno</div>
+  <p><strong>Proforma.</strong> Cuando el cliente pide un documento para tramitar el pago o
+  la apertura de crédito antes de que la mercancía salga. Se crea igual que una factura,
+  cambiando el tipo arriba. Cuando el embarque se confirma, en la lista de Documentos hay un
+  botón <strong>A factura</strong> que la convierte con un clic: se copian todas las líneas y
+  la proforma queda marcada como convertida.</p>
+  <p><strong>Albarán.</strong> Documento de entrega, sin efectos fiscales. Estados
+  Pendiente, Enviado y Entregado.</p>
+  <p><strong>Duplicar.</strong> Cualquier documento tiene un botón Duplicar. Es lo más rápido
+  para un embarque parecido al anterior: duplicas, cambias el packing y el precio, y listo.</p>
+</div>
+
+<h2 class="sec" id="dudas">Errores frecuentes</h2>
+
+<div class="card">
+  <div class="card-title">Qué hacer en cada caso</div>
+  <p><strong>"Elige un cliente antes de guardar".</strong> Falta seleccionarlo en el
+  desplegable.</p>
+  <p><strong>No me deja emitir y pide la referencia del SIF.</strong> Es normal en las
+  facturas de Tropical Báez. Pregunta a José qué poner.</p>
+  <p><strong>El IVA sale en cero y no sé si está bien.</strong> En venta en tránsito y en
+  operación intracomunitaria, cero es lo correcto. Debajo del cliente aparece escrita la
+  mención legal que se va a imprimir: si la lees y encaja con la operación, está bien.</p>
+  <p><strong>El packing list no carga.</strong> Ciérralo en Excel y prueba otra vez. Si sigue
+  sin cargar, es que esa planta usa un formato distinto: mándaselo a José para que lo
+  revise.</p>
+  <p><strong>Los kilos no cuadran con el packing.</strong> No corrijas la cifra a mano.
+  Avisa: si el sistema lee mal un packing, lo va a leer mal en todos los embarques de esa
+  planta.</p>
+  <p><strong>La factura sale con los datos de Grupo Juan Ruiz.</strong> Estabas en GJR al
+  crearla. Bórrala si sigue en borrador y créala de nuevo con TB seleccionado.</p>
+  <div class="aviso">Ante cualquier duda con un importe, un régimen fiscal o un cliente
+  nuevo, pregunta antes de emitir. Un borrador se corrige en un minuto; una factura emitida
+  con un error necesita una rectificativa.</div>
+</div>
+
+<div class="pie">Grupo Juan Ruiz · Tropical Báez — Sistema de Facturación</div>
+
+</main>
+</body>
+</html>
