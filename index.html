@@ -474,6 +474,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--gris-bg);color:var(--gris
         <div class="mod-link">Abrir módulo <span class="mod-arrow">→</span></div>
       </a>
 
+      <a class="module-card" id="card-divisas" href="control_divisas.html">
+        <div class="mod-icon verde">💱</div>
+        <div class="mod-title">Control de Divisas</div>
+        <div class="mod-desc">Compra y venta de dólares, euros y soles. Media ponderada, gráficas y tipo de cambio de mercado en vivo.</div>
+        <div class="mod-link">Abrir módulo <span class="mod-arrow">→</span></div>
+      </a>
+
     </div>
 
     <!-- MÓDULOS DE CALIDAD -->
@@ -523,14 +530,14 @@ const USUARIOS = {
     nombre: 'José María',
     avatar: 'J',
     rol: 'Administrador',
-    acceso: ['liquidaciones','facturacion','trazabilidad','defectos','descarte']
+    acceso: ['liquidaciones','facturacion','trazabilidad','defectos','descarte','divisas']
   },
   renato: {
     pass: 'renato123',
     nombre: 'Renato',
     avatar: 'R',
     rol: 'Operaciones',
-    acceso: ['liquidaciones','facturacion','trazabilidad','defectos','descarte']
+    acceso: ['liquidaciones','facturacion','trazabilidad','defectos','descarte','divisas']
   },
   diana: {
     pass: 'diana123',
@@ -561,7 +568,8 @@ const MODULO_CARD = {
   facturacion:   'card-facturacion',
   trazabilidad:  'card-trazabilidad',
   defectos:      'card-defectos',
-  descarte:      'card-descarte'
+  descarte:      'card-descarte',
+  divisas:       'card-divisas'
 };
 
 // ══ LOGIN ══
@@ -620,7 +628,8 @@ function mostrarDashboard(u){
     facturacion:   'Facturación',
     trazabilidad:  'Trazabilidad',
     defectos:      'Defectos Críticos',
-    descarte:      'Descarte'
+    descarte:      'Descarte',
+    divisas:       'Control de Divisas'
   };
   const lista = u.acceso.map(m => nombres[m]).join(', ');
   const esAdmin = u.acceso.length === 4;
