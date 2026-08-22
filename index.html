@@ -467,14 +467,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--gris-bg);color:var(--gris
         <div class="mod-link">Abrir módulo <span class="mod-arrow">→</span></div>
       </a>
 
-      <a class="module-card comercial" id="card-facturacion" href="facturacion_v14.html">
+      <a class="module-card comercial" id="card-facturacion" href="facturacion_v16.html">
         <div class="mod-icon dorado">🧾</div>
         <div class="mod-title">Facturación</div>
         <div class="mod-desc">Proformas, facturas y albaranes de GJR y Tropical Báez. Series, estados, cobros e historial.</div>
         <div class="mod-link">Abrir módulo <span class="mod-arrow">→</span></div>
       </a>
 
-      <a class="module-card comercial" id="card-almacen" href="almacen_v2.html">
+      <a class="module-card comercial" id="card-almacen" href="almacen_v4.html">
         <div class="mod-icon dorado">📦</div>
         <div class="mod-title">Almacén y Kardex</div>
         <div class="mod-desc">Recepción de contenedores, stock por pallet y calibre, albaranes de salida y trazabilidad por lote.</div>
@@ -537,14 +537,14 @@ const USUARIOS = {
     nombre: 'José María',
     avatar: 'J',
     rol: 'Administrador',
-    acceso: ['liquidaciones','facturacion','trazabilidad','defectos','descarte','divisas']
+    acceso: ['liquidaciones','facturacion','almacen','trazabilidad','defectos','descarte','divisas']
   },
   renato: {
     pass: 'renato123',
     nombre: 'Renato',
     avatar: 'R',
     rol: 'Operaciones',
-    acceso: ['liquidaciones','facturacion','trazabilidad','defectos','descarte','divisas']
+    acceso: ['liquidaciones','facturacion','almacen','trazabilidad','defectos','descarte','divisas']
   },
   diana: {
     pass: 'diana123',
@@ -565,7 +565,7 @@ const USUARIOS = {
     nombre: 'Paola',
     avatar: 'P',
     rol: 'Facturación',
-    acceso: ['facturacion']
+    acceso: ['facturacion','almacen']
   }
 };
 
@@ -576,7 +576,8 @@ const MODULO_CARD = {
   trazabilidad:  'card-trazabilidad',
   defectos:      'card-defectos',
   descarte:      'card-descarte',
-  divisas:       'card-divisas'
+  divisas:       'card-divisas',
+  almacen:       'card-almacen'
 };
 
 // ══ LOGIN ══
