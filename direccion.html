@@ -174,18 +174,20 @@ td input,td select{padding:5px 7px;font-size:12.5px}
 .tabla-scroll{overflow-x:auto}
 th.num,td.num{text-align:right;font-variant-numeric:tabular-nums}
 td.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
-.btn-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-.bloque-tit{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;
-  color:var(--texto-suave);margin:20px 0 10px}
-.bloque-tit:first-child{margin-top:4px}
-.kpi{margin-bottom:4px}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;margin:4px 0 12px}
+.check input{width:auto}
+.total-linea{margin-left:auto;font-size:13px;color:var(--texto-suave)}
+.btn-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.kpi{margin-bottom:16px}
 .kpi .box .lbl{font-size:10.5px;font-weight:500;text-transform:uppercase;
   letter-spacing:.06em;color:var(--texto-suave);margin-bottom:6px}
 .kpi .box .val{font-family:'DM Serif Display',Georgia,serif;font-size:23px;color:var(--verde);line-height:1.1}
 .sublbl{font-size:10.5px;color:var(--texto-suave);margin-top:4px}
 .rojo{color:var(--error)}
-td.num.rojo strong{color:var(--error)}
 tr.fila-alerta td{background:var(--error-bg)}
+.nota{font-size:12px;color:var(--texto-suave);margin:10px 0 0}
+textarea{min-height:120px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+#sec-pedidos td input{padding:6px 8px;font-size:12.5px}
 .lista-riesgo{list-style:none;padding:0;margin:0}
 .lista-riesgo li{padding:7px 0;border-bottom:1px solid var(--verde-border);font-size:13px;
   display:flex;align-items:center;gap:10px}
@@ -193,15 +195,9 @@ tr.fila-alerta td{background:var(--error-bg)}
 table.mini{width:100%;font-size:12.5px}
 table.mini th{padding-bottom:6px}
 table.mini td{padding:5px 6px;border-bottom:1px solid var(--verde-border)}
-table.mini td.lbl-td{color:var(--texto-suave)}
-.resultado-caja{display:flex;flex-wrap:wrap;gap:26px;margin-top:18px;padding:14px 16px;
-  background:var(--verde-pale);border:1px solid var(--verde-border);border-radius:var(--radio)}
-.resultado-caja.neg{background:var(--error-bg);border-color:var(--error-border)}
-.resultado-caja .lbl{display:block;font-size:10px;text-transform:uppercase;
-  letter-spacing:.06em;color:var(--texto-suave);margin-bottom:3px}
-.resultado-caja strong{font-family:'DM Serif Display',Georgia,serif;font-size:19px;color:var(--verde)}
-.resultado-caja.neg strong{color:var(--error)}
-.nota{font-size:12px;color:var(--texto-suave);margin:10px 0 0}
+.bloque-tit{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--texto-suave);margin:20px 0 10px}
+.bloque-tit:first-child{margin-top:4px}
 
 </style>
 </head>
@@ -232,7 +228,6 @@ table.mini td.lbl-td{color:var(--texto-suave)}
 
 <div class="tabs">
   <button id="tb-panel" class="on" onclick="tab('panel')">Panel</button>
-  <button id="tb-contenedores"    onclick="tab('contenedores')">Contenedores</button>
   <button id="tb-traza"           onclick="tab('traza')">Trazabilidad</button>
   <button id="tb-libros"          onclick="tab('libros')">Libros de IVA</button>
   <button id="tb-cierre"          onclick="tab('cierre')">Cierre mensual</button>
@@ -276,13 +271,6 @@ table.mini td.lbl-td{color:var(--texto-suave)}
   </div>
 </div>
 
-<div id="sec-contenedores" style="display:none">
-  <div class="card">
-    <div class="card-title">Contenedores — compra, venta y resultado</div>
-    <div class="tabla-scroll"><table id="tb-cont"><tbody><tr><td class="vacio">Cargando…</td></tr></tbody></table></div>
-  </div>
-  <div id="detalle-cont"></div>
-</div>
 
 <div id="sec-traza" style="display:none">
   <div class="card">
@@ -409,14 +397,13 @@ async function entrarEnApp(){
   tab('panel');
 }
 
-const SECCIONES = ['panel','contenedores','traza','libros','cierre','alertas'];
+const SECCIONES = ['panel','traza','libros','cierre','alertas'];
 function tab(n){
   SECCIONES.forEach(t => {
     $('sec-'+t).style.display = (t===n) ? 'block' : 'none';
     $('tb-'+t).classList.toggle('on', t===n);
   });
   if (n==='panel')        cargarPanel();
-  if (n==='contenedores') cargarContenedores();
   if (n==='libros')       cargarLibros();
   if (n==='cierre')       cargarCierre();
   if (n==='alertas')      cargarAlertas();
@@ -455,84 +442,6 @@ async function cargarPanel(){
     ? '<ul class="lista-riesgo">' + r.map(x =>
         `<li><span class="chip ${x[0]==='ALTA'?'chip-rojo':'chip-ambar'}">${x[0]}</span> ${esc(x[1])}</li>`).join('') + '</ul>'
     : '<div class="vacio">Nada pendiente. Todo cuadrado.</div>';
-}
-
-/* ═══ CONTENEDORES 360 ═══ */
-async function cargarContenedores(){
-  const {data} = await sb.from('erp_v_contenedor_360').select('*').order('fecha_carga',{ascending:false}).limit(100);
-  const t = $('tb-cont');
-  if (!data || !data.length){
-    t.innerHTML = '<tbody><tr><td class="vacio">No hay contenedores.</td></tr></tbody>'; return;
-  }
-  t.innerHTML =
-    '<thead><tr><th>Contenedor</th><th>Canal</th><th>Estado</th><th class="num">Kilos</th>' +
-    '<th class="num">Landed €/kg</th><th class="num">Ingreso</th><th class="num">Resultado</th>' +
-    '<th>Cierre</th><th></th></tr></thead><tbody>' +
-    data.map(c => {
-      const neg = Number(c.resultado) < 0;
-      const bloqueo = [];
-      if (c.liq_pendientes)  bloqueo.push(c.liq_pendientes + ' liq.');
-      if (c.reclam_abiertas) bloqueo.push(c.reclam_abiertas + ' recl.');
-      if (c.compras_sin_validar) bloqueo.push(c.compras_sin_validar + ' fact.');
-      return `<tr${neg && c.definitivo ? ' class="fila-alerta"' : ''}>
-        <td><strong>${esc(c.codigo)}</strong></td>
-        <td>${esc(c.canal || c.regimen || '')}</td>
-        <td><span class="chip chip-gris">${esc(c.estado||'')}</span></td>
-        <td class="num">${n0(c.kilos)}</td>
-        <td class="num">${c.landed_cost_kg ? n2(c.landed_cost_kg) : '—'}</td>
-        <td class="num">${n2(c.ingreso)}</td>
-        <td class="num ${neg?'rojo':''}"><strong>${n2(c.resultado)}</strong>
-          ${c.definitivo ? '' : '<div class="sublbl">provisional</div>'}</td>
-        <td>${c.cerrado_en ? '<span class="chip chip-verde">Cerrado</span>'
-             : (bloqueo.length ? '<span class="chip chip-ambar">'+esc(bloqueo.join(' · '))+'</span>'
-                               : '<span class="chip chip-gris">Abierto</span>')}</td>
-        <td><button class="btn btn-outline btn-sm" onclick='verContenedor(${JSON.stringify(JSON.stringify(c))})'>Ver</button></td>
-      </tr>`;
-    }).join('') + '</tbody>';
-}
-
-function verContenedor(json){
-  const c = JSON.parse(json);
-  const fila = (a,b) => `<tr><td class="lbl-td">${a}</td><td class="num">${b}</td></tr>`;
-  $('detalle-cont').innerHTML = `
-  <div class="card">
-    <div class="card-title">${esc(c.codigo)} · recorrido completo</div>
-    <div class="grid g3">
-      <div><table class="mini">
-        <tr><th colspan="2">Compra</th></tr>
-        ${fila('Proveedor', esc(c.proveedor || c.exportador || '—'))}
-        ${fila('Pedidos', c.pedidos)}
-        ${fila('Facturas de compra', c.facturas_compra)}
-        ${fila('Sin validar', c.compras_sin_validar)}
-        ${fila('Coste mercancía y gastos', n2(c.landed_cost) + ' €')}
-      </table></div>
-      <div><table class="mini">
-        <tr><th colspan="2">Mercancía</th></tr>
-        ${fila('Pallets', c.pallets)}
-        ${fila('Kilos', n0(c.kilos))}
-        ${fila('En cámara', n0(c.kilos_en_stock))}
-        ${fila('Albaranes', c.albaranes)}
-        ${fila('Landed cost por kilo', c.landed_cost_kg ? n2(c.landed_cost_kg)+' €' : '—')}
-      </table></div>
-      <div><table class="mini">
-        <tr><th colspan="2">Venta y cobro</th></tr>
-        ${fila('Facturas de venta', c.facturas_venta)}
-        ${fila('Facturado', n2(c.facturado) + ' €')}
-        ${fila('Cobrado', n2(c.cobrado) + ' €')}
-        ${fila('Liquidaciones', c.liquidaciones)}
-        ${fila('Reclamaciones abiertas', c.reclam_abiertas)}
-      </table></div>
-    </div>
-    <div class="resultado-caja ${Number(c.resultado)<0?'neg':''}">
-      <div><span class="lbl">Ingreso</span><strong>${n2(c.ingreso)} €</strong></div>
-      <div><span class="lbl">Landed cost</span><strong>${n2(c.landed_cost)} €</strong></div>
-      <div><span class="lbl">Resultado</span><strong>${n2(c.resultado)} €</strong></div>
-      <div><span class="lbl">Por kilo</span><strong>${c.resultado_kg ? n2(c.resultado_kg)+' €' : '—'}</strong></div>
-      <div><span class="lbl">Fiabilidad</span><strong>${c.definitivo ? 'Definitivo' : 'Provisional'}</strong></div>
-    </div>
-    ${c.definitivo ? '' : '<p class="nota">Falta la liquidación del cliente. Hasta que llegue, este resultado puede cambiar.</p>'}
-  </div>`;
-  $('detalle-cont').scrollIntoView({behavior:'smooth'});
 }
 
 /* ═══ TRAZABILIDAD ═══ */

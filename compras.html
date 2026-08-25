@@ -170,8 +170,7 @@ td input,td select{padding:5px 7px;font-size:12.5px}
 }
 
 
-/* ── AÑADIDOS DEL MÓDULO DE COMPRAS ──────────────────────────── */
-.wrap{max-width:1240px;margin:0 auto;padding:18px 20px 60px}
+.wrap{max-width:1280px;margin:0 auto;padding:18px 20px 60px}
 .tabla-scroll{overflow-x:auto}
 th.num,td.num{text-align:right;font-variant-numeric:tabular-nums}
 td.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
@@ -179,12 +178,26 @@ td.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
 .check input{width:auto}
 .total-linea{margin-left:auto;font-size:13px;color:var(--texto-suave)}
 .btn-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.kpi{margin-bottom:16px}
 .kpi .box .lbl{font-size:10.5px;font-weight:500;text-transform:uppercase;
   letter-spacing:.06em;color:var(--texto-suave);margin-bottom:6px}
-.kpi .box .val{font-family:'DM Serif Display',Georgia,serif;font-size:22px;color:var(--verde)}
-.kpi{margin-bottom:16px}
+.kpi .box .val{font-family:'DM Serif Display',Georgia,serif;font-size:23px;color:var(--verde);line-height:1.1}
+.sublbl{font-size:10.5px;color:var(--texto-suave);margin-top:4px}
+.rojo{color:var(--error)}
 tr.fila-alerta td{background:var(--error-bg)}
+.nota{font-size:12px;color:var(--texto-suave);margin:10px 0 0}
+textarea{min-height:120px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
 #sec-pedidos td input{padding:6px 8px;font-size:12.5px}
+.lista-riesgo{list-style:none;padding:0;margin:0}
+.lista-riesgo li{padding:7px 0;border-bottom:1px solid var(--verde-border);font-size:13px;
+  display:flex;align-items:center;gap:10px}
+.lista-riesgo li:last-child{border-bottom:0}
+table.mini{width:100%;font-size:12.5px}
+table.mini th{padding-bottom:6px}
+table.mini td{padding:5px 6px;border-bottom:1px solid var(--verde-border)}
+.bloque-tit{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--texto-suave);margin:20px 0 10px}
+.bloque-tit:first-child{margin-top:4px}
 
 </style>
 </head>
@@ -221,6 +234,7 @@ tr.fila-alerta td{background:var(--error-bg)}
   <button id="tb-proveedores" class="on" onclick="tab('proveedores')">Proveedores</button>
   <button id="tb-bancos"                onclick="tab('bancos')">Cuentas de pago</button>
   <button id="tb-pedidos"               onclick="tab('pedidos')">Pedidos</button>
+  <button id="tb-recepcion"             onclick="tab('recepcion')">Recepción</button>
   <button id="tb-facturas"              onclick="tab('facturas')">Facturas</button>
   <button id="tb-pagos"                 onclick="tab('pagos')">Pagos</button>
   <button id="tb-cartera"               onclick="tab('cartera')">Cartera</button>
@@ -361,6 +375,80 @@ tr.fila-alerta td{background:var(--error-bg)}
   </div>
 </div>
 
+
+<!-- ══════════ RECEPCIÓN ══════════ -->
+<div id="sec-recepcion" style="display:none">
+  <div class="status-bar">
+    La mercancía entra en el almacén desde el pedido, sin volver a teclearla.
+    Pega el packing list del Excel del proveedor o deja el detalle en blanco y se generará
+    un pallet por línea del pedido.
+  </div>
+
+  <div class="card">
+    <div class="card-title">1 · Pedido a recepcionar</div>
+    <div class="grid g3">
+      <div class="fld"><label>Pedido</label><select id="rc-pedido" onchange="cargarPedidoRecep()"></select></div>
+      <div class="fld"><label>Régimen</label>
+        <select id="rc-regimen" onchange="cambiarRegimen()">
+          <option value="FLOTE">A flote — no pasa por cámara</option>
+          <option value="NACIONALIZADO">Nacionalizado — entra en cámara</option>
+        </select></div>
+      <div class="fld" id="fld-almacen" style="display:none"><label>Almacén de destino</label>
+        <select id="rc-almacen"></select></div>
+    </div>
+    <div id="rc-resumen-pedido"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">2 · Datos del contenedor</div>
+    <div class="grid g4">
+      <div class="fld"><label>Matrícula</label><input id="rc-matricula" placeholder="MSKU1234567"></div>
+      <div class="fld"><label>Booking</label><input id="rc-booking"></div>
+      <div class="fld"><label>Precinto</label><input id="rc-precinto"></div>
+      <div class="fld"><label>Naviera</label><input id="rc-naviera"></div>
+    </div>
+    <div class="grid g4">
+      <div class="fld"><label>Origen</label><input id="rc-origen" maxlength="2" placeholder="PE"></div>
+      <div class="fld"><label>Destino</label><input id="rc-destino" placeholder="ROTTERDAM"></div>
+      <div class="fld"><label>Fecha de carga</label><input id="rc-carga" type="date"></div>
+      <div class="fld"><label>ETA</label><input id="rc-eta" type="date"></div>
+    </div>
+    <div class="grid g4">
+      <div class="fld"><label>Lote</label><input id="rc-lote" placeholder="se usa el código del contenedor"></div>
+      <div class="fld"><label>Productor</label><input id="rc-productor"></div>
+      <div class="fld"><label>Variedad</label><input id="rc-variedad" value="HASS"></div>
+      <div class="fld"><label>Campaña</label><input id="rc-campana"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">3 · Packing list</div>
+    <p class="nota">Copia las columnas desde Excel y pégalas aquí:
+      <strong>pallet · calibre · categoría · peso caja · cajas · kilos</strong>.
+      Una fila por línea, sin encabezado.</p>
+    <textarea id="rc-packing" rows="7" placeholder="1&#9;20&#9;CAT 1&#9;4&#9;120&#9;480
+1&#9;22&#9;CAT 1&#9;4&#9;60&#9;240
+2&#9;20&#9;CAT 1&#9;4&#9;180&#9;720"></textarea>
+    <div class="btn-row">
+      <button class="btn btn-outline btn-sm" onclick="leerPacking()">Leer packing list</button>
+      <button class="btn btn-outline btn-sm" onclick="$('rc-packing').value='';leerPacking()">Vaciar</button>
+      <span class="total-linea" id="rc-totales"></span>
+    </div>
+    <div class="tabla-scroll" style="margin-top:12px">
+      <table id="tb-rc-preview"><tbody><tr><td class="vacio">Sin packing list: se generará un pallet por línea del pedido.</td></tr></tbody></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">4 · Confirmar</div>
+    <div id="rc-comparativa"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="recepcionar()">Recepcionar en almacén</button>
+    </div>
+    <div id="rc-aviso"></div>
+  </div>
+</div>
+
 <!-- ══════════ FACTURAS ══════════ -->
 <div id="sec-facturas" style="display:none">
   <div class="card">
@@ -479,6 +567,9 @@ let proveedores = [];
 let contenedores = [];
 let cuentasPropias = [];
 let lineasPedido = [];
+let palletsRecep = [];
+let pedidoRecep = null;
+let almacenes = [];
 
 const $ = id => document.getElementById(id);
 const esc = t => String(t ?? '').replace(/[&<>"']/g, c =>
@@ -562,10 +653,15 @@ async function cargarMaestros(){
 
   if ($('pg-cuenta')) $('pg-cuenta').innerHTML = cuentasPropias
     .map(x => `<option value="${x.id}">${esc(x.etiqueta || x.banco)} · ${esc(x.moneda)}</option>`).join('');
+
+  const {data:al} = await sb.from('erp_almacen').select('id,codigo,nombre').order('nombre');
+  almacenes = al || [];
+  if ($('rc-almacen')) $('rc-almacen').innerHTML =
+    almacenes.map(a => `<option value="${a.id}">${esc(a.nombre || a.codigo)}</option>`).join('');
 }
 
 /* ── NAVEGACIÓN ──────────────────────────────────────────── */
-const SECCIONES = ['proveedores','bancos','pedidos','facturas','pagos','cartera'];
+const SECCIONES = ['proveedores','bancos','pedidos','recepcion','facturas','pagos','cartera'];
 function tab(nombre){
   SECCIONES.forEach(t => {
     $('sec-' + t).style.display = (t === nombre) ? 'block' : 'none';
@@ -574,6 +670,7 @@ function tab(nombre){
   if (nombre === 'proveedores') cargarProveedores();
   if (nombre === 'bancos')      cargarBancos();
   if (nombre === 'pedidos')     cargarPedidos();
+  if (nombre === 'recepcion')   cargarRecepcion();
   if (nombre === 'facturas')    cargarFacturas();
   if (nombre === 'pagos')       cargarPagos();
   if (nombre === 'cartera')     cargarCartera();
@@ -789,6 +886,160 @@ async function cargarPedidos(){
         <td><span class="chip chip-gris">${esc(p.estado)}</span></td>
       </tr>`;
     }).join('') + '</tbody>';
+}
+
+
+
+/* ═══ RECEPCIÓN: del pedido al almacén ═══ */
+async function cargarRecepcion(){
+  if (!$('rc-carga').value) $('rc-carga').value = hoy();
+  const {data} = await sb.from('erp_compra')
+    .select('id,codigo,fecha,moneda,estado,proveedor_id,erp_compra_linea(posicion,descripcion,calibre,categoria,peso_caja,cajas,kilos,precio_kg)')
+    .is('contenedor_id', null).in('estado', ['CONFIRMADO','BORRADOR'])
+    .order('fecha', {ascending:false});
+  const libres = data || [];
+  $('rc-pedido').innerHTML = libres.length
+    ? '<option value="">— elige un pedido —</option>' + libres.map(p =>
+        `<option value="${p.id}">${esc(p.codigo||'')} · ${esc((proveedores.find(x=>x.id===p.proveedor_id)||{}).razon_social||'')}</option>`).join('')
+    : '<option value="">— no hay pedidos pendientes de recepcionar —</option>';
+  window._pedidosLibres = libres;
+  $('rc-resumen-pedido').innerHTML = '';
+  $('rc-comparativa').innerHTML = '';
+}
+
+function cargarPedidoRecep(){
+  const id = $('rc-pedido').value;
+  pedidoRecep = (window._pedidosLibres || []).find(p => p.id === id) || null;
+  if (!pedidoRecep){ $('rc-resumen-pedido').innerHTML = ''; return; }
+  const ls = pedidoRecep.erp_compra_linea || [];
+  const kg = ls.reduce((a,l) => a + Number(l.kilos||0), 0);
+  const cj = ls.reduce((a,l) => a + Number(l.cajas||0), 0);
+  const im = ls.reduce((a,l) => a + Number(l.kilos||0)*Number(l.precio_kg||0), 0);
+  $('rc-resumen-pedido').innerHTML =
+    `<div class="status-bar" style="margin-top:14px">
+       <strong>${esc(pedidoRecep.codigo||'')}</strong> · ${ls.length} líneas ·
+       ${n0(cj)} cajas · <strong>${n0(kg)} kg</strong> ·
+       ${n2(im)} ${esc(pedidoRecep.moneda)}
+     </div>`;
+  const p = proveedores.find(x => x.id === pedidoRecep.proveedor_id);
+  if (p && !$('rc-productor').value) $('rc-productor').value = p.razon_social;
+  compararRecep();
+}
+
+function cambiarRegimen(){
+  $('fld-almacen').style.display = $('rc-regimen').value === 'NACIONALIZADO' ? '' : 'none';
+}
+
+function leerPacking(){
+  const txt = $('rc-packing').value.trim();
+  palletsRecep = [];
+  if (txt){
+    const mapa = new Map();
+    txt.split(/\r?\n/).forEach(fila => {
+      if (!fila.trim()) return;
+      const c = fila.split(/\t|;|,(?=\s*\S)/).map(x => x.trim());
+      if (c.length < 6) return;
+      const [num, calibre, categoria, peso, cajas, kilos] = c;
+      const key = String(num);
+      if (!mapa.has(key)) mapa.set(key, {num:key, categoria: categoria || 'CAT 1', lineas:[]});
+      mapa.get(key).lineas.push({
+        calibre: calibre || 'SC',
+        categoria: categoria || 'CAT 1',
+        peso_caja: Number(String(peso).replace(',','.')) || 4,
+        cajas: Number(String(cajas).replace(',','.')) || 0,
+        kilos: Number(String(kilos).replace(',','.')) || 0
+      });
+    });
+    palletsRecep = [...mapa.values()].map(p => ({
+      ...p,
+      peso_caja: p.lineas[0].peso_caja,
+      cajas: p.lineas.reduce((a,l) => a + l.cajas, 0),
+      kilos: p.lineas.reduce((a,l) => a + l.kilos, 0)
+    }));
+  }
+  pintarPreview();
+  compararRecep();
+}
+
+function pintarPreview(){
+  const t = $('tb-rc-preview');
+  if (!palletsRecep.length){
+    t.innerHTML = '<tbody><tr><td class="vacio">Sin packing list: se generará un pallet por línea del pedido.</td></tr></tbody>';
+    $('rc-totales').textContent = '';
+    return;
+  }
+  const cj = palletsRecep.reduce((a,p) => a + p.cajas, 0);
+  const kg = palletsRecep.reduce((a,p) => a + p.kilos, 0);
+  $('rc-totales').innerHTML =
+    `<strong>${palletsRecep.length}</strong> pallets · <strong>${n0(cj)}</strong> cajas · <strong>${n0(kg)}</strong> kg`;
+  t.innerHTML =
+    '<thead><tr><th>Pallet</th><th>Calibre</th><th>Categoría</th>' +
+    '<th class="num">Peso caja</th><th class="num">Cajas</th><th class="num">Kilos</th></tr></thead><tbody>' +
+    palletsRecep.flatMap(p => p.lineas.map((l,i) => `<tr>
+      <td>${i === 0 ? '<strong>'+esc(p.num)+'</strong>' : ''}</td>
+      <td>${esc(l.calibre)}</td><td>${esc(l.categoria)}</td>
+      <td class="num">${n2(l.peso_caja)}</td>
+      <td class="num">${n0(l.cajas)}</td>
+      <td class="num">${n0(l.kilos)}</td>
+    </tr>`)).join('') + '</tbody>';
+}
+
+function compararRecep(){
+  if (!pedidoRecep){ $('rc-comparativa').innerHTML = ''; return; }
+  const ped = (pedidoRecep.erp_compra_linea||[]).reduce((a,l) => a + Number(l.kilos||0), 0);
+  const rec = palletsRecep.length
+    ? palletsRecep.reduce((a,p) => a + p.kilos, 0)
+    : ped;
+  const dif = rec - ped;
+  const pct = ped ? Math.abs(dif)/ped*100 : 0;
+  const mal = pct > 5;
+  $('rc-comparativa').innerHTML =
+    `<div class="status-bar${mal ? ' error' : ''}">
+       Pedido <strong>${n0(ped)} kg</strong> · a recepcionar <strong>${n0(rec)} kg</strong> ·
+       diferencia <strong>${dif >= 0 ? '+' : ''}${n0(dif)} kg</strong> (${n2(pct)}%)
+       ${mal ? ' — fuera de tolerancia. Se recepciona igual, pero queda registrado.' : ''}
+     </div>`;
+}
+
+async function recepcionar(){
+  if (!$('rc-pedido').value) return aviso('rc-aviso','Elige el pedido que vas a recepcionar.', true);
+  if ($('rc-regimen').value === 'NACIONALIZADO' && !$('rc-almacen').value)
+    return aviso('rc-aviso','Una recepción nacionalizada necesita almacén de destino.', true);
+
+  const payload = {
+    compra_id:   $('rc-pedido').value,
+    regimen:     $('rc-regimen').value,
+    almacen_id:  $('rc-regimen').value === 'NACIONALIZADO' ? $('rc-almacen').value : null,
+    usuario:     yo.nombre,
+    fecha:       hoy(),
+    matricula:   $('rc-matricula').value.trim() || null,
+    booking:     $('rc-booking').value.trim() || null,
+    precinto:    $('rc-precinto').value.trim() || null,
+    naviera:     $('rc-naviera').value.trim() || null,
+    origen_pais: $('rc-origen').value.trim().toUpperCase() || null,
+    destino:     $('rc-destino').value.trim() || null,
+    fecha_carga: $('rc-carga').value || null,
+    fecha_eta:   $('rc-eta').value || null,
+    lote:        $('rc-lote').value.trim() || null,
+    productor:   $('rc-productor').value.trim() || null,
+    variedad:    $('rc-variedad').value.trim() || 'HASS',
+    campana:     $('rc-campana').value.trim() || null,
+    pallets:     palletsRecep
+  };
+
+  const {data, error} = await sb.rpc('erp_recepcionar_compra', {p: payload});
+  if (error) return aviso('rc-aviso', error.message, true);
+  if (!data.ok) return aviso('rc-aviso', data.motivo, true);
+
+  aviso('rc-aviso',
+    'Contenedor ' + data.contenedor + ' creado con ' + data.pallets + ' pallets y ' +
+    n0(data.kilos) + ' kg. La mercancía ya está en el almacén y el pedido queda enlazado.' +
+    (data.aviso ? ' ' + data.aviso : ''));
+
+  $('rc-packing').value = ''; palletsRecep = []; pintarPreview();
+  ['rc-matricula','rc-booking','rc-precinto','rc-lote'].forEach(id => $(id).value = '');
+  await cargarMaestros();
+  cargarRecepcion();
 }
 
 /* ═══ FACTURAS ═══ */
