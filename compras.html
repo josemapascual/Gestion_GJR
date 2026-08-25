@@ -186,9 +186,21 @@ td.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
 .rojo{color:var(--error)}
 tr.fila-alerta td{background:var(--error-bg)}
 .nota{font-size:12px;color:var(--texto-suave);margin:10px 0 0}
-textarea{min-height:110px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+textarea{min-height:100px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
 #sec-compra td input{padding:6px 8px;font-size:12.5px}
 .opc{font-weight:400;text-transform:none;letter-spacing:0;color:var(--texto-suave);font-size:11px}
+.upload-zone{border:2px dashed var(--verde-border);background:var(--verde-pale);
+  border-radius:var(--radio);padding:28px;text-align:center;cursor:pointer;
+  transition:background .15s,border-color .15s}
+.upload-zone:hover{border-color:var(--verde-claro)}
+.upload-zone.cargado{border-style:solid;background:#F1F8E9}
+.upload-zone strong{display:block;font-size:14px;margin-bottom:4px}
+.upload-zone span{font-size:12px;color:var(--texto-suave);display:block}
+.upload-zone .archivo{margin-top:8px;font-weight:600;color:var(--verde)}
+details.pegar{margin-top:14px}
+details.pegar summary{cursor:pointer;font-size:12.5px;color:var(--texto-suave);
+  padding:6px 0;user-select:none}
+details.pegar summary:hover{color:var(--verde)}
 
 </style>
 </head>
@@ -364,16 +376,28 @@ textarea{min-height:110px;font-family:ui-monospace,SFMono-Regular,Menlo,monospac
 
   <div class="card">
     <div class="card-title">3 · Mercancía</div>
-    <p class="nota">Pega el packing list desde Excel —
-      <strong>pallet · calibre · categoría · peso caja · cajas · kilos · precio/kg</strong> —
-      o añade las líneas a mano. El precio puede quedar en blanco y completarse con la factura.</p>
-    <textarea id="cm-packing" rows="6" placeholder="1&#9;20&#9;CAT 1&#9;4&#9;120&#9;480&#9;2,10
-1&#9;22&#9;CAT 1&#9;4&#9;60&#9;240&#9;2,00
-2&#9;20&#9;CAT 1&#9;4&#9;180&#9;720&#9;2,10"></textarea>
+    <p class="nota">Arrastra el packing list del proveedor. Se leen los pallets, los calibres y también matrícula, booking, precinto y guía. Los precios se ponen después: en blanco los completa la factura.</p>
+    <div class="upload-zone" id="cm-zona" onclick="document.getElementById('cm-file').click()">
+      <strong>Suelta aquí el packing list</strong>
+      <span>o pulsa para elegir el archivo (.xlsx)</span>
+      <span id="cm-archivo" class="archivo"></span>
+    </div>
+    <input type="file" id="cm-file" accept=".xlsx,.xls" style="display:none"
+           onchange="leerArchivo(this.files[0])">
+
+    <details class="pegar">
+      <summary>o pegar las filas a mano desde Excel</summary>
+      <p class="nota">pallet · calibre · categoría · peso caja · cajas · kilos · precio/kg</p>
+      <textarea id="cm-packing" rows="5" placeholder="1&#9;20&#9;CAT 1&#9;4&#9;120&#9;480&#9;2,10
+1&#9;22&#9;CAT 1&#9;4&#9;60&#9;240&#9;2,00"></textarea>
+      <div class="btn-row">
+        <button class="btn btn-outline btn-sm" onclick="leerPegado()">Leer lo pegado</button>
+      </div>
+    </details>
+
     <div class="btn-row">
-      <button class="btn btn-outline btn-sm" onclick="leerPacking()">Leer packing list</button>
       <button class="btn btn-outline btn-sm" onclick="addLineaCompra()">+ Añadir línea a mano</button>
-      <button class="btn btn-outline btn-sm" onclick="vaciarCompra()">Vaciar</button>
+      <button class="btn btn-outline btn-sm" onclick="vaciarCompra()">Vaciar todo</button>
     </div>
     <div class="tabla-scroll" style="margin-top:12px">
       <table id="tb-cm-lineas">
@@ -738,8 +762,243 @@ async function cargarBancos(){
 }
 
 
+
+/* ═══ LECTURA DEL PACKING LIST (mismo lector que Almacén) ═══ */
+const _scripts = {};
+function loadScript(src){
+  if (_scripts[src]) return _scripts[src];
+  _scripts[src] = new Promise((ok, fallo) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = () => ok();
+    s.onerror = () => fallo(new Error('No se pudo cargar ' + src));
+    document.head.appendChild(s);
+  });
+  return _scripts[src];
+}
+const cargarXLSX = () => window.XLSX ? Promise.resolve()
+  : loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+
+function activarZona(){
+  const zona = $('cm-zona');
+  if (!zona || zona.dataset.listo) return;
+  zona.dataset.listo = '1';
+  ['dragenter','dragover'].forEach(ev => zona.addEventListener(ev, e => {
+    e.preventDefault(); zona.classList.add('cargado');
+  }));
+  ['dragleave','drop'].forEach(ev => zona.addEventListener(ev, e => {
+    e.preventDefault();
+    if (ev === 'drop' && e.dataTransfer.files.length) leerArchivo(e.dataTransfer.files[0]);
+    else if (!lineasCompra.length) zona.classList.remove('cargado');
+  }));
+}
+
+async function leerArchivo(f){
+  if (!f) return;
+  aviso('cm-aviso','');
+  try{
+    await cargarXLSX();
+    const buf = await f.arrayBuffer();
+    const packing = parsearPallets(XLSX.read(buf, {type:'array'}));
+
+    // Del formato del packing a las líneas de compra
+    lineasCompra = [];
+    packing.pallets.forEach(p => {
+      p.lineas.forEach(l => {
+        lineasCompra.push({
+          num_pallet:    p.num || String(lineasCompra.length + 1),
+          codigo_origen: p.codigo || '',
+          calibre:       l.calibre,
+          categoria:     l.categoria || 'CAT 1',
+          peso_caja:     l.peso_caja,
+          cajas:         l.cajas,
+          kilos:         l.kilos,
+          precio_kg:     ''
+        });
+      });
+    });
+
+    // La cabecera del documento rellena el transporte
+    if (packing.matricula)  $('cm-matricula').value = packing.matricula;
+    if (packing.booking)    $('cm-booking').value   = packing.booking;
+    if (packing.precinto)   $('cm-precinto').value  = packing.precinto;
+    if (packing.destino)    $('cm-destino').value   = packing.destino;
+    if (packing.exportador && !$('cm-productor').value) $('cm-productor').value = packing.exportador;
+    if (packing.fechaCarga){
+      const d = new Date(packing.fechaCarga);
+      if (!isNaN(d)) $('cm-carga').value = d.toISOString().slice(0,10);
+    }
+    const v = packing.pallets[0] && packing.pallets[0].variedad;
+    if (v) $('cm-variedad').value = v;
+
+    $('cm-archivo').textContent = f.name;
+    $('cm-zona').classList.add('cargado');
+    pintarCompra();
+    aviso('cm-aviso', 'Leídos ' + packing.pallets.length + ' pallets del packing list. ' +
+      'Revisa los datos y pon los precios antes de registrar.');
+  }catch(e){
+    lineasCompra = []; pintarCompra();
+    $('cm-archivo').textContent = '';
+    $('cm-zona').classList.remove('cargado');
+    aviso('cm-aviso', 'No se pudo leer el packing list: ' + e.message, true);
+  }
+}
+
+function parsearPallets(wb){
+  const txt  = v => (v === null || v === undefined) ? '' : String(v).trim();
+  const norm = v => txt(v).toLowerCase().normalize('NFD')
+                     .replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ');
+  const numero = v => {
+    if (typeof v === 'number') return v;
+    const n = parseFloat(String(v).replace(/[^0-9.,-]/g,'').replace(',','.'));
+    return isNaN(n) ? 0 : n;
+  };
+
+  const nombreHoja = wb.SheetNames.find(n => norm(n).includes('packing')) || wb.SheetNames[0];
+  const filas = XLSX.utils.sheet_to_json(wb.Sheets[nombreHoja], {header:1, defval:'', raw:true});
+  if (!filas.length) throw new Error('La hoja está vacía.');
+
+  // Cabecera de la tabla: la fila con "ID Number Pallet"
+  let hdr = -1;
+  for (let i = 0; i < Math.min(60, filas.length); i++){
+    const f = filas[i] || [];
+    for (let c = 0; c < Math.min(14, f.length); c++){
+      const t = norm(f[c]);
+      if (t.includes('id number') || t === 'pallet' || t.includes('nro pallet') || t.includes('n pallet')){
+        hdr = i; break;
+      }
+    }
+    if (hdr >= 0) break;
+  }
+  if (hdr < 0) throw new Error('No se encontró la fila de cabecera con "ID Number Pallet".');
+  const cab = filas[hdr];
+
+  const buscarCol = (...claves) => {
+    for (const k of claves)
+      for (let c = 0; c < cab.length; c++)
+        if (norm(cab[c]).includes(k)) return c;
+    return -1;
+  };
+  const cVariedad  = buscarCol('variety','variedad');
+  const cMetodo    = buscarCol('metodo','method');
+  const cPeso      = buscarCol('weight','peso');
+  const cCategoria = buscarCol('category','categoria');
+
+  const idCols = [];
+  for (let c = 0; c < cab.length; c++) if (norm(cab[c]).includes('id number')) idCols.push(c);
+  const cNum = idCols.length ? idCols[0] : 1;
+  const cCod = idCols.length > 1 ? idCols[1] : cNum + 1;
+
+  const desde = Math.max(cCategoria, cPeso, cVariedad, cNum) + 1;
+  const calibres = [];
+  for (let c = desde; c < cab.length; c++){
+    const t = txt(cab[c]);
+    if (!t) continue;
+    if (norm(t).includes('total')) break;
+    if (/^\d{1,3}$/.test(t) || /^(sc|s\/c)$/i.test(t)) calibres.push({col:c, cal:t.toUpperCase()});
+  }
+  if (!calibres.length) throw new Error('No se encontraron columnas de calibre en la cabecera.');
+
+  // Un pallet puede ocupar varias filas: las de continuación no
+  // repiten el número, así que se arrastran sus atributos.
+  const lista = [];
+  let actual = null;
+
+  for (let i = hdr + 1; i < filas.length; i++){
+    const f = filas[i] || [];
+    const primero = txt(f[cNum]) || txt(f[cCod]);
+    if (norm(primero).startsWith('total')) break;
+    if (norm(f[0]).startsWith('total') || norm(f[1]).startsWith('total')) break;
+
+    if (primero && !norm(primero).startsWith('total')){
+      actual = {
+        num:       txt(f[cNum]),
+        codigo:    txt(f[cCod]),
+        variedad:  cVariedad  >= 0 ? txt(f[cVariedad])  : '',
+        metodo:    cMetodo    >= 0 ? txt(f[cMetodo])    : '',
+        peso_caja: cPeso      >= 0 ? numero(f[cPeso])   : 0,
+        categoria: cCategoria >= 0 ? txt(f[cCategoria]) : '',
+        lineas: [], cajas: 0, kilos: 0
+      };
+      if (actual.peso_caja > 0) lista.push(actual);
+    }
+    if (!actual || !actual.peso_caja) continue;
+
+    calibres.forEach(({col, cal}) => {
+      const cajas = numero(f[col]);
+      if (!cajas) return;
+      const categoria = actual.categoria || 'CAT 1';
+      const previo = actual.lineas.find(l => l.calibre === cal && l.categoria === categoria);
+      if (previo){
+        previo.cajas += cajas;
+        previo.kilos += cajas * actual.peso_caja;
+      } else {
+        actual.lineas.push({
+          calibre: cal, categoria: categoria,
+          peso_caja: actual.peso_caja,
+          cajas: cajas, kilos: cajas * actual.peso_caja
+        });
+      }
+      actual.cajas += cajas;
+      actual.kilos += cajas * actual.peso_caja;
+    });
+  }
+
+  const conCarga = lista.filter(p => p.cajas > 0);
+  if (!conCarga.length) throw new Error('No se leyó ninguna caja. Revisa la tabla de pallets.');
+
+  // Datos de cabecera del documento. Las etiquetas de este formato
+  // son bilingües y llevan barra ("Booking N°/N° reserva"), así que
+  // primero se recogen todas para no confundir una etiqueta vecina
+  // con el valor buscado.
+  const etiquetas = new Set();
+  for (let i = 0; i < Math.min(hdr, filas.length); i++)
+    for (const v of (filas[i] || [])){
+      const t = txt(v);
+      if (t && t.includes('/') && /[a-záéíóúñ]/i.test(t)) etiquetas.add(t);
+    }
+  const campo = (...claves) => {
+    for (let i = 0; i < Math.min(hdr, filas.length); i++){
+      const f = filas[i] || [];
+      for (let c = 0; c < f.length; c++){
+        const t = norm(f[c]);
+        if (!t) continue;
+        if (claves.some(k => t.includes(k))){
+          const hasta = Math.min(f.length, c + 16);
+          for (let d = c + 1; d < hasta; d++){
+            const v = txt(f[d]);
+            if (!v || v === '-') continue;
+            if (etiquetas.has(v)) break;
+            return v;
+          }
+        }
+      }
+    }
+    return '';
+  };
+
+  let titulo = '';
+  for (let i = 0; i < Math.min(hdr, filas.length); i++){
+    for (const v of (filas[i] || [])) if (norm(v).includes('packing list')){ titulo = txt(v); break; }
+    if (titulo) break;
+  }
+
+  return {
+    titulo:     titulo,
+    exportador: campo('exportado por','exported by','eported by'),
+    destino:    campo('destination','destino'),
+    matricula:  campo('container n','n contenedor','contenedor'),
+    booking:    campo('booking','n reserva','reserva'),
+    precinto:   campo('customs seal','precinto aduana'),
+    guia:       campo('waybill','guias de remision','guia de remision'),
+    fechaCarga: campo('loading date','fecha carga'),
+    pallets:    conCarga
+  };
+}
+
 /* ═══ COMPRA EN UN SOLO PASO ═══ */
 function cargarCompra(){
+  activarZona();
   if (!$('cm-fecha').value) $('cm-fecha').value = hoy();
   if (!lineasCompra.length) pintarCompra();
   cambiarRegimen();
@@ -764,11 +1023,15 @@ function addLineaCompra(){
 }
 function borrarLineaCompra(i){ lineasCompra.splice(i,1); pintarCompra(); }
 function cambiarCompra(i,campo,valor){ lineasCompra[i][campo]=valor; totalesCompra(); }
-function vaciarCompra(){ $('cm-packing').value=''; lineasCompra=[]; pintarCompra(); }
+function vaciarCompra(){
+  $('cm-packing').value=''; $('cm-archivo').textContent='';
+  $('cm-file').value=''; $('cm-zona').classList.remove('cargado');
+  lineasCompra=[]; pintarCompra(); aviso('cm-aviso','');
+}
 
-function leerPacking(){
+function leerPegado(){
   const txt = $('cm-packing').value.trim();
-  if (!txt) return;
+  if (!txt) return aviso('cm-aviso','No has pegado nada.', true);
   const nuevas = [];
   txt.split(/\r?\n/).forEach(fila => {
     if (!fila.trim()) return;
@@ -861,7 +1124,7 @@ async function registrarCompra(){
     ' con ' + data.pallets + ' pallets, ' + n0(data.cajas) + ' cajas y ' + n0(data.kilos) +
     ' kg ya en almacén. Cuando llegue la factura del proveedor, regístrala en Facturas.');
   vaciarCompra();
-  ['cm-matricula','cm-booking','cm-precinto','cm-lote'].forEach(id => $(id).value='');
+  ['cm-matricula','cm-booking','cm-precinto','cm-lote','cm-destino'].forEach(id => $(id).value='');
   await cargarMaestros();
 }
 
