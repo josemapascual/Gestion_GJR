@@ -186,18 +186,9 @@ td.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
 .rojo{color:var(--error)}
 tr.fila-alerta td{background:var(--error-bg)}
 .nota{font-size:12px;color:var(--texto-suave);margin:10px 0 0}
-textarea{min-height:120px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
-#sec-pedidos td input{padding:6px 8px;font-size:12.5px}
-.lista-riesgo{list-style:none;padding:0;margin:0}
-.lista-riesgo li{padding:7px 0;border-bottom:1px solid var(--verde-border);font-size:13px;
-  display:flex;align-items:center;gap:10px}
-.lista-riesgo li:last-child{border-bottom:0}
-table.mini{width:100%;font-size:12.5px}
-table.mini th{padding-bottom:6px}
-table.mini td{padding:5px 6px;border-bottom:1px solid var(--verde-border)}
-.bloque-tit{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;
-  color:var(--texto-suave);margin:20px 0 10px}
-.bloque-tit:first-child{margin-top:4px}
+textarea{min-height:110px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+#sec-compra td input{padding:6px 8px;font-size:12.5px}
+.opc{font-weight:400;text-transform:none;letter-spacing:0;color:var(--texto-suave);font-size:11px}
 
 </style>
 </head>
@@ -233,8 +224,8 @@ table.mini td{padding:5px 6px;border-bottom:1px solid var(--verde-border)}
 <div class="tabs">
   <button id="tb-proveedores" class="on" onclick="tab('proveedores')">Proveedores</button>
   <button id="tb-bancos"                onclick="tab('bancos')">Cuentas de pago</button>
-  <button id="tb-pedidos"               onclick="tab('pedidos')">Pedidos</button>
-  <button id="tb-recepcion"             onclick="tab('recepcion')">Recepción</button>
+  <button id="tb-compra"                onclick="tab('compra')">Nueva compra</button>
+  <button id="tb-historico"             onclick="tab('historico')">Compras</button>
   <button id="tb-facturas"              onclick="tab('facturas')">Facturas</button>
   <button id="tb-pagos"                 onclick="tab('pagos')">Pagos</button>
   <button id="tb-cartera"               onclick="tab('cartera')">Cartera</button>
@@ -323,129 +314,92 @@ table.mini td{padding:5px 6px;border-bottom:1px solid var(--verde-border)}
   </div>
 </div>
 
-<!-- ══════════ PEDIDOS ══════════ -->
-<div id="sec-pedidos" style="display:none">
+<!-- ══════════ NUEVA COMPRA ══════════ -->
+<div id="sec-compra" style="display:none">
+  <div class="status-bar">
+    Una sola pantalla. Registras la compra y la mercancía entra en almacén con tu numeración
+    de pallets. Da igual que pegues el packing list del proveedor o lo escribas a mano.
+  </div>
+
   <div class="card">
-    <div class="card-title">Nuevo pedido de compra</div>
+    <div class="card-title">1 · Proveedor y destino</div>
     <div class="grid g4">
-      <div class="fld"><label>Proveedor</label><select id="pd-prov"></select></div>
-      <div class="fld"><label>Contenedor</label><select id="pd-cont"></select></div>
-      <div class="fld"><label>Fecha</label><input id="pd-fecha" type="date"></div>
+      <div class="fld"><label>Proveedor</label><select id="cm-prov" onchange="autoProveedor()"></select></div>
+      <div class="fld"><label>Fecha</label><input id="cm-fecha" type="date"></div>
       <div class="fld"><label>Moneda</label>
-        <select id="pd-moneda"><option>USD</option><option>EUR</option><option>PEN</option></select></div>
+        <select id="cm-moneda" onchange="totalesCompra()"><option>USD</option><option>EUR</option><option>PEN</option></select></div>
+      <div class="fld"><label>Incoterm</label><input id="cm-incoterm" placeholder="FOB Callao"></div>
     </div>
     <div class="grid g3">
-      <div class="fld"><label>Tipo</label>
-        <select id="pd-tipo">
-          <option value="INTERNACIONAL">Internacional</option>
-          <option value="AGRICOLA">Agrícola</option>
-          <option value="PROCESADA">Fruta procesada</option>
-          <option value="SERVICIO">Servicio</option>
+      <div class="fld"><label>Destino de la mercancía</label>
+        <select id="cm-regimen" onchange="cambiarRegimen()">
+          <option value="NACIONALIZADO">Entra en cámara</option>
+          <option value="FLOTE">A flote — se vende en tránsito</option>
         </select></div>
-      <div class="fld"><label>Incoterm</label><input id="pd-incoterm" placeholder="FOB"></div>
-      <div class="fld"><label>Lugar</label><input id="pd-lugar" placeholder="Callao"></div>
+      <div class="fld" id="fld-almacen"><label>Almacén</label><select id="cm-almacen"></select></div>
+      <div class="fld"><label>Campaña</label><input id="cm-campana"></div>
     </div>
+  </div>
 
-    <div class="card-title" style="margin-top:18px">Líneas</div>
-    <div class="tabla-scroll">
-      <table id="tb-pd-lineas">
-        <thead><tr>
-          <th>Descripción</th><th>Calibre</th><th>Categoría</th>
-          <th class="num">Cajas</th><th class="num">Kilos</th><th class="num">€/kg o $/kg</th>
-          <th class="num">Importe</th><th></th>
-        </tr></thead>
+  <div class="card">
+    <div class="card-title">2 · Transporte y origen <span class="opc">opcional</span></div>
+    <div class="grid g4">
+      <div class="fld"><label>Matrícula</label><input id="cm-matricula" placeholder="MSKU1234567"></div>
+      <div class="fld"><label>Booking</label><input id="cm-booking"></div>
+      <div class="fld"><label>Precinto</label><input id="cm-precinto"></div>
+      <div class="fld"><label>Naviera o transportista</label><input id="cm-naviera"></div>
+    </div>
+    <div class="grid g4">
+      <div class="fld"><label>País de origen</label><input id="cm-origen" maxlength="2" placeholder="PE"></div>
+      <div class="fld"><label>Destino</label><input id="cm-destino" placeholder="ROTTERDAM"></div>
+      <div class="fld"><label>Fecha de carga</label><input id="cm-carga" type="date"></div>
+      <div class="fld"><label>Llegada prevista</label><input id="cm-eta" type="date"></div>
+    </div>
+    <div class="grid g3">
+      <div class="fld"><label>Lote</label><input id="cm-lote" placeholder="si lo dejas vacío usa el código de entrada"></div>
+      <div class="fld"><label>Productor</label><input id="cm-productor"></div>
+      <div class="fld"><label>Variedad</label><input id="cm-variedad" value="HASS"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">3 · Mercancía</div>
+    <p class="nota">Pega el packing list desde Excel —
+      <strong>pallet · calibre · categoría · peso caja · cajas · kilos · precio/kg</strong> —
+      o añade las líneas a mano. El precio puede quedar en blanco y completarse con la factura.</p>
+    <textarea id="cm-packing" rows="6" placeholder="1&#9;20&#9;CAT 1&#9;4&#9;120&#9;480&#9;2,10
+1&#9;22&#9;CAT 1&#9;4&#9;60&#9;240&#9;2,00
+2&#9;20&#9;CAT 1&#9;4&#9;180&#9;720&#9;2,10"></textarea>
+    <div class="btn-row">
+      <button class="btn btn-outline btn-sm" onclick="leerPacking()">Leer packing list</button>
+      <button class="btn btn-outline btn-sm" onclick="addLineaCompra()">+ Añadir línea a mano</button>
+      <button class="btn btn-outline btn-sm" onclick="vaciarCompra()">Vaciar</button>
+    </div>
+    <div class="tabla-scroll" style="margin-top:12px">
+      <table id="tb-cm-lineas">
+        <thead><tr><th>Pallet</th><th>Cód. proveedor</th><th>Calibre</th><th>Categoría</th>
+          <th class="num">Peso caja</th><th class="num">Cajas</th><th class="num">Kilos</th>
+          <th class="num">Precio/kg</th><th class="num">Importe</th><th></th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
-    <div class="btn-row">
-      <button class="btn btn-outline btn-sm" onclick="addLineaPedido()">+ Añadir línea</button>
-      <span class="total-linea">Total: <strong id="pd-total">0,00</strong> <span id="pd-total-mon">USD</span>
-        · <strong id="pd-kilos">0</strong> kg</span>
-    </div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="guardarPedido()">Guardar pedido</button>
-      <button class="btn btn-outline" onclick="limpiarPedido()">Limpiar</button>
-    </div>
-    <div id="pd-aviso"></div>
+    <div class="btn-row"><span class="total-linea" id="cm-totales"></span></div>
   </div>
 
   <div class="card">
-    <div class="card-title">Pedidos</div>
-    <div class="tabla-scroll"><table id="tb-lista-pedidos"><tbody><tr><td class="vacio">Cargando…</td></tr></tbody></table></div>
+    <div class="card-title">4 · Registrar</div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="registrarCompra()">Registrar compra y dar entrada</button>
+    </div>
+    <div id="cm-aviso"></div>
   </div>
 </div>
 
-
-<!-- ══════════ RECEPCIÓN ══════════ -->
-<div id="sec-recepcion" style="display:none">
-  <div class="status-bar">
-    La mercancía entra en el almacén desde el pedido, sin volver a teclearla.
-    Pega el packing list del Excel del proveedor o deja el detalle en blanco y se generará
-    un pallet por línea del pedido.
-  </div>
-
+<!-- ══════════ HISTÓRICO ══════════ -->
+<div id="sec-historico" style="display:none">
   <div class="card">
-    <div class="card-title">1 · Pedido a recepcionar</div>
-    <div class="grid g3">
-      <div class="fld"><label>Pedido</label><select id="rc-pedido" onchange="cargarPedidoRecep()"></select></div>
-      <div class="fld"><label>Régimen</label>
-        <select id="rc-regimen" onchange="cambiarRegimen()">
-          <option value="FLOTE">A flote — no pasa por cámara</option>
-          <option value="NACIONALIZADO">Nacionalizado — entra en cámara</option>
-        </select></div>
-      <div class="fld" id="fld-almacen" style="display:none"><label>Almacén de destino</label>
-        <select id="rc-almacen"></select></div>
-    </div>
-    <div id="rc-resumen-pedido"></div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">2 · Datos del contenedor</div>
-    <div class="grid g4">
-      <div class="fld"><label>Matrícula</label><input id="rc-matricula" placeholder="MSKU1234567"></div>
-      <div class="fld"><label>Booking</label><input id="rc-booking"></div>
-      <div class="fld"><label>Precinto</label><input id="rc-precinto"></div>
-      <div class="fld"><label>Naviera</label><input id="rc-naviera"></div>
-    </div>
-    <div class="grid g4">
-      <div class="fld"><label>Origen</label><input id="rc-origen" maxlength="2" placeholder="PE"></div>
-      <div class="fld"><label>Destino</label><input id="rc-destino" placeholder="ROTTERDAM"></div>
-      <div class="fld"><label>Fecha de carga</label><input id="rc-carga" type="date"></div>
-      <div class="fld"><label>ETA</label><input id="rc-eta" type="date"></div>
-    </div>
-    <div class="grid g4">
-      <div class="fld"><label>Lote</label><input id="rc-lote" placeholder="se usa el código del contenedor"></div>
-      <div class="fld"><label>Productor</label><input id="rc-productor"></div>
-      <div class="fld"><label>Variedad</label><input id="rc-variedad" value="HASS"></div>
-      <div class="fld"><label>Campaña</label><input id="rc-campana"></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">3 · Packing list</div>
-    <p class="nota">Copia las columnas desde Excel y pégalas aquí:
-      <strong>pallet · calibre · categoría · peso caja · cajas · kilos</strong>.
-      Una fila por línea, sin encabezado.</p>
-    <textarea id="rc-packing" rows="7" placeholder="1&#9;20&#9;CAT 1&#9;4&#9;120&#9;480
-1&#9;22&#9;CAT 1&#9;4&#9;60&#9;240
-2&#9;20&#9;CAT 1&#9;4&#9;180&#9;720"></textarea>
-    <div class="btn-row">
-      <button class="btn btn-outline btn-sm" onclick="leerPacking()">Leer packing list</button>
-      <button class="btn btn-outline btn-sm" onclick="$('rc-packing').value='';leerPacking()">Vaciar</button>
-      <span class="total-linea" id="rc-totales"></span>
-    </div>
-    <div class="tabla-scroll" style="margin-top:12px">
-      <table id="tb-rc-preview"><tbody><tr><td class="vacio">Sin packing list: se generará un pallet por línea del pedido.</td></tr></tbody></table>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">4 · Confirmar</div>
-    <div id="rc-comparativa"></div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="recepcionar()">Recepcionar en almacén</button>
-    </div>
-    <div id="rc-aviso"></div>
+    <div class="card-title">Compras registradas</div>
+    <div class="tabla-scroll"><table id="tb-lista-compras"><tbody><tr><td class="vacio">Cargando…</td></tr></tbody></table></div>
   </div>
 </div>
 
@@ -566,9 +520,7 @@ let yo = null;                 // {id, nombre, rol, puede_controlar}
 let proveedores = [];
 let contenedores = [];
 let cuentasPropias = [];
-let lineasPedido = [];
-let palletsRecep = [];
-let pedidoRecep = null;
+let lineasCompra = [];
 let almacenes = [];
 
 const $ = id => document.getElementById(id);
@@ -627,7 +579,7 @@ function aplicarPermisos(){
   $('card-alta-banco').style.display = esGerencia ? '' : 'none';
   // Comercial no compra
   if (yo.rol === 'COMERCIAL'){
-    ['tb-pedidos','tb-pagos'].forEach(t => $(t).style.display = 'none');
+    ['tb-compra','tb-pagos'].forEach(t => $(t).style.display = 'none');
   }
 }
 
@@ -645,23 +597,23 @@ async function cargarMaestros(){
 
   const optProv = proveedores.filter(x => x.activo !== false)
     .map(x => `<option value="${x.id}">${esc(x.razon_social)}</option>`).join('');
-  ['pv-x','bk-prov','pd-prov','fc-prov'].forEach(id => { if ($(id)) $(id).innerHTML = optProv; });
+  ['bk-prov','cm-prov','fc-prov'].forEach(id => { if ($(id)) $(id).innerHTML = optProv; });
 
   const optCont = '<option value="">— sin contenedor —</option>' +
     contenedores.map(x => `<option value="${x.id}">${esc(x.codigo)}</option>`).join('');
-  ['pd-cont','fc-cont'].forEach(id => { if ($(id)) $(id).innerHTML = optCont; });
+  ['fc-cont'].forEach(id => { if ($(id)) $(id).innerHTML = optCont; });
 
   if ($('pg-cuenta')) $('pg-cuenta').innerHTML = cuentasPropias
     .map(x => `<option value="${x.id}">${esc(x.etiqueta || x.banco)} · ${esc(x.moneda)}</option>`).join('');
 
   const {data:al} = await sb.from('erp_almacen').select('id,codigo,nombre').order('nombre');
   almacenes = al || [];
-  if ($('rc-almacen')) $('rc-almacen').innerHTML =
+  if ($('cm-almacen')) $('cm-almacen').innerHTML =
     almacenes.map(a => `<option value="${a.id}">${esc(a.nombre || a.codigo)}</option>`).join('');
 }
 
 /* ── NAVEGACIÓN ──────────────────────────────────────────── */
-const SECCIONES = ['proveedores','bancos','pedidos','recepcion','facturas','pagos','cartera'];
+const SECCIONES = ['proveedores','bancos','compra','historico','facturas','pagos','cartera'];
 function tab(nombre){
   SECCIONES.forEach(t => {
     $('sec-' + t).style.display = (t === nombre) ? 'block' : 'none';
@@ -669,8 +621,8 @@ function tab(nombre){
   });
   if (nombre === 'proveedores') cargarProveedores();
   if (nombre === 'bancos')      cargarBancos();
-  if (nombre === 'pedidos')     cargarPedidos();
-  if (nombre === 'recepcion')   cargarRecepcion();
+  if (nombre === 'compra')      cargarCompra();
+  if (nombre === 'historico')   cargarHistorico();
   if (nombre === 'facturas')    cargarFacturas();
   if (nombre === 'pagos')       cargarPagos();
   if (nombre === 'cartera')     cargarCartera();
@@ -785,261 +737,163 @@ async function cargarBancos(){
     </tr>`).join('') + '</tbody>';
 }
 
-/* ═══ PEDIDOS ═══ */
-function addLineaPedido(){
-  lineasPedido.push({descripcion:'', calibre:'', categoria:'', cajas:'', kilos:'', precio_kg:''});
-  pintarLineasPedido();
-}
-function borrarLineaPedido(i){ lineasPedido.splice(i,1); pintarLineasPedido(); }
-function cambiarLinea(i, campo, valor){ lineasPedido[i][campo] = valor; totalesPedido(); }
 
-function pintarLineasPedido(){
-  const tb = $('tb-pd-lineas').querySelector('tbody');
-  tb.innerHTML = lineasPedido.map((l,i) => `<tr>
-    <td><input value="${esc(l.descripcion)}" oninput="cambiarLinea(${i},'descripcion',this.value)"></td>
-    <td><input style="width:70px" value="${esc(l.calibre)}" oninput="cambiarLinea(${i},'calibre',this.value)"></td>
-    <td><input style="width:80px" value="${esc(l.categoria)}" oninput="cambiarLinea(${i},'categoria',this.value)"></td>
-    <td><input type="number" step="1" style="width:90px" value="${l.cajas}" oninput="cambiarLinea(${i},'cajas',this.value)"></td>
-    <td><input type="number" step="0.001" style="width:110px" value="${l.kilos}" oninput="cambiarLinea(${i},'kilos',this.value)"></td>
-    <td><input type="number" step="0.0001" style="width:110px" value="${l.precio_kg}" oninput="cambiarLinea(${i},'precio_kg',this.value)"></td>
-    <td class="num" id="pd-imp-${i}">0,00</td>
-    <td><button class="btn btn-danger btn-sm" onclick="borrarLineaPedido(${i})">×</button></td>
-  </tr>`).join('') || '<tr><td class="vacio">Sin líneas. Añade la primera.</td></tr>';
-  totalesPedido();
+/* ═══ COMPRA EN UN SOLO PASO ═══ */
+function cargarCompra(){
+  if (!$('cm-fecha').value) $('cm-fecha').value = hoy();
+  if (!lineasCompra.length) pintarCompra();
+  cambiarRegimen();
 }
 
-function totalesPedido(){
-  let total = 0, kilos = 0;
-  lineasPedido.forEach((l,i) => {
-    const imp = (Number(l.kilos)||0) * (Number(l.precio_kg)||0);
-    total += imp; kilos += Number(l.kilos)||0;
-    const c = $('pd-imp-' + i); if (c) c.textContent = n2(imp);
+function cambiarRegimen(){
+  $('fld-almacen').style.display = $('cm-regimen').value === 'NACIONALIZADO' ? '' : 'none';
+}
+
+function autoProveedor(){
+  const p = proveedores.find(x => x.id === $('cm-prov').value);
+  if (!p) return;
+  if (p.moneda_habitual) $('cm-moneda').value = p.moneda_habitual;
+  if (!$('cm-productor').value) $('cm-productor').value = p.razon_social;
+  totalesCompra();
+}
+
+function addLineaCompra(){
+  lineasCompra.push({num_pallet:String(lineasCompra.length+1), codigo_origen:'', calibre:'',
+                     categoria:'CAT 1', peso_caja:4, cajas:'', kilos:'', precio_kg:''});
+  pintarCompra();
+}
+function borrarLineaCompra(i){ lineasCompra.splice(i,1); pintarCompra(); }
+function cambiarCompra(i,campo,valor){ lineasCompra[i][campo]=valor; totalesCompra(); }
+function vaciarCompra(){ $('cm-packing').value=''; lineasCompra=[]; pintarCompra(); }
+
+function leerPacking(){
+  const txt = $('cm-packing').value.trim();
+  if (!txt) return;
+  const nuevas = [];
+  txt.split(/\r?\n/).forEach(fila => {
+    if (!fila.trim()) return;
+    const c = fila.split(/\t|;/).map(x => x.trim());
+    if (c.length < 6) return;
+    const num = (v) => Number(String(v||'').replace(/\./g,'').replace(',','.')) || 0;
+    nuevas.push({
+      num_pallet: c[0] || String(nuevas.length+1),
+      codigo_origen: '',
+      calibre: c[1] || 'SC',
+      categoria: c[2] || 'CAT 1',
+      peso_caja: num(c[3]) || 4,
+      cajas: num(c[4]),
+      kilos: num(c[5]),
+      precio_kg: c[6] !== undefined ? num(c[6]) : ''
+    });
   });
-  $('pd-total').textContent = n2(total);
-  $('pd-kilos').textContent = n0(kilos);
-  $('pd-total-mon').textContent = $('pd-moneda').value;
+  if (!nuevas.length)
+    return aviso('cm-aviso','No se ha podido leer ninguna fila. Revisa que haya al menos seis columnas separadas por tabulador.', true);
+  lineasCompra = nuevas;
+  aviso('cm-aviso','');
+  pintarCompra();
 }
 
-async function guardarPedido(){
-  const validas = lineasPedido.filter(l => Number(l.kilos) > 0 && Number(l.precio_kg) >= 0);
-  if (!validas.length) return aviso('pd-aviso','Añade al menos una línea con kilos y precio.', true);
-
-  const {data:cab, error:e1} = await sb.from('erp_compra').insert({
-    proveedor_id: $('pd-prov').value,
-    contenedor_id: $('pd-cont').value || null,
-    tipo: $('pd-tipo').value,
-    incoterm: $('pd-incoterm').value.trim() || null,
-    lugar_incoterm: $('pd-lugar').value.trim() || null,
-    fecha: $('pd-fecha').value || hoy(),
-    moneda: $('pd-moneda').value,
-    estado: 'CONFIRMADO',
-    creado_por: yo.id
-  }).select('id,codigo').single();
-  if (e1) return aviso('pd-aviso','No se guardó: ' + e1.message, true);
-
-  const {error:e2} = await sb.from('erp_compra_linea').insert(
-    validas.map((l,i) => ({
-      compra_id: cab.id, posicion: i+1,
-      descripcion: l.descripcion || null,
-      calibre: l.calibre || null, categoria: l.categoria || null,
-      cajas: Number(l.cajas) || null,
-      kilos: Number(l.kilos), precio_kg: Number(l.precio_kg)
-    })));
-  if (e2) return aviso('pd-aviso','Cabecera guardada pero fallaron las líneas: ' + e2.message, true);
-
-  aviso('pd-aviso','Pedido ' + cab.codigo + ' guardado.');
-  limpiarPedido(); cargarPedidos();
+function pintarCompra(){
+  const tb = $('tb-cm-lineas').querySelector('tbody');
+  tb.innerHTML = lineasCompra.map((l,i) => `<tr>
+    <td><input style="width:60px" value="${esc(l.num_pallet)}" oninput="cambiarCompra(${i},'num_pallet',this.value)"></td>
+    <td><input style="width:90px" value="${esc(l.codigo_origen||'')}" oninput="cambiarCompra(${i},'codigo_origen',this.value)"></td>
+    <td><input style="width:65px" value="${esc(l.calibre)}" oninput="cambiarCompra(${i},'calibre',this.value)"></td>
+    <td><input style="width:80px" value="${esc(l.categoria)}" oninput="cambiarCompra(${i},'categoria',this.value)"></td>
+    <td><input type="number" step="0.001" style="width:85px" value="${l.peso_caja}" oninput="cambiarCompra(${i},'peso_caja',this.value)"></td>
+    <td><input type="number" step="1" style="width:85px" value="${l.cajas}" oninput="cambiarCompra(${i},'cajas',this.value)"></td>
+    <td><input type="number" step="0.001" style="width:100px" value="${l.kilos}" oninput="cambiarCompra(${i},'kilos',this.value)"></td>
+    <td><input type="number" step="0.0001" style="width:95px" value="${l.precio_kg}" oninput="cambiarCompra(${i},'precio_kg',this.value)"></td>
+    <td class="num" id="cm-imp-${i}">0,00</td>
+    <td><button class="btn btn-danger btn-sm" onclick="borrarLineaCompra(${i})">×</button></td>
+  </tr>`).join('') || '<tr><td class="vacio">Pega el packing list o añade una línea a mano.</td></tr>';
+  totalesCompra();
 }
 
-function limpiarPedido(){
-  lineasPedido = []; pintarLineasPedido();
-  ['pd-incoterm','pd-lugar'].forEach(id => $(id).value = '');
-  $('pd-fecha').value = hoy();
+function totalesCompra(){
+  let imp = 0, kg = 0, cj = 0;
+  const pallets = new Set();
+  lineasCompra.forEach((l,i) => {
+    const x = (Number(l.kilos)||0) * (Number(l.precio_kg)||0);
+    imp += x; kg += Number(l.kilos)||0; cj += Number(l.cajas)||0;
+    if (l.num_pallet) pallets.add(String(l.num_pallet));
+    const c = $('cm-imp-'+i); if (c) c.textContent = n2(x);
+  });
+  $('cm-totales').innerHTML = lineasCompra.length
+    ? `<strong>${pallets.size}</strong> pallets · <strong>${n0(cj)}</strong> cajas ·
+       <strong>${n0(kg)}</strong> kg · <strong>${n2(imp)} ${esc($('cm-moneda').value)}</strong>`
+    : '';
 }
 
-async function cargarPedidos(){
-  if (!$('pd-fecha').value) $('pd-fecha').value = hoy();
-  if (!lineasPedido.length) pintarLineasPedido();
+async function registrarCompra(){
+  const validas = lineasCompra.filter(l => Number(l.kilos) > 0);
+  if (!$('cm-prov').value) return aviso('cm-aviso','Elige el proveedor.', true);
+  if (!validas.length)     return aviso('cm-aviso','Añade al menos una línea con kilos.', true);
+  if ($('cm-regimen').value === 'NACIONALIZADO' && !$('cm-almacen').value)
+    return aviso('cm-aviso','Elige el almacén donde entra la mercancía.', true);
+
+  const {data, error} = await sb.rpc('erp_registrar_compra', {p: {
+    proveedor_id: $('cm-prov').value,
+    fecha:      $('cm-fecha').value || hoy(),
+    moneda:     $('cm-moneda').value,
+    incoterm:   $('cm-incoterm').value.trim() || null,
+    regimen:    $('cm-regimen').value,
+    almacen_id: $('cm-regimen').value === 'NACIONALIZADO' ? $('cm-almacen').value : null,
+    usuario:    yo.nombre,
+    matricula:  $('cm-matricula').value.trim() || null,
+    booking:    $('cm-booking').value.trim() || null,
+    precinto:   $('cm-precinto').value.trim() || null,
+    naviera:    $('cm-naviera').value.trim() || null,
+    origen_pais:$('cm-origen').value.trim().toUpperCase() || null,
+    destino:    $('cm-destino').value.trim() || null,
+    fecha_carga:$('cm-carga').value || null,
+    fecha_eta:  $('cm-eta').value || null,
+    lote:       $('cm-lote').value.trim() || null,
+    productor:  $('cm-productor').value.trim() || null,
+    variedad:   $('cm-variedad').value.trim() || 'HASS',
+    campana:    $('cm-campana').value.trim() || null,
+    lineas:     validas
+  }});
+  if (error) return aviso('cm-aviso', error.message, true);
+  if (!data.ok) return aviso('cm-aviso', data.motivo, true);
+
+  aviso('cm-aviso', 'Compra ' + data.compra + ' registrada. Entrada ' + data.entrada +
+    ' con ' + data.pallets + ' pallets, ' + n0(data.cajas) + ' cajas y ' + n0(data.kilos) +
+    ' kg ya en almacén. Cuando llegue la factura del proveedor, regístrala en Facturas.');
+  vaciarCompra();
+  ['cm-matricula','cm-booking','cm-precinto','cm-lote'].forEach(id => $(id).value='');
+  await cargarMaestros();
+}
+
+async function cargarHistorico(){
   const {data} = await sb.from('erp_compra')
-    .select('id,codigo,fecha,moneda,estado,proveedor_id,contenedor_id,erp_compra_linea(kilos,precio_kg)')
-    .order('fecha', {ascending:false}).limit(100);
-  const t = $('tb-lista-pedidos');
+    .select('id,codigo,fecha,moneda,estado,proveedor_id,contenedor_id,erp_compra_linea(kilos,precio_kg,cajas)')
+    .order('fecha',{ascending:false}).limit(150);
+  const t = $('tb-lista-compras');
   if (!data || !data.length){
-    t.innerHTML = '<tbody><tr><td class="vacio">Todavía no hay pedidos.</td></tr></tbody>'; return;
+    t.innerHTML = '<tbody><tr><td class="vacio">Todavía no hay compras registradas.</td></tr></tbody>'; return;
   }
   const nomP = id => (proveedores.find(p => p.id === id) || {}).razon_social || '—';
-  const nomC = id => (contenedores.find(c => c.id === id) || {}).codigo || '';
+  const nomC = id => (contenedores.find(c => c.id === id) || {}).codigo || '—';
   t.innerHTML =
-    '<thead><tr><th>Pedido</th><th>Fecha</th><th>Proveedor</th><th>Contenedor</th>' +
-    '<th class="num">Kilos</th><th class="num">Importe</th><th>Estado</th></tr></thead><tbody>' +
+    '<thead><tr><th>Compra</th><th>Fecha</th><th>Proveedor</th><th>Entrada</th>' +
+    '<th class="num">Cajas</th><th class="num">Kilos</th><th class="num">Importe</th><th>Estado</th></tr></thead><tbody>' +
     data.map(p => {
       const ls = p.erp_compra_linea || [];
-      const kg = ls.reduce((a,l) => a + Number(l.kilos||0), 0);
-      const im = ls.reduce((a,l) => a + Number(l.kilos||0)*Number(l.precio_kg||0), 0);
+      const kg = ls.reduce((a,l)=>a+Number(l.kilos||0),0);
+      const cj = ls.reduce((a,l)=>a+Number(l.cajas||0),0);
+      const im = ls.reduce((a,l)=>a+Number(l.kilos||0)*Number(l.precio_kg||0),0);
       return `<tr>
-        <td><strong>${esc(p.codigo || '')}</strong></td>
-        <td>${esc(p.fecha || '')}</td>
+        <td><strong>${esc(p.codigo||'')}</strong></td>
+        <td>${esc(p.fecha||'')}</td>
         <td>${esc(nomP(p.proveedor_id))}</td>
         <td>${esc(nomC(p.contenedor_id))}</td>
+        <td class="num">${n0(cj)}</td>
         <td class="num">${n0(kg)}</td>
         <td class="num">${n2(im)} ${esc(p.moneda)}</td>
         <td><span class="chip chip-gris">${esc(p.estado)}</span></td>
       </tr>`;
     }).join('') + '</tbody>';
-}
-
-
-
-/* ═══ RECEPCIÓN: del pedido al almacén ═══ */
-async function cargarRecepcion(){
-  if (!$('rc-carga').value) $('rc-carga').value = hoy();
-  const {data} = await sb.from('erp_compra')
-    .select('id,codigo,fecha,moneda,estado,proveedor_id,erp_compra_linea(posicion,descripcion,calibre,categoria,peso_caja,cajas,kilos,precio_kg)')
-    .is('contenedor_id', null).in('estado', ['CONFIRMADO','BORRADOR'])
-    .order('fecha', {ascending:false});
-  const libres = data || [];
-  $('rc-pedido').innerHTML = libres.length
-    ? '<option value="">— elige un pedido —</option>' + libres.map(p =>
-        `<option value="${p.id}">${esc(p.codigo||'')} · ${esc((proveedores.find(x=>x.id===p.proveedor_id)||{}).razon_social||'')}</option>`).join('')
-    : '<option value="">— no hay pedidos pendientes de recepcionar —</option>';
-  window._pedidosLibres = libres;
-  $('rc-resumen-pedido').innerHTML = '';
-  $('rc-comparativa').innerHTML = '';
-}
-
-function cargarPedidoRecep(){
-  const id = $('rc-pedido').value;
-  pedidoRecep = (window._pedidosLibres || []).find(p => p.id === id) || null;
-  if (!pedidoRecep){ $('rc-resumen-pedido').innerHTML = ''; return; }
-  const ls = pedidoRecep.erp_compra_linea || [];
-  const kg = ls.reduce((a,l) => a + Number(l.kilos||0), 0);
-  const cj = ls.reduce((a,l) => a + Number(l.cajas||0), 0);
-  const im = ls.reduce((a,l) => a + Number(l.kilos||0)*Number(l.precio_kg||0), 0);
-  $('rc-resumen-pedido').innerHTML =
-    `<div class="status-bar" style="margin-top:14px">
-       <strong>${esc(pedidoRecep.codigo||'')}</strong> · ${ls.length} líneas ·
-       ${n0(cj)} cajas · <strong>${n0(kg)} kg</strong> ·
-       ${n2(im)} ${esc(pedidoRecep.moneda)}
-     </div>`;
-  const p = proveedores.find(x => x.id === pedidoRecep.proveedor_id);
-  if (p && !$('rc-productor').value) $('rc-productor').value = p.razon_social;
-  compararRecep();
-}
-
-function cambiarRegimen(){
-  $('fld-almacen').style.display = $('rc-regimen').value === 'NACIONALIZADO' ? '' : 'none';
-}
-
-function leerPacking(){
-  const txt = $('rc-packing').value.trim();
-  palletsRecep = [];
-  if (txt){
-    const mapa = new Map();
-    txt.split(/\r?\n/).forEach(fila => {
-      if (!fila.trim()) return;
-      const c = fila.split(/\t|;|,(?=\s*\S)/).map(x => x.trim());
-      if (c.length < 6) return;
-      const [num, calibre, categoria, peso, cajas, kilos] = c;
-      const key = String(num);
-      if (!mapa.has(key)) mapa.set(key, {num:key, categoria: categoria || 'CAT 1', lineas:[]});
-      mapa.get(key).lineas.push({
-        calibre: calibre || 'SC',
-        categoria: categoria || 'CAT 1',
-        peso_caja: Number(String(peso).replace(',','.')) || 4,
-        cajas: Number(String(cajas).replace(',','.')) || 0,
-        kilos: Number(String(kilos).replace(',','.')) || 0
-      });
-    });
-    palletsRecep = [...mapa.values()].map(p => ({
-      ...p,
-      peso_caja: p.lineas[0].peso_caja,
-      cajas: p.lineas.reduce((a,l) => a + l.cajas, 0),
-      kilos: p.lineas.reduce((a,l) => a + l.kilos, 0)
-    }));
-  }
-  pintarPreview();
-  compararRecep();
-}
-
-function pintarPreview(){
-  const t = $('tb-rc-preview');
-  if (!palletsRecep.length){
-    t.innerHTML = '<tbody><tr><td class="vacio">Sin packing list: se generará un pallet por línea del pedido.</td></tr></tbody>';
-    $('rc-totales').textContent = '';
-    return;
-  }
-  const cj = palletsRecep.reduce((a,p) => a + p.cajas, 0);
-  const kg = palletsRecep.reduce((a,p) => a + p.kilos, 0);
-  $('rc-totales').innerHTML =
-    `<strong>${palletsRecep.length}</strong> pallets · <strong>${n0(cj)}</strong> cajas · <strong>${n0(kg)}</strong> kg`;
-  t.innerHTML =
-    '<thead><tr><th>Pallet</th><th>Calibre</th><th>Categoría</th>' +
-    '<th class="num">Peso caja</th><th class="num">Cajas</th><th class="num">Kilos</th></tr></thead><tbody>' +
-    palletsRecep.flatMap(p => p.lineas.map((l,i) => `<tr>
-      <td>${i === 0 ? '<strong>'+esc(p.num)+'</strong>' : ''}</td>
-      <td>${esc(l.calibre)}</td><td>${esc(l.categoria)}</td>
-      <td class="num">${n2(l.peso_caja)}</td>
-      <td class="num">${n0(l.cajas)}</td>
-      <td class="num">${n0(l.kilos)}</td>
-    </tr>`)).join('') + '</tbody>';
-}
-
-function compararRecep(){
-  if (!pedidoRecep){ $('rc-comparativa').innerHTML = ''; return; }
-  const ped = (pedidoRecep.erp_compra_linea||[]).reduce((a,l) => a + Number(l.kilos||0), 0);
-  const rec = palletsRecep.length
-    ? palletsRecep.reduce((a,p) => a + p.kilos, 0)
-    : ped;
-  const dif = rec - ped;
-  const pct = ped ? Math.abs(dif)/ped*100 : 0;
-  const mal = pct > 5;
-  $('rc-comparativa').innerHTML =
-    `<div class="status-bar${mal ? ' error' : ''}">
-       Pedido <strong>${n0(ped)} kg</strong> · a recepcionar <strong>${n0(rec)} kg</strong> ·
-       diferencia <strong>${dif >= 0 ? '+' : ''}${n0(dif)} kg</strong> (${n2(pct)}%)
-       ${mal ? ' — fuera de tolerancia. Se recepciona igual, pero queda registrado.' : ''}
-     </div>`;
-}
-
-async function recepcionar(){
-  if (!$('rc-pedido').value) return aviso('rc-aviso','Elige el pedido que vas a recepcionar.', true);
-  if ($('rc-regimen').value === 'NACIONALIZADO' && !$('rc-almacen').value)
-    return aviso('rc-aviso','Una recepción nacionalizada necesita almacén de destino.', true);
-
-  const payload = {
-    compra_id:   $('rc-pedido').value,
-    regimen:     $('rc-regimen').value,
-    almacen_id:  $('rc-regimen').value === 'NACIONALIZADO' ? $('rc-almacen').value : null,
-    usuario:     yo.nombre,
-    fecha:       hoy(),
-    matricula:   $('rc-matricula').value.trim() || null,
-    booking:     $('rc-booking').value.trim() || null,
-    precinto:    $('rc-precinto').value.trim() || null,
-    naviera:     $('rc-naviera').value.trim() || null,
-    origen_pais: $('rc-origen').value.trim().toUpperCase() || null,
-    destino:     $('rc-destino').value.trim() || null,
-    fecha_carga: $('rc-carga').value || null,
-    fecha_eta:   $('rc-eta').value || null,
-    lote:        $('rc-lote').value.trim() || null,
-    productor:   $('rc-productor').value.trim() || null,
-    variedad:    $('rc-variedad').value.trim() || 'HASS',
-    campana:     $('rc-campana').value.trim() || null,
-    pallets:     palletsRecep
-  };
-
-  const {data, error} = await sb.rpc('erp_recepcionar_compra', {p: payload});
-  if (error) return aviso('rc-aviso', error.message, true);
-  if (!data.ok) return aviso('rc-aviso', data.motivo, true);
-
-  aviso('rc-aviso',
-    'Contenedor ' + data.contenedor + ' creado con ' + data.pallets + ' pallets y ' +
-    n0(data.kilos) + ' kg. La mercancía ya está en el almacén y el pedido queda enlazado.' +
-    (data.aviso ? ' ' + data.aviso : ''));
-
-  $('rc-packing').value = ''; palletsRecep = []; pintarPreview();
-  ['rc-matricula','rc-booking','rc-precinto','rc-lote'].forEach(id => $(id).value = '');
-  await cargarMaestros();
-  cargarRecepcion();
 }
 
 /* ═══ FACTURAS ═══ */
@@ -1105,20 +959,16 @@ function limpiarFactura(){
 async function validarFactura(id){
   const {data, error} = await sb.rpc('erp_validar_factura_compra', {p_factura: id});
   if (error) return aviso('fc-aviso', error.message, true);
-  if (!data.ok){
-    let m = data.motivo;
-    if (data.desviacion_pct != null)
-      m += ` — factura ${n0(data.kilos_factura)} kg frente a pedido ${n0(data.kilos_pedido)} kg (${data.desviacion_pct}%)`;
-    return aviso('fc-aviso', m, true);
-  }
-  aviso('fc-aviso', 'Factura validada.' + (data.aviso ? ' ' + data.aviso : ''));
+  const av = data.avisos || [];
+  if (av.length) aviso('fc-aviso', 'Factura validada, pero hay discrepancias con la compra — ' + av.join(' · '), true);
+  else aviso('fc-aviso', 'Factura validada.' + (data.sin_compra ? ' No tiene compra asociada.' : ' Cuadra con la compra.'));
   cargarFacturas();
 }
 
 async function cargarFacturas(){
   if (!$('fc-fecha').value) $('fc-fecha').value = hoy();
   const {data:peds} = await sb.from('erp_compra').select('id,codigo').order('fecha',{ascending:false}).limit(100);
-  $('fc-pedido').innerHTML = '<option value="">— sin pedido —</option>' +
+  $('fc-pedido').innerHTML = '<option value="">— sin compra asociada —</option>' +
     (peds||[]).map(p => `<option value="${p.id}">${esc(p.codigo||'')}</option>`).join('');
 
   const {data} = await sb.from('erp_factura_compra')
@@ -1174,9 +1024,11 @@ async function cargarPagos(){
     '<th>Prevista</th><th>Estado</th><th>Acción</th></tr></thead><tbody>' +
     data.map(p => {
       let acc = '';
-      if (p.estado === 'SOLICITADO' && yo.puede_controlar && yo.rol !== 'GERENCIA')
+      if (p.estado === 'SOLICITADO' && yo.rol === 'GERENCIA')
+        acc = `<button class="btn btn-gold btn-sm" onclick="autorizarPago('${p.id}')">Autorizar y pagar</button>`;
+      else if (p.estado === 'SOLICITADO' && yo.puede_controlar)
         acc = `<button class="btn btn-outline btn-sm" onclick="aprobarPago('${p.id}')">Aprobar</button>`;
-      else if (p.estado === 'APROBADO' && yo.rol === 'GERENCIA')
+      else if (p.estado === 'APROBADO' && (yo.rol === 'GERENCIA' || yo.puede_controlar))
         acc = `<button class="btn btn-gold btn-sm" onclick="autorizarPago('${p.id}')">Autorizar</button>`;
       else if (p.estado === 'AUTORIZADO' && yo.puede_controlar)
         acc = `<button class="btn btn-primary btn-sm" onclick="ejecutarPago('${p.id}')">Marcar ejecutado</button>`;
@@ -1236,7 +1088,7 @@ async function autorizarPago(id){
   const {data, error} = await sb.rpc('erp_autorizar_pago', {p_pago: id});
   if (error) return aviso('pg-aviso', error.message, true);
   if (!data.ok) return aviso('pg-aviso', data.motivo, true);
-  aviso('pg-aviso','Pago autorizado. Ya se puede ejecutar en el banco.');
+  aviso('pg-aviso', data.firma_unica ? 'Pago autorizado con tu firma. Ya se puede ejecutar en el banco.' : 'Pago autorizado. Ya se puede ejecutar en el banco.');
   cargarPagos();
 }
 
