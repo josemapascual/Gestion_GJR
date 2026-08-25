@@ -187,6 +187,7 @@ td.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
 tr.fila-alerta td{background:var(--error-bg)}
 .nota{font-size:12px;color:var(--texto-suave);margin:10px 0 0}
 textarea{min-height:100px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+textarea.llano{min-height:52px;font-family:inherit;font-size:13px}
 #sec-compra td input{padding:6px 8px;font-size:12.5px}
 .opc{font-weight:400;text-transform:none;letter-spacing:0;color:var(--texto-suave);font-size:11px}
 .upload-zone{border:2px dashed var(--verde-border);background:var(--verde-pale);
@@ -198,8 +199,7 @@ textarea{min-height:100px;font-family:ui-monospace,SFMono-Regular,Menlo,monospac
 .upload-zone span{font-size:12px;color:var(--texto-suave);display:block}
 .upload-zone .archivo{margin-top:8px;font-weight:600;color:var(--verde)}
 details.pegar{margin-top:14px}
-details.pegar summary{cursor:pointer;font-size:12.5px;color:var(--texto-suave);
-  padding:6px 0;user-select:none}
+details.pegar summary{cursor:pointer;font-size:12.5px;color:var(--texto-suave);padding:6px 0;user-select:none}
 details.pegar summary:hover{color:var(--verde)}
 
 </style>
@@ -351,6 +351,31 @@ details.pegar summary:hover{color:var(--verde)}
       <div class="fld" id="fld-almacen"><label>Almacén</label><select id="cm-almacen"></select></div>
       <div class="fld"><label>Campaña</label><input id="cm-campana"></div>
     </div>
+    <div class="grid g4">
+      <div class="fld"><label>Modalidad de precio</label>
+        <select id="cm-modalidad" onchange="cambiarModalidad()">
+          <option value="FIJO">Precio fijo cerrado</option>
+          <option value="PMG">Precio mínimo garantizado</option>
+          <option value="FIJO_ADELANTADO">Fijo adelantado, liquida después</option>
+          <option value="LIQUIDACION">Sin precio, a liquidación</option>
+          <option value="ANTICIPO">Anticipo a cuenta</option>
+        </select></div>
+      <div class="fld" id="fld-pmg" style="display:none"><label>Precio mínimo €/kg o $/kg</label>
+        <input id="cm-pmin" type="number" step="0.0001"></div>
+      <div class="fld"><label>Forma de pago</label>
+        <select id="cm-formapago">
+          <option value="TRANSFERENCIA">Transferencia</option>
+          <option value="ANTICIPO">Anticipo</option>
+          <option value="CONTRA_BL">Contra entrega del B/L</option>
+          <option value="CONTRA_LIQUIDACION">Contra liquidación</option>
+          <option value="CREDITO">Crédito documentario</option>
+          <option value="OTRA">Otra</option>
+        </select></div>
+      <div class="fld"><label>Días de pago</label><input id="cm-diaspago" type="number" value="0"></div>
+    </div>
+    <div class="fld"><label>Condiciones pactadas <span class="opc">texto libre</span></label>
+      <textarea id="cm-condiciones" rows="2" class="llano"
+        placeholder="Lo que no cabe en un campo: acuerdos de calidad, reparto de mermas, penalizaciones…"></textarea></div>
   </div>
 
   <div class="card">
@@ -358,8 +383,14 @@ details.pegar summary:hover{color:var(--verde)}
     <div class="grid g4">
       <div class="fld"><label>Matrícula</label><input id="cm-matricula" placeholder="MSKU1234567"></div>
       <div class="fld"><label>Booking</label><input id="cm-booking"></div>
-      <div class="fld"><label>Precinto</label><input id="cm-precinto"></div>
+      <div class="fld"><label>Precinto principal</label><input id="cm-precinto"></div>
       <div class="fld"><label>Naviera o transportista</label><input id="cm-naviera"></div>
+    </div>
+    <div class="grid g4">
+      <div class="fld"><label>B/L</label><input id="cm-bl" placeholder="conocimiento de embarque"></div>
+      <div class="fld"><label>Otros precintos</label><input id="cm-precintos" placeholder="separados por coma"></div>
+      <div class="fld"><label>Kilos netos</label><input id="cm-neto" type="number" step="0.001"></div>
+      <div class="fld"><label>Kilos brutos</label><input id="cm-bruto" type="number" step="0.001"></div>
     </div>
     <div class="grid g4">
       <div class="fld"><label>País de origen</label><input id="cm-origen" maxlength="2" placeholder="PE"></div>
@@ -823,6 +854,9 @@ async function leerArchivo(f){
     if (packing.booking)    $('cm-booking').value   = packing.booking;
     if (packing.precinto)   $('cm-precinto').value  = packing.precinto;
     if (packing.destino)    $('cm-destino').value   = packing.destino;
+    if (packing.bl)         $('cm-bl').value       = packing.bl;
+    if (packing.pesoNeto)   $('cm-neto').value     = packing.pesoNeto;
+    if (packing.pesoBruto)  $('cm-bruto').value    = packing.pesoBruto;
     if (packing.exportador && !$('cm-productor').value) $('cm-productor').value = packing.exportador;
     if (packing.fechaCarga){
       const d = new Date(packing.fechaCarga);
@@ -999,9 +1033,15 @@ function parsearPallets(wb){
 /* ═══ COMPRA EN UN SOLO PASO ═══ */
 function cargarCompra(){
   activarZona();
+  cambiarModalidad();
   if (!$('cm-fecha').value) $('cm-fecha').value = hoy();
   if (!lineasCompra.length) pintarCompra();
   cambiarRegimen();
+}
+
+function cambiarModalidad(){
+  const m = $('cm-modalidad').value;
+  $('fld-pmg').style.display = (m === 'PMG' || m === 'FIJO_ADELANTADO') ? '' : 'none';
 }
 
 function cambiarRegimen(){
@@ -1012,6 +1052,7 @@ function autoProveedor(){
   const p = proveedores.find(x => x.id === $('cm-prov').value);
   if (!p) return;
   if (p.moneda_habitual) $('cm-moneda').value = p.moneda_habitual;
+  if (p.dias_pago != null) $('cm-diaspago').value = p.dias_pago;
   if (!$('cm-productor').value) $('cm-productor').value = p.razon_social;
   totalesCompra();
 }
@@ -1090,6 +1131,13 @@ function totalesCompra(){
 
 async function registrarCompra(){
   const validas = lineasCompra.filter(l => Number(l.kilos) > 0);
+  const neto = Number($('cm-neto').value) || 0;
+  if (neto > 0){
+    const kg = validas.reduce((a,l) => a + Number(l.kilos||0), 0);
+    if (kg > 0 && Math.abs(neto - kg) / kg > 0.02 &&
+        !confirm('Los kilos netos que has puesto (' + n0(neto) + ') no cuadran con los del detalle (' +
+                 n0(kg) + '). ¿Registro igual?')) return;
+  }
   if (!$('cm-prov').value) return aviso('cm-aviso','Elige el proveedor.', true);
   if (!validas.length)     return aviso('cm-aviso','Añade al menos una línea con kilos.', true);
   if ($('cm-regimen').value === 'NACIONALIZADO' && !$('cm-almacen').value)
@@ -1115,6 +1163,15 @@ async function registrarCompra(){
     productor:  $('cm-productor').value.trim() || null,
     variedad:   $('cm-variedad').value.trim() || 'HASS',
     campana:    $('cm-campana').value.trim() || null,
+    bl:         $('cm-bl').value.trim() || null,
+    precintos:  $('cm-precintos').value.trim() || null,
+    peso_neto_kg:  $('cm-neto').value  || null,
+    peso_bruto_kg: $('cm-bruto').value || null,
+    forma_pago: $('cm-formapago').value,
+    dias_pago:  $('cm-diaspago').value || 0,
+    modalidad_precio: $('cm-modalidad').value,
+    precio_minimo: $('cm-pmin').value || null,
+    condiciones: $('cm-condiciones').value.trim() || null,
     lineas:     validas
   }});
   if (error) return aviso('cm-aviso', error.message, true);
@@ -1122,9 +1179,12 @@ async function registrarCompra(){
 
   aviso('cm-aviso', 'Compra ' + data.compra + ' registrada. Entrada ' + data.entrada +
     ' con ' + data.pallets + ' pallets, ' + n0(data.cajas) + ' cajas y ' + n0(data.kilos) +
-    ' kg ya en almacén. Cuando llegue la factura del proveedor, regístrala en Facturas.');
+    ' kg ya en almacén. Cuando llegue la factura del proveedor, regístrala en Facturas.' +
+    (['PMG','FIJO_ADELANTADO','LIQUIDACION'].includes($('cm-modalidad').value)
+      ? ' Ojo: al ser ' + $('cm-modalidad').selectedOptions[0].textContent.toLowerCase() +
+        ', el coste de esta compra es provisional hasta que se liquide.' : ''));
   vaciarCompra();
-  ['cm-matricula','cm-booking','cm-precinto','cm-lote','cm-destino'].forEach(id => $(id).value='');
+  ['cm-matricula','cm-booking','cm-precinto','cm-precintos','cm-bl','cm-neto','cm-bruto','cm-lote','cm-destino','cm-condiciones','cm-pmin'].forEach(id => $(id).value='');
   await cargarMaestros();
 }
 
