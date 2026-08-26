@@ -489,6 +489,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--gris-bg);color:var(--gris
         <div class="mod-desc">Bancos, divisas y coste real del cambio.</div>
         <div class="mod-link">Abrir módulo <span class="mod-arrow">→</span></div>
       </a>
+      <a class="module-card comercial" id="card-analisis-liq" href="analisis_liquidaciones_v1.html">
+        <div class="mod-icon dorado">📈</div>
+        <div class="mod-title">Análisis de Liquidaciones</div>
+        <div class="mod-desc">Cuentas de venta reconstruidas contra CIRAD y contra el PMG: precio bruto, comisión, costes repercutidos y neto real por kilo.</div>
+        <div class="mod-link">Abrir módulo <span class="mod-arrow">→</span></div>
+      </a>
       <a class="module-card comercial" id="card-gestion" href="gestion.html">
         <div class="mod-icon dorado">📊</div>
         <div class="mod-title">Gestión</div>
@@ -603,6 +609,7 @@ function mostrarDashboard(u){
   const todosModulos = Object.keys(MODULO_CARD);
   todosModulos.forEach(mod => {
     const card = document.getElementById(MODULO_CARD[mod]);
+    if(!card) return;
     if(!u.acceso.includes(mod)){
       card.classList.add('locked');
       card.removeAttribute('href');
