@@ -32,6 +32,15 @@ input:disabled,select:disabled{background:#F2F4F1;color:var(--texto-suave)}
 label{display:block;font-size:11px;font-weight:500;text-transform:uppercase;
   letter-spacing:.06em;color:var(--texto-suave);margin-bottom:5px}
 
+.pie-nota{font-size:12px;color:var(--texto-suave);margin:0 0 12px;line-height:1.45}
+.grid.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:760px){.grid.g4{grid-template-columns:repeat(2,1fr)}}
+.sem{font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.sem-ok{background:var(--verde-pale);color:var(--verde)}
+.sem-bajo{background:#FFF8E1;color:#8D6E00}
+.sem-perdida{background:var(--error-bg);color:var(--error)}
+.sem-sinventa{background:#F2F4F1;color:var(--texto-suave)}
+
 /* ── CABECERA ───────────────────────────────────────────────── */
 .topbar{position:sticky;top:0;z-index:60;background:var(--verde);color:#fff;
   padding:12px 20px;display:flex;align-items:center;gap:12px}
@@ -224,6 +233,9 @@ table.mini td{padding:5px 6px;border-bottom:1px solid var(--verde-border)}
 <div class="tabs">
   <button id="tb-panel" class="on" onclick="tab('panel')">Panel</button>
   <button id="tb-traza"           onclick="tab('traza')">Trazabilidad</button>
+  <button id="tb-resultado"       onclick="tab('resultado')">Resultado</button>
+  <button id="tb-cobros"          onclick="tab('cobros')">Cobros</button>
+  <button id="tb-sinfactura"      onclick="tab('sinfactura')">Sin factura</button>
   <button id="tb-libros"          onclick="tab('libros')">Libros de IVA</button>
   <button id="tb-cierre"          onclick="tab('cierre')">Cierre mensual</button>
   <button id="tb-alertas"         onclick="tab('alertas')">Alertas</button>
@@ -280,6 +292,74 @@ table.mini td{padding:5px 6px;border-bottom:1px solid var(--verde-border)}
   <div class="card">
     <div class="card-title">Resultado</div>
     <div class="tabla-scroll"><table id="tb-traza"><tbody><tr><td class="vacio">Escribe algo y pulsa Buscar.</td></tr></tbody></table></div>
+  </div>
+</div>
+
+<div id="sec-resultado" style="display:none">
+  <div class="card">
+    <div class="card-title">Resultado del mes</div>
+    <div class="grid g3">
+      <div class="fld"><label>Mes de ETD</label><input id="rs-periodo" type="month" onchange="cargarResultado()"></div>
+    </div>
+    <div id="rs-aviso"></div>
+  </div>
+
+  <div class="bloque-tit">Cuenta de resultados</div>
+  <div class="grid g4">
+    <div class="box"><div class="lbl">Ingreso</div><div class="val" id="rs-ingreso">&mdash;</div>
+      <div class="sublbl" id="rs-kilos"></div></div>
+    <div class="box"><div class="lbl">Margen de embarques</div><div class="val" id="rs-margen">&mdash;</div>
+      <div class="sublbl" id="rs-margenpct"></div></div>
+    <div class="box"><div class="lbl">Estructura y divisa</div><div class="val" id="rs-estructura">&mdash;</div></div>
+    <div class="box"><div class="lbl">Resultado</div><div class="val" id="rs-resultado">&mdash;</div>
+      <div class="sublbl" id="rs-prov"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Desglose</div>
+    <div class="tabla-scroll"><table id="tb-pyg"><tbody><tr><td class="vacio">Elige un mes.</td></tr></tbody></table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Margen por embarque</div>
+    <p class="pie-nota">El margen medio del mes es una media entre contenedores buenos y malos. Lo que se corrige es el contenedor, no el cliente.</p>
+    <div class="tabla-scroll"><table id="tb-emb"><tbody><tr><td class="vacio">Elige un mes.</td></tr></tbody></table></div>
+  </div>
+</div>
+
+<div id="sec-cobros" style="display:none">
+  <div class="card">
+    <div class="card-title">Cartera de cobro</div>
+    <div class="btn-row"><button class="btn btn-outline btn-sm" onclick="cargarCobros()">Actualizar</button></div>
+    <div id="co-aviso"></div>
+    <div class="tabla-scroll"><table id="tb-aging"><tbody><tr><td class="vacio">Cargando&hellip;</td></tr></tbody></table></div>
+  </div>
+
+  <div class="card" id="card-borrador" style="display:none">
+    <div class="card-title">Borrador de reclamaci&oacute;n</div>
+    <p class="pie-nota">Rev&iacute;salo y env&iacute;alo t&uacute;. El sistema no manda correos.</p>
+    <div class="fld"><label>Destinatario</label><input id="bo-dest"></div>
+    <div class="fld"><label>Asunto</label><input id="bo-asunto"></div>
+    <div class="fld"><label>Texto</label><textarea id="bo-cuerpo" rows="16"></textarea></div>
+    <div class="btn-row">
+      <button class="btn btn-outline btn-sm" onclick="copiarBorrador()">Copiar</button>
+      <button class="btn btn-primary btn-sm" onclick="marcarEnviada()">Marcar como enviada</button>
+    </div>
+  </div>
+</div>
+
+<div id="sec-sinfactura" style="display:none">
+  <div class="card">
+    <div class="card-title">Movimientos sin factura</div>
+    <p class="pie-nota">Un gasto sin factura no es deducible ni en IVA ni en Sociedades.</p>
+    <div class="btn-row"><button class="btn btn-outline btn-sm" onclick="cargarSinFactura()">Actualizar</button></div>
+    <div id="sf-aviso"></div>
+    <div class="tabla-scroll"><table id="tb-candidatos"><tbody><tr><td class="vacio">Cargando&hellip;</td></tr></tbody></table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Facturas ya reclamadas</div>
+    <div class="tabla-scroll"><table id="tb-pendientes"><tbody><tr><td class="vacio">Cargando&hellip;</td></tr></tbody></table></div>
   </div>
 </div>
 
@@ -388,17 +468,21 @@ async function entrarEnApp(){
   yo = u;
   $('chip-user').textContent = u.nombre + ' · ' + u.rol + (u.puede_controlar ? ' · control' : '');
   $('lb-periodo').value = mesActual();
+  $('rs-periodo').value = mesActual();
   $('ci-periodo').value = mesActual();
   tab('panel');
 }
 
-const SECCIONES = ['panel','traza','libros','cierre','alertas'];
+const SECCIONES = ['panel','traza','resultado','cobros','sinfactura','libros','cierre','alertas'];
 function tab(n){
   SECCIONES.forEach(t => {
     $('sec-'+t).style.display = (t===n) ? 'block' : 'none';
     $('tb-'+t).classList.toggle('on', t===n);
   });
   if (n==='panel')        cargarPanel();
+  if (n==='resultado')    cargarResultado();
+  if (n==='cobros')       cargarCobros();
+  if (n==='sinfactura')   cargarSinFactura();
   if (n==='libros')       cargarLibros();
   if (n==='cierre')       cargarCierre();
   if (n==='alertas')      cargarAlertas();
@@ -577,10 +661,242 @@ async function paqueteAsesoria(){
         <tr><td>De partes vinculadas</td><td class="num">${n2(r.vinculadas)} €</td></tr>
       </table>
     </div>
+    <div id="paquete-iva"></div>
     ${(data.avisos||[]).length
       ? '<div class="status-bar error" style="margin-top:14px"><strong>Antes de enviarlo:</strong><ul class="lista-riesgo">'
         + data.avisos.map(a => '<li>'+esc(a)+'</li>').join('') + '</ul></div>'
       : '<div class="status-bar" style="margin-top:14px">Nada pendiente. El paquete se puede enviar.</div>'}`;
+  cargarIvaPeriodo(per);
+}
+
+const REGIMEN = {
+  NACIONAL:'Nacional', INTRACOMUNITARIO:'Intracomunitaria (349)', EXPORTACION:'Exportación',
+  CANARIAS_CEUTA_MELILLA:'Canarias, Ceuta y Melilla', TRANSITO_NO_SUJETA:'Venta en tránsito (no sujeta)'
+};
+const A_CONFIRMAR = ['TRANSITO_NO_SUJETA','EXPORTACION','INTRACOMUNITARIO'];
+
+async function cargarIvaPeriodo(per){
+  const {data} = await sb.from('erp_v_iva_periodo').select('*').eq('periodo', per);
+  const c = $('paquete-iva');
+  if (!data || !data.length){ c.innerHTML = ''; return; }
+  const bloque = (sentido, titulo) => {
+    const f = data.filter(r => r.sentido === sentido);
+    if (!f.length) return '';
+    return '<table class="mini"><tr><th>' + titulo + '</th><th class="num">Base</th><th class="num">Cuota</th></tr>'
+      + f.map(r => '<tr><td>' + esc(REGIMEN[r.regimen] || r.regimen)
+          + (sentido === 'REPERCUTIDO' && A_CONFIRMAR.includes(r.regimen) ? ' <span class="sem sem-bajo">confirmar</span>' : '')
+          + '</td><td class="num">' + n2(r.base_eur) + ' €</td><td class="num">' + n2(r.cuota_eur) + ' €</td></tr>').join('')
+      + '<tr><td><strong>Total</strong></td><td class="num"><strong>'
+      + n2(f.reduce((a,r) => a + Number(r.base_eur||0), 0)) + ' €</strong></td><td class="num"><strong>'
+      + n2(f.reduce((a,r) => a + Number(r.cuota_eur||0), 0)) + ' €</strong></td></tr></table>';
+  };
+  c.innerHTML = '<div class="grid g2" style="margin-top:14px">'
+    + bloque('REPERCUTIDO','IVA repercutido por régimen')
+    + bloque('SOPORTADO','IVA soportado por régimen') + '</div>'
+    + '<p class="pie-nota" style="margin-top:10px">Las operaciones marcadas para confirmar son las que hay que revisar '
+    + 'con Rosendo Asesores antes de presentar: la venta en tránsito y lo que declara Exonero en Países Bajos '
+    + 'no van al 303 español.</p>';
+}
+
+/* ═══ RESULTADO DEL MES ═══ */
+const SEM = {
+  OK:          ['sem-ok','Cumple'],
+  BAJO_MINIMO: ['sem-bajo','Bajo mínimo'],
+  PERDIDA:     ['sem-perdida','Pérdida'],
+  SIN_VENTA:   ['sem-sinventa','Sin venta']
+};
+
+async function cargarResultado(){
+  const per = $('rs-periodo').value;
+  if (!per) return;
+  aviso('rs-aviso','');
+
+  const {data:p, error} = await sb.from('erp_v_pyg_mes').select('*').eq('periodo', per).maybeSingle();
+  if (error) return aviso('rs-aviso', error.message, true);
+
+  if (!p){
+    ['rs-ingreso','rs-margen','rs-estructura','rs-resultado'].forEach(i => $(i).textContent = '—');
+    ['rs-kilos','rs-margenpct','rs-prov'].forEach(i => $(i).textContent = '');
+    $('tb-pyg').innerHTML = '<tbody><tr><td class="vacio">Sin embarques con ETD en ese mes.</td></tr></tbody>';
+    $('tb-emb').innerHTML = '<tbody><tr><td class="vacio">Sin embarques con ETD en ese mes.</td></tr></tbody>';
+    return;
+  }
+
+  const pct = v => v == null ? '—' : (Number(v)*100).toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1}) + ' %';
+  $('rs-ingreso').textContent    = eur(p.ingreso);
+  $('rs-kilos').textContent      = n0(p.kilos) + ' kg · ' + p.contenedores + ' embarques';
+  $('rs-margen').textContent     = eur(p.margen_embarques);
+  $('rs-margenpct').innerHTML    = pct(p.margen_pct) + (p.embarques_bajo_minimo > 0
+    ? ' · <span class="rojo">' + p.embarques_bajo_minimo + ' bajo mínimo</span>' : '');
+  $('rs-estructura').textContent = eur(Number(p.estructura) + Number(p.coste_fx));
+  $('rs-resultado').textContent  = eur(p.resultado);
+  $('rs-prov').innerHTML = Number(p.peso_provisional) > 0.3
+    ? '<span class="rojo">' + pct(p.peso_provisional) + ' sin liquidar: es una estimación</span>'
+    : pct(p.peso_provisional) + ' sin liquidar';
+
+  const fila = (c, v, fuerte) => '<tr><td>' + esc(c) + '</td><td class="num">' +
+    (fuerte ? '<strong>'+eur(v)+'</strong>' : eur(v)) + '</td></tr>';
+  $('tb-pyg').innerHTML = '<tbody>'
+    + fila('Ingreso (liquidación si existe, si no factura)', p.ingreso, true)
+    + fila('Coste de la mercancía', -p.coste_mercancia)
+    + fila('Flete, seguro y transporte', -p.costes_logisticos)
+    + fila('Aduana e inspección', -p.costes_aduana)
+    + fila('Almacenaje', -p.costes_almacen)
+    + fila('Comisiones y reclamaciones', -p.costes_comerciales)
+    + fila('Margen de embarques', p.margen_embarques, true)
+    + fila('Estructura (facturas sin embarque)', -p.estructura)
+    + fila('Coste de divisa EUR/USD', -p.coste_fx)
+    + fila('Resultado del mes', p.resultado, true)
+    + '</tbody>';
+
+  const {data:e} = await sb.from('erp_v_resultado_embarque').select('*')
+    .eq('periodo', per).order('margen_pct', {ascending:true, nullsFirst:true});
+  if (!e || !e.length){
+    $('tb-emb').innerHTML = '<tbody><tr><td class="vacio">Sin embarques.</td></tr></tbody>'; return;
+  }
+  $('tb-emb').innerHTML =
+    '<thead><tr><th>Embarque</th><th>Cliente</th><th class="num">Kg</th><th class="num">Ingreso</th>'
+    + '<th class="num">Landed cost</th><th class="num">Resultado</th><th class="num">Margen</th>'
+    + '<th class="num">€/kg</th><th>Liquidación</th><th></th></tr></thead><tbody>'
+    + e.map(r => {
+      const sm = SEM[r.semaforo] || SEM.SIN_VENTA;
+      return '<tr><td><strong>'+esc(r.codigo)+'</strong></td>'
+        + '<td>'+esc(r.cliente || '—')+'</td>'
+        + '<td class="num">'+n0(r.kilos)+'</td>'
+        + '<td class="num">'+eur(r.ingreso)+'</td>'
+        + '<td class="num">'+eur(r.landed_cost)+'</td>'
+        + '<td class="num">'+eur(r.resultado)+'</td>'
+        + '<td class="num">'+(r.margen_pct==null?'—':(Number(r.margen_pct)*100).toFixed(1).replace('.',',')+' %')+'</td>'
+        + '<td class="num">'+(r.resultado_kg==null?'—':n2(r.resultado_kg))+'</td>'
+        + '<td>'+(r.definitivo ? 'Cerrada' : 'Provisional')+'</td>'
+        + '<td><span class="sem '+sm[0]+'">'+sm[1]+'</span></td></tr>';
+    }).join('') + '</tbody>';
+}
+
+/* ═══ COBROS ═══ */
+const TRAMOS = {EN_PLAZO:'En plazo', D1_30:'1 a 30 días', D31_60:'31 a 60 días',
+                D61_90:'61 a 90 días', D90_MAS:'Más de 90 días', SIN_VENCIMIENTO:'Sin vencimiento'};
+const ACCION = ['Seguimiento','Recordatorio','Reclamación formal','Escalar a dirección'];
+let borradorId = null;
+
+async function cargarCobros(){
+  aviso('co-aviso','');
+  const {data, error} = await sb.from('erp_v_aging_cobro').select('*')
+    .order('dias_vencido', {ascending:false});
+  if (error) return aviso('co-aviso', error.message, true);
+  const t = $('tb-aging');
+  if (!data || !data.length){
+    t.innerHTML = '<tbody><tr><td class="vacio">Nada pendiente de cobro.</td></tr></tbody>'; return;
+  }
+  const total = data.reduce((a,r) => a + Number(r.pendiente||0), 0);
+  const vencido = data.filter(r => (r.dias_vencido||0) > 0)
+                      .reduce((a,r) => a + Number(r.pendiente||0), 0);
+  t.innerHTML =
+    '<thead><tr><th>Factura</th><th>Cliente</th><th>Vence</th><th class="num">Pendiente</th>'
+    + '<th class="num">Días</th><th>Tramo</th><th>Acción</th><th></th></tr></thead><tbody>'
+    + data.map(r =>
+        '<tr><td><strong>'+esc(r.codigo)+'</strong></td>'
+      + '<td>'+esc(r.cliente)+'</td>'
+      + '<td>'+(r.fecha_vencimiento ? esc(r.fecha_vencimiento.split('-').reverse().join('/')) : '—')+'</td>'
+      + '<td class="num">'+n2(r.pendiente)+' '+esc(r.moneda||'EUR')+'</td>'
+      + '<td class="num">'+((r.dias_vencido||0) > 0 ? '<span class="rojo">'+r.dias_vencido+'</span>' : (r.dias_vencido ?? '—'))+'</td>'
+      + '<td>'+esc(TRAMOS[r.tramo] || r.tramo)+'</td>'
+      + '<td>'+esc(ACCION[r.nivel_sugerido])+(r.nivel_enviado ? ' · ya enviado nivel '+r.nivel_enviado : '')+'</td>'
+      + '<td>'+(r.nivel_sugerido > 0
+          ? '<button class="btn btn-outline btn-sm" onclick="redactar(\''+r.documento_id+'\')">Redactar</button>'
+          : '')+'</td></tr>').join('')
+    + '<tr><td colspan="3"><strong>Total</strong></td><td class="num"><strong>'+eur(total)+'</strong></td>'
+    + '<td colspan="4">'+(vencido > 0 ? '<span class="rojo">'+eur(vencido)+' vencido</span>' : 'nada vencido')+'</td></tr>'
+    + '</tbody>';
+}
+
+async function redactar(id){
+  const {data, error} = await sb.rpc('erp_borrador_reclamacion', {p_documento: id});
+  if (error) return aviso('co-aviso', error.message, true);
+  borradorId = data.id;
+  $('card-borrador').style.display = '';
+  $('bo-dest').value   = data.destinatario || '';
+  $('bo-asunto').value = data.asunto;
+  $('bo-cuerpo').value = data.cuerpo;
+  $('card-borrador').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function copiarBorrador(){
+  navigator.clipboard.writeText($('bo-asunto').value + '\n\n' + $('bo-cuerpo').value);
+  aviso('co-aviso','Copiado. Pégalo en tu correo y revísalo antes de enviarlo.');
+}
+
+async function marcarEnviada(){
+  if (!borradorId) return;
+  const {error} = await sb.from('erp_reclamacion_cobro').update({
+    estado:'ENVIADA', enviada_en:new Date().toISOString(),
+    destinatario:$('bo-dest').value, asunto:$('bo-asunto').value, cuerpo:$('bo-cuerpo').value
+  }).eq('id', borradorId);
+  if (error) return aviso('co-aviso', error.message, true);
+  $('card-borrador').style.display = 'none';
+  borradorId = null;
+  aviso('co-aviso','Anotada como enviada.');
+  cargarCobros();
+}
+
+/* ═══ MOVIMIENTOS SIN FACTURA ═══ */
+async function cargarSinFactura(){
+  aviso('sf-aviso','');
+  const [{data:c, error:e1}, {data:g}] = await Promise.all([
+    sb.from('erp_v_gasto_candidato').select('*').order('fecha', {ascending:false}).limit(200),
+    sb.from('erp_gasto_pendiente').select('*').neq('estado','RECIBIDA')
+      .order('fecha', {ascending:false}).limit(200)
+  ]);
+  if (e1) return aviso('sf-aviso', e1.message, true);
+
+  const t = $('tb-candidatos');
+  if (!c || !c.length){
+    t.innerHTML = '<tbody><tr><td class="vacio">Todos los cargos del banco tienen documento.</td></tr></tbody>';
+  } else {
+    t.innerHTML =
+      '<thead><tr><th>Fecha</th><th>Cuenta</th><th>Concepto</th><th class="num">Importe</th>'
+      + '<th class="num">Días</th><th></th></tr></thead><tbody>'
+      + c.map(r =>
+          '<tr><td>'+esc(r.fecha.split('-').reverse().join('/'))+'</td>'
+        + '<td>'+esc(r.cuenta || '—')+'</td>'
+        + '<td>'+esc(r.concepto || '')+'</td>'
+        + '<td class="num">'+n2(r.importe)+' '+esc(r.moneda||'EUR')+'</td>'
+        + '<td class="num">'+((r.dias||0) > 7 ? '<span class="rojo">'+r.dias+'</span>' : r.dias)+'</td>'
+        + '<td><button class="btn btn-outline btn-sm" onclick="reclamarFactura(\''+r.movimiento_id+'\')">Reclamar factura</button></td></tr>'
+        ).join('') + '</tbody>';
+  }
+
+  const tp = $('tb-pendientes');
+  if (!g || !g.length){
+    tp.innerHTML = '<tbody><tr><td class="vacio">Nada reclamado.</td></tr></tbody>'; return;
+  }
+  tp.innerHTML =
+    '<thead><tr><th>Fecha</th><th>Proveedor</th><th class="num">Importe</th><th>Estado</th>'
+    + '<th class="num">Veces</th><th></th></tr></thead><tbody>'
+    + g.map(r =>
+        '<tr><td>'+esc((r.fecha||'').split('-').reverse().join('/'))+'</td>'
+      + '<td>'+esc(r.proveedor_texto || r.concepto || '')+'</td>'
+      + '<td class="num">'+n2(r.importe)+' '+esc(r.moneda||'EUR')+'</td>'
+      + '<td>'+esc(r.estado)+'</td>'
+      + '<td class="num">'+(r.veces_solicitada||0)+'</td>'
+      + '<td><button class="btn btn-outline btn-sm" onclick="verReclamo(\''+r.id+'\')">Ver texto</button></td></tr>'
+      ).join('') + '</tbody>';
+}
+
+async function reclamarFactura(mov){
+  const prov = prompt('¿A quién se le pide la factura? (deja vacío si no lo sabes)') || '';
+  const {data, error} = await sb.rpc('erp_borrador_gasto', {p_movimiento: mov, p_proveedor: prov});
+  if (error) return aviso('sf-aviso', error.message, true);
+  await navigator.clipboard.writeText(data.asunto + '\n\n' + data.cuerpo);
+  aviso('sf-aviso','Borrador copiado al portapapeles. Revísalo antes de enviarlo.');
+  cargarSinFactura();
+}
+
+async function verReclamo(id){
+  const {data} = await sb.from('erp_gasto_pendiente').select('asunto,cuerpo').eq('id', id).maybeSingle();
+  if (!data) return;
+  await navigator.clipboard.writeText((data.asunto||'') + '\n\n' + (data.cuerpo||''));
+  aviso('sf-aviso','Texto copiado al portapapeles.');
 }
 
 /* ═══ ALERTAS ═══ */
