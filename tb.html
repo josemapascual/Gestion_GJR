@@ -457,6 +457,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--gris-bg);color:var(--gris
       <div class="welcome-sub">Selecciona el módulo al que deseas acceder</div>
     </div>
 
+    <!-- DIRECCIÓN -->
+    <div class="section-label">Dirección</div>
+    <div class="modules-grid" id="grid-direccion">
+      <a class="module-card comercial" id="card-cuadro" href="cuadro_mando.html">
+        <div class="mod-icon dorado">📈</div>
+        <div class="mod-title">Cuadro de mandos</div>
+        <div class="mod-desc">Visor general, excepciones, previsión de entradas, existencias, ranking de clientes y margen por embarque.</div>
+        <div class="mod-link">Abrir módulo <span class="mod-arrow">→</span></div>
+      </a>
+    </div>
+
     <!-- MÓDULOS OPERATIVOS -->
     <div class="section-label">Módulos Operativos</div>
     <div class="modules-grid" id="grid-operativo">
@@ -484,13 +495,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--gris-bg);color:var(--gris
     <!-- MÓDULOS DE CALIDAD -->
     <div class="section-label">Calidad y Trazabilidad</div>
     <div class="modules-grid" id="grid-calidad">
+      <a class="module-card comercial" id="card-calidad" href="calidad.html">
+        <div class="mod-icon dorado">🔬</div>
+        <div class="mod-title">Calidad</div>
+        <div class="mod-desc">Inspecciones en origen, llegada y cámara, reclamaciones de cliente y coste de la no calidad por productor.</div>
+        <div class="mod-link">Abrir módulo <span class="mod-arrow">→</span></div>
+      </a>
+    </div>
+
+    <!-- CONTROL Y FINANZAS -->
+    <div class="section-label">Control y Finanzas</div>
+    <div class="modules-grid" id="grid-control">
       <a class="module-card comercial" id="card-gestion" href="gestion.html">
         <div class="mod-icon dorado">📊</div>
         <div class="mod-title">Gestión</div>
         <div class="mod-desc">Ingresos y gastos, resultado por contenedor, libros de IVA, cierre mensual y alertas.</div>
         <div class="mod-link">Abrir módulo <span class="mod-arrow">→</span></div>
       </a>
-
     </div>
 
     <!-- Info de acceso -->
@@ -513,47 +534,47 @@ const USUARIOS = {
     nombre: 'José María',
     avatar: 'J',
     rol: 'Administrador',
-    acceso: ['liquidaciones','facturacion','almacen','trazabilidad','defectos','descarte','divisas']
+    acceso: ['cuadro','compras','ventas','almacen','calidad','gestion']
   },
   renato: {
     pass: 'renato123',
     nombre: 'Renato',
     avatar: 'R',
     rol: 'Operaciones',
-    acceso: ['liquidaciones','facturacion','almacen','trazabilidad','defectos','descarte','divisas']
+    acceso: ['cuadro','compras','ventas','almacen','calidad']
   },
   diana: {
     pass: 'diana123',
     nombre: 'Diana',
     avatar: 'D',
     rol: 'Liquidaciones',
-    acceso: ['liquidaciones']
+    acceso: ['gestion']
   },
   reynaldo: {
     pass: 'reynaldo123',
     nombre: 'Reynaldo',
     avatar: 'Ry',
     rol: 'Calidad',
-    acceso: ['trazabilidad','defectos','descarte']
+    acceso: ['calidad','almacen']
   },
   paola: {
     pass: 'paola123',
     nombre: 'Paola',
     avatar: 'P',
     rol: 'Facturación',
-    acceso: ['facturacion','almacen']
+    acceso: ['ventas','almacen']
   }
 };
 
-// Mapeo módulo → card id
+
+// Mapeo módulo → card id (debe coincidir con los id de las tarjetas de arriba)
 const MODULO_CARD = {
-  liquidaciones: 'card-liquidaciones',
-  facturacion:   'card-facturacion',
-  trazabilidad:  'card-trazabilidad',
-  defectos:      'card-defectos',
-  descarte:      'card-descarte',
-  divisas:       'card-divisas',
-  almacen:       'card-almacen'
+  cuadro:  'card-cuadro',
+  compras: 'card-compras',
+  ventas:  'card-ventas',
+  almacen: 'card-almacen',
+  calidad: 'card-calidad',
+  gestion: 'card-gestion'
 };
 
 // ══ LOGIN ══
@@ -598,6 +619,7 @@ function mostrarDashboard(u){
   const todosModulos = Object.keys(MODULO_CARD);
   todosModulos.forEach(mod => {
     const card = document.getElementById(MODULO_CARD[mod]);
+    if(!card) return;                      // tarjeta no montada: no rompas el resto
     if(!u.acceso.includes(mod)){
       card.classList.add('locked');
       card.removeAttribute('href');
@@ -608,15 +630,15 @@ function mostrarDashboard(u){
 
   // Texto de acceso
   const nombres = {
-    liquidaciones: 'Liquidaciones',
-    facturacion:   'Facturación',
-    trazabilidad:  'Trazabilidad',
-    defectos:      'Defectos Críticos',
-    descarte:      'Descarte',
-    divisas:       'Control de Divisas'
+    cuadro:  'Cuadro de mandos',
+    compras: 'Compras',
+    ventas:  'Ventas',
+    almacen: 'Almacén',
+    calidad: 'Calidad',
+    gestion: 'Gestión'
   };
-  const lista = u.acceso.map(m => nombres[m]).join(', ');
-  const esAdmin = u.acceso.length === 4;
+  const lista   = u.acceso.map(m => nombres[m] || m).join(', ');
+  const esAdmin = u.acceso.length === todosModulos.length;
   document.getElementById('access-text').innerHTML = esAdmin
     ? 'Tienes <strong>acceso completo</strong> a todos los módulos.'
     : `Tu acceso está habilitado para: <strong>${lista}</strong>.`;
