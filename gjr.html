@@ -478,6 +478,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--gris-bg);color:var(--gris
         <div class="mod-desc">Gastos de viaje del personal de campo.</div>
         <div class="mod-link">Abrir módulo <span class="mod-arrow">→</span></div>
       </a>
+      <a class="module-card comercial" id="card-crm" href="crm.html">
+        <div class="mod-icon dorado">📇</div>
+        <div class="mod-title">CRM Comercial</div>
+        <div class="mod-desc">Agenda de clientes, correos enviados y seguimiento de cada negociación.</div>
+        <div class="mod-link">Abrir módulo <span class="mod-arrow">→</span></div>
+      </a>
 
     </div>
 
@@ -525,14 +531,14 @@ const USUARIOS = {
     nombre: 'José María',
     avatar: 'J',
     rol: 'Administrador',
-    acceso: ['liquidaciones','facturacion','almacen','trazabilidad','defectos','descarte','divisas']
+    acceso: ['liquidaciones','facturacion','almacen','trazabilidad','defectos','descarte','divisas','crm']
   },
   renato: {
     pass: 'renato123',
     nombre: 'Renato',
     avatar: 'R',
     rol: 'Operaciones',
-    acceso: ['liquidaciones','facturacion','almacen','trazabilidad','defectos','descarte','divisas']
+    acceso: ['liquidaciones','facturacion','almacen','trazabilidad','defectos','descarte','divisas','crm']
   },
   diana: {
     pass: 'diana123',
@@ -553,7 +559,7 @@ const USUARIOS = {
     nombre: 'Paola',
     avatar: 'P',
     rol: 'Facturación',
-    acceso: ['facturacion','almacen']
+    acceso: ['facturacion','almacen','crm']
   }
 };
 
@@ -565,7 +571,8 @@ const MODULO_CARD = {
   defectos:      'card-defectos',
   descarte:      'card-descarte',
   divisas:       'card-divisas',
-  almacen:       'card-almacen'
+  almacen:       'card-almacen',
+  crm:           'card-crm'
 };
 
 // ══ LOGIN ══
@@ -625,7 +632,9 @@ function mostrarDashboard(u){
     trazabilidad:  'Trazabilidad',
     defectos:      'Defectos Críticos',
     descarte:      'Descarte',
-    divisas:       'Control de Divisas'
+    divisas:       'Control de Divisas',
+    almacen:       'Almacén',
+    crm:           'CRM Comercial'
   };
   const lista = u.acceso.map(m => nombres[m]).join(', ');
   const esAdmin = u.acceso.length === 4;
