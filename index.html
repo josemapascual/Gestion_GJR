@@ -190,18 +190,15 @@ const GJR = [
 ];
 
 /* ══ USUARIOS ══ */
-const TODO_TB = ['partidas','cuadro','compras','almacen','calidad','ventas','liqui_tb','gestion'];
 const USUARIOS = {
   jose:     {pass:'gjr2025',     nombre:'José María', rol:'Administrador', acceso:'*'},
-  renato:   {pass:'renato123',   nombre:'Renato',     rol:'Operaciones',
-             acceso:[...TODO_TB, 'traza','defectos','descarte','crm','divisas']},
-  diana:    {pass:'diana123',    nombre:'Diana',      rol:'Administración',
-             acceso:[...TODO_TB, 'liqui_gjr','viaticos']},
-  paola:    {pass:'paola123',    nombre:'Paola',      rol:'Comercial',
-             acceso:[...TODO_TB, 'crm']},
+  renato:   {pass:'renato123',   nombre:'Renato',     rol:'Operaciones',   acceso:'*'},
+  diana:    {pass:'diana123',    nombre:'Diana',      rol:'Administración',acceso:'*'},
+  paola:    {pass:'paola123',    nombre:'Paola',      rol:'Comercial',     acceso:'*'},
   reynaldo: {pass:'reynaldo123', nombre:'Reynaldo',   rol:'Calidad',
              acceso:['partidas','almacen','calidad','traza','defectos','descarte']}
 };
+
 
 
 const TODOS = [...TB, ...GJR].map(m => m[0]);
