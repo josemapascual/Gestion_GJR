@@ -204,7 +204,7 @@ table.mini td{padding:5px 6px;border-bottom:1px solid var(--verde-border)}
 .nota{font-size:12px;color:var(--texto-suave);margin:10px 0 0}
 
 </style>
-<link rel="stylesheet" href="estilo.css">
+<link rel="stylesheet" href="estilo.css?v=3">
 </head>
 <body>
 
@@ -299,8 +299,18 @@ table.mini td{padding:5px 6px;border-bottom:1px solid var(--verde-border)}
 <div id="sec-resultado" style="display:none">
   <div class="card">
     <div class="card-title">Resultado del mes</div>
-    <div class="grid g3">
-      <div class="fld"><label>Mes de ETD</label><input id="rs-periodo" type="month" onchange="cargarResultado()"></div>
+    <div class="grid g4">
+      <div class="fld"><label>Filtrar por</label>
+        <select id="rs-modo" onchange="modoResultado()">
+          <option value="mes">Mes completo</option>
+          <option value="rango">Rango de fechas</option>
+        </select></div>
+      <div class="fld" id="rs-fld-mes"><label>Mes de ETD</label>
+        <input id="rs-periodo" type="month" onchange="cargarResultado()"></div>
+      <div class="fld" id="rs-fld-desde" style="display:none"><label>Desde</label>
+        <input id="rs-desde" type="date" onchange="cargarResultado()"></div>
+      <div class="fld" id="rs-fld-hasta" style="display:none"><label>Hasta</label>
+        <input id="rs-hasta" type="date" onchange="cargarResultado()"></div>
     </div>
     <div id="rs-aviso"></div>
   </div>
@@ -707,19 +717,49 @@ const SEM = {
   SIN_VENTA:   ['sem-sinventa','Sin venta']
 };
 
-async function cargarResultado(){
-  const per = $('rs-periodo').value;
-  if (!per) return;
-  aviso('rs-aviso','');
+function modoResultado(){
+  const rango = $('rs-modo').value === 'rango';
+  $('rs-fld-mes').style.display   = rango ? 'none' : '';
+  $('rs-fld-desde').style.display = rango ? '' : 'none';
+  $('rs-fld-hasta').style.display = rango ? '' : 'none';
+  if (rango && !$('rs-desde').value){
+    // por defecto, el mes que ya estaba elegido
+    const per = $('rs-periodo').value || new Date().toISOString().slice(0,7);
+    const [a,m] = per.split('-').map(Number);
+    $('rs-desde').value = per + '-01';
+    $('rs-hasta').value = new Date(Date.UTC(a, m, 0)).toISOString().slice(0,10);
+  }
+  cargarResultado();
+}
 
-  const {data:p, error} = await sb.from('erp_v_pyg_mes').select('*').eq('periodo', per).maybeSingle();
+async function cargarResultado(){
+  aviso('rs-aviso','');
+  const rango = $('rs-modo') && $('rs-modo').value === 'rango';
+  let p = null, error = null, etiqueta = '';
+
+  if (rango){
+    const d = $('rs-desde').value, ha = $('rs-hasta').value;
+    if (!d || !ha) return;
+    if (d > ha) return aviso('rs-aviso','La fecha "Desde" es posterior a la de "Hasta".', true);
+    const r = await sb.rpc('erp_pyg_rango', {p_desde: d, p_hasta: ha});
+    error = r.error;
+    p = (r.data && r.data.length) ? r.data[0] : null;
+    if (p && !Number(p.contenedores)) p = null;
+    etiqueta = 'en ese rango de fechas';
+  } else {
+    const per = $('rs-periodo').value;
+    if (!per) return;
+    const r = await sb.from('erp_v_pyg_mes').select('*').eq('periodo', per).maybeSingle();
+    error = r.error; p = r.data;
+    etiqueta = 'en ese mes';
+  }
   if (error) return aviso('rs-aviso', error.message, true);
 
   if (!p){
     ['rs-ingreso','rs-margen','rs-estructura','rs-resultado'].forEach(i => $(i).textContent = '—');
     ['rs-kilos','rs-margenpct','rs-prov'].forEach(i => $(i).textContent = '');
-    $('tb-pyg').innerHTML = '<tbody><tr><td class="vacio">Sin embarques con ETD en ese mes.</td></tr></tbody>';
-    $('tb-emb').innerHTML = '<tbody><tr><td class="vacio">Sin embarques con ETD en ese mes.</td></tr></tbody>';
+    $('tb-pyg').innerHTML = '<tbody><tr><td class="vacio">Sin embarques con ETD ' + etiqueta + '.</td></tr></tbody>';
+    $('tb-emb').innerHTML = '<tbody><tr><td class="vacio">Sin embarques con ETD ' + etiqueta + '.</td></tr></tbody>';
     return;
   }
 
@@ -943,6 +983,6 @@ document.addEventListener('keydown', e => {
 });
 
 </script>
-<script src="nav.js"></script>
+<script src="nav.js?v=3"></script>
 </body>
 </html>

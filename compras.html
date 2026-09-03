@@ -203,7 +203,7 @@ details.pegar summary{cursor:pointer;font-size:12.5px;color:var(--texto-suave);p
 details.pegar summary:hover{color:var(--verde)}
 
 </style>
-<link rel="stylesheet" href="estilo.css">
+<link rel="stylesheet" href="estilo.css?v=3">
 </head>
 <body>
 <!-- ═══ LOGIN ═══ -->
@@ -1215,19 +1215,66 @@ async function registrarCompra(){
   await cargarMaestros();
 }
 
+let facturasPorCompra = new Map();
+
+/* ═══════════════════════════════════════════════════════════════
+   Registrar la factura del proveedor desde la propia compra.
+   No inventa nada: lleva a la pestaña Facturas con el proveedor,
+   la compra, el contenedor, la moneda, el cambio y el importe ya
+   puestos. El número de factura y el vencimiento los pones tú,
+   y puedes corregir cualquier campo antes de guardar.
+   ═══════════════════════════════════════════════════════════════ */
+async function facturarCompra(compraId){
+  const {data:c, error} = await sb.from('erp_compra')
+    .select('id,codigo,fecha,moneda,tipo_cambio,proveedor_id,contenedor_id,incoterm,'
+          + 'dias_pago,erp_compra_linea(kilos,precio_kg)')
+    .eq('id', compraId).maybeSingle();
+  if (error || !c) return alert('No se pudo leer la compra.');
+
+  tab('facturas');
+  await cargarFacturas();
+
+  const ls = c.erp_compra_linea || [];
+  const base = ls.reduce((a,l) => a + Number(l.kilos||0) * Number(l.precio_kg||0), 0);
+
+  const poner = (id, v) => { const e = $(id); if (e && v != null && v !== '') e.value = v; };
+  poner('fc-prov',   c.proveedor_id);
+  poner('fc-pedido', c.id);
+  poner('fc-cont',   c.contenedor_id);
+  poner('fc-moneda', c.moneda);
+  poner('fc-tc',     c.tipo_cambio);
+  poner('fc-fecha',  c.fecha || hoy());
+  if (base > 0) poner('fc-base', base.toFixed(2));
+  poner('fc-concepto', 'Mercancía ' + (c.codigo || ''));
+
+  // Vencimiento: fecha de la factura más los días de pago del proveedor
+  const prov = proveedores.find(p => p.id === c.proveedor_id) || {};
+  const dias = Number(c.dias_pago ?? prov.dias_pago ?? 0);
+  const f = new Date(($('fc-fecha').value || hoy()) + 'T00:00:00');
+  f.setDate(f.getDate() + (isFinite(dias) ? dias : 0));
+  poner('fc-venc', f.toISOString().slice(0,10));
+
+  const n = $('fc-numero'); if (n){ n.value = ''; n.focus(); }
+  aviso('fc-aviso', 'Datos traídos de ' + (c.codigo || 'la compra')
+    + '. Escribe el número de la factura del proveedor y revisa el importe.');
+}
+
 async function cargarHistorico(){
+  const {data:fs} = await sb.from('erp_factura_compra').select('compra_id,numero');
+  facturasPorCompra = new Map((fs||[]).filter(f => f.compra_id).map(f => [f.compra_id, f.numero]));
   const {data} = await sb.from('erp_compra')
     .select('id,codigo,fecha,moneda,estado,proveedor_id,contenedor_id,erp_compra_linea(kilos,precio_kg,cajas)')
     .order('fecha',{ascending:false}).limit(150);
   const t = $('tb-lista-compras');
   if (!data || !data.length){
-    t.innerHTML = '<tbody><tr><td class="vacio">Todavía no hay compras registradas.</td></tr></tbody>'; return;
+    t.innerHTML = '<tbody><tr><td colspan="9" class="vacio">Todavía no hay compras registradas.</td></tr></tbody>'; return;
   }
   const nomP = id => (proveedores.find(p => p.id === id) || {}).razon_social || '—';
   const nomC = id => (contenedores.find(c => c.id === id) || {}).codigo || '—';
   t.innerHTML =
     '<thead><tr><th>Compra</th><th>Fecha</th><th>Proveedor</th><th>Entrada</th>' +
-    '<th class="num">Cajas</th><th class="num">Kilos</th><th class="num">Importe</th><th>Estado</th></tr></thead><tbody>' +
+    '<th class="num">Cajas</th><th class="num">Kilos</th><th class="num">Importe</th><th>Estado</th>' +
+    '<th>Factura</th></tr></thead><tbody>' +
     data.map(p => {
       const ls = p.erp_compra_linea || [];
       const kg = ls.reduce((a,l)=>a+Number(l.kilos||0),0);
@@ -1242,6 +1289,9 @@ async function cargarHistorico(){
         <td class="num">${n0(kg)}</td>
         <td class="num">${n2(im)} ${esc(p.moneda)}</td>
         <td><span class="chip chip-gris">${esc(p.estado)}</span></td>
+        <td>${facturasPorCompra.has(p.id)
+          ? '<span class="chip chip-verde">' + esc(facturasPorCompra.get(p.id)) + '</span>'
+          : `<button class="btn btn-outline btn-sm" onclick="facturarCompra('${p.id}')">Registrar factura</button>`}</td>
       </tr>`;
     }).join('') + '</tbody>';
 }
@@ -1498,6 +1548,6 @@ document.addEventListener('keydown', e => {
 });
 
 </script>
-<script src="nav.js"></script>
+<script src="nav.js?v=3"></script>
 </body>
 </html>
