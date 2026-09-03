@@ -196,3 +196,59 @@ input:focus, select:focus, textarea:focus{
 
 /* ── 11. Convivencia con la barra de módulos (nav.js) ── */
 .topbar{top:34px !important}
+
+/* ══════════════════════════════════════════════════════════════
+   12. Igualar al armazón de Partidas (tb.html)
+   Lo que quedaba con aspecto antiguo en Compras, Ventas,
+   Almacén, Gestión y Calidad.
+   ══════════════════════════════════════════════════════════════ */
+
+/* La barra de pestañas era una franja verde clara con texto en
+   versalitas muy espaciado. Ahora es blanca, como en Partidas. */
+.tabs{
+  background:var(--blanco) !important;
+  border-bottom:1px solid var(--linea) !important;
+  position:sticky !important;
+}
+.tabs button{
+  color:var(--texto-suave) !important;
+  font-weight:500 !important;
+  min-height:auto !important;
+}
+
+/* Cabecera: mismo alto, tipografía y separación que Partidas */
+.topbar h1{font-size:15px !important;line-height:1.2 !important}
+.topbar > div{min-width:0}
+
+/* El acento naranja delante de cada título de tarjeta sobraba */
+.card-title::before, .card-title:before{display:none !important}
+
+/* Campos: eran altos, con borde grueso y esquinas muy redondeadas */
+input, select, textarea{
+  border-width:1px !important;
+  font-size:13px !important;
+  min-height:auto !important;
+  line-height:1.4 !important;
+}
+.fld{margin-bottom:10px !important}
+.fld label{margin-bottom:3px !important}
+
+/* Ancho y aire del área de trabajo, igual que el lienzo de Partidas */
+.wrap{max-width:none !important;padding:15px 20px 30px !important}
+.grid{gap:10px !important}
+
+/* Las tarjetas de indicadores iban sueltas con sombra; ahora van
+   pegadas en una sola rejilla, como en Partidas */
+.kpi.grid{gap:1px !important}
+.kpi .box{border-radius:0 !important;padding:10px 13px !important}
+.kpi .box .val{font-size:17px !important}
+
+/* Tablas: cabecera clara y filas compactas */
+.tabla-scroll{border:0 !important;border-radius:0 !important}
+table{border-collapse:collapse !important}
+
+/* Tipografías de marca en los títulos serif */
+.serif, .topbar h1, .card h2{font-family:'DM Serif Display',Georgia,serif !important}
+
+/* Botones: sin sombra ni mayúsculas */
+.btn{text-transform:none !important;letter-spacing:0 !important}
