@@ -204,6 +204,7 @@ table.mini td{padding:5px 6px;border-bottom:1px solid var(--verde-border)}
 .nota{font-size:12px;color:var(--texto-suave);margin:10px 0 0}
 
 </style>
+<link rel="stylesheet" href="estilo.css">
 </head>
 <body>
 
@@ -291,7 +292,7 @@ table.mini td{padding:5px 6px;border-bottom:1px solid var(--verde-border)}
   </div>
   <div class="card">
     <div class="card-title">Resultado</div>
-    <div class="tabla-scroll"><table id="tb-traza"><tbody><tr><td class="vacio">Escribe algo y pulsa Buscar.</td></tr></tbody></table></div>
+    <div class="tabla-scroll"><table id="tb-lista-traza"><tbody><tr><td class="vacio">Escribe algo y pulsa Buscar.</td></tr></tbody></table></div>
   </div>
 </div>
 
@@ -406,7 +407,7 @@ table.mini td{padding:5px 6px;border-bottom:1px solid var(--verde-border)}
   </div>
   <div class="card">
     <div class="card-title">Partidas de control</div>
-    <div class="tabla-scroll"><table id="tb-cierre"><tbody><tr><td class="vacio">Abre un periodo.</td></tr></tbody></table></div>
+    <div class="tabla-scroll"><table id="tb-lista-cierre"><tbody><tr><td class="vacio">Abre un periodo.</td></tr></tbody></table></div>
   </div>
 </div>
 
@@ -414,7 +415,7 @@ table.mini td{padding:5px 6px;border-bottom:1px solid var(--verde-border)}
   <div class="card">
     <div class="card-title">Alertas abiertas</div>
     <div class="btn-row"><button class="btn btn-outline btn-sm" onclick="generarAlertas()">Revisar ahora</button></div>
-    <div class="tabla-scroll"><table id="tb-alertas"><tbody><tr><td class="vacio">Cargando…</td></tr></tbody></table></div>
+    <div class="tabla-scroll"><table id="tb-lista-alertas"><tbody><tr><td class="vacio">Cargando…</td></tr></tbody></table></div>
   </div>
 </div>
 
@@ -526,7 +527,7 @@ async function cargarPanel(){
 /* ═══ TRAZABILIDAD ═══ */
 async function buscarTraza(){
   const q = $('tz-q').value.trim();
-  const t = $('tb-traza');
+  const t = $('tb-lista-traza');
   if (!q){ t.innerHTML = '<tbody><tr><td class="vacio">Escribe algo y pulsa Buscar.</td></tr></tbody>'; return; }
   const {data} = await sb.from('erp_v_trazabilidad').select('*')
     .or(`lote.ilike.%${q}%,contenedor.ilike.%${q}%,codigo_traza.ilike.%${q}%,cliente.ilike.%${q}%,factura.ilike.%${q}%`)
@@ -609,7 +610,7 @@ async function abrirCierre(){
 async function cargarCierre(){
   const per = $('ci-periodo').value || mesActual();
   const {data:c} = await sb.from('erp_cierre').select('id,estado').eq('periodo', per).maybeSingle();
-  const t = $('tb-cierre');
+  const t = $('tb-lista-cierre');
   if (!c){
     t.innerHTML = '<tbody><tr><td class="vacio">El cierre de '+esc(per)+' no está abierto todavía.</td></tr></tbody>';
     return;
@@ -908,7 +909,7 @@ async function generarAlertas(){
 async function cargarAlertas(){
   const {data} = await sb.from('erp_alerta').select('*')
     .eq('estado','ABIERTA').order('severidad').order('creado_en',{ascending:false}).limit(200);
-  const t = $('tb-alertas');
+  const t = $('tb-lista-alertas');
   if (!data || !data.length){
     t.innerHTML = '<tbody><tr><td class="vacio">No hay alertas abiertas.</td></tr></tbody>'; return;
   }
@@ -942,5 +943,6 @@ document.addEventListener('keydown', e => {
 });
 
 </script>
+<script src="nav.js"></script>
 </body>
 </html>

@@ -203,6 +203,7 @@ details.pegar summary{cursor:pointer;font-size:12.5px;color:var(--texto-suave);p
 details.pegar summary:hover{color:var(--verde)}
 
 </style>
+<link rel="stylesheet" href="estilo.css">
 </head>
 <body>
 <!-- ═══ LOGIN ═══ -->
@@ -560,7 +561,7 @@ details.pegar summary:hover{color:var(--verde)}
   </div>
   <div class="card">
     <div class="card-title">Facturas de proveedor pendientes</div>
-    <div class="tabla-scroll"><table id="tb-cartera"><tbody><tr><td class="vacio">Cargando…</td></tr></tbody></table></div>
+    <div class="tabla-scroll"><table id="tb-lista-cartera"><tbody><tr><td class="vacio">Cargando…</td></tr></tbody></table></div>
   </div>
 </div>
 
@@ -1454,7 +1455,7 @@ async function ejecutarPago(id){
 async function cargarCartera(){
   const {data} = await sb.from('erp_v_cartera_pago')
     .select('*').order('fecha_vencimiento');
-  const t = $('tb-cartera');
+  const t = $('tb-lista-cartera');
   if (!data || !data.length){
     t.innerHTML = '<tbody><tr><td class="vacio">No hay facturas de proveedor pendientes.</td></tr></tbody>';
     ['k-total','k-vencido','k-30','k-num'].forEach(k => $(k).textContent = '0');
@@ -1497,5 +1498,6 @@ document.addEventListener('keydown', e => {
 });
 
 </script>
+<script src="nav.js"></script>
 </body>
 </html>
