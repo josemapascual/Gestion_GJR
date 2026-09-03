@@ -11,7 +11,7 @@
 <style>
 :root{
   --verde:#1B5E20; --verde-medio:#2E7D32; --verde-claro:#43A047; --verde-pale:#E8F5E9;
-  --tinta:#122E16; --tinta-alta:#1D4423; --acento:#F9A825;
+  --verde-border:#C8E6C9; --tinta:#122E16; --tinta-alta:#1D4423; --acento:#F9A825;
   --texto:#16211A; --suave:#5F6B62; --tenue:#8A948C;
   --fondo:#EFF2ED; --blanco:#fff; --linea:#D9E1D6;
   --rojo:#B3261E; --rojo-pale:#FCEBEA; --ambar:#8A6200; --ambar-pale:#FFF6DF;
@@ -21,7 +21,7 @@ html,body{height:100%}
 body{margin:0;background:var(--fondo);color:var(--texto);
   font-family:'DM Sans',system-ui,sans-serif;font-size:13px;line-height:1.45;
   -webkit-font-smoothing:antialiased}
-td.num,th.num,.kpi b,.cif,.fase-n{font-variant-numeric:tabular-nums}
+td.num,th.num,.kpi b,.fase-n{font-variant-numeric:tabular-nums}
 button,input,select{font-family:inherit;font-size:13px;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--acento);outline-offset:1px}
@@ -60,21 +60,48 @@ button{cursor:pointer}
 .pie{grid-column:1/3;background:var(--tinta);color:rgba(255,255,255,.55);font-size:11px;
   display:flex;align-items:center;gap:16px;padding:0 16px}
 .pie .pt{width:6px;height:6px;border-radius:50%;background:var(--verde-claro);display:inline-block}
+.pie kbd{background:rgba(255,255,255,.14);border-radius:3px;padding:1px 5px;font-family:inherit;font-size:10px}
 
-.encab{background:var(--blanco);border-bottom:1px solid var(--linea);padding:12px 20px;
-  display:flex;align-items:flex-end;gap:12px;position:sticky;top:0;z-index:20;flex-wrap:wrap}
-.encab h2{font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:19px;margin:0}
-.encab .sub{font-size:12px;color:var(--suave);margin-top:1px}
-.encab .util{margin-left:auto;display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap}
-.encab label{display:block;font-size:9.5px;font-weight:600;letter-spacing:.08em;
+/* ── CABECERA CON MIGAS Y ATRÁS ── */
+.encab{background:var(--blanco);border-bottom:1px solid var(--linea);
+  position:sticky;top:0;z-index:20}
+.migas{display:flex;align-items:center;gap:7px;padding:7px 20px 0;font-size:11.5px;color:var(--tenue)}
+.migas button{background:none;border:0;color:var(--suave);padding:0;font-size:11.5px;
+  text-decoration:underline;text-underline-offset:2px}
+.migas button:hover{color:var(--verde)}
+.migas .sep{color:var(--linea)}
+.migas .aqui{color:var(--texto);font-weight:500}
+.cab2{padding:6px 20px 12px;display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.atras{border:1px solid var(--linea);background:var(--blanco);border-radius:4px;
+  padding:7px 12px;font-size:12.5px;font-weight:500;white-space:nowrap}
+.atras:hover{background:var(--verde-pale);border-color:var(--verde-border)}
+.cab2 h2{font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:19px;margin:0}
+.cab2 .sub{font-size:12px;color:var(--suave);margin-top:1px}
+.util{margin-left:auto;display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap}
+.util label{display:block;font-size:9.5px;font-weight:600;letter-spacing:.08em;
   text-transform:uppercase;color:var(--tenue);margin-bottom:3px}
-.encab select,.encab input{border:1px solid var(--linea);border-radius:4px;padding:5px 8px;
-  background:var(--blanco);min-width:120px}
+.util select,.util input{border:1px solid var(--linea);border-radius:4px;padding:5px 8px;
+  background:var(--blanco);min-width:118px}
+.pasa{display:flex;gap:0}
+.pasa button{border:1px solid var(--linea);background:var(--blanco);width:30px;height:31px;
+  font-size:15px;line-height:1}
+.pasa button:first-child{border-radius:4px 0 0 4px}
+.pasa button:last-child{border-radius:0 4px 4px 0;border-left:0}
+.pasa button:hover:not(:disabled){background:var(--verde-pale)}
+.pasa button:disabled{color:var(--linea);cursor:not-allowed}
 .btn{border:1px solid var(--linea);background:var(--blanco);border-radius:4px;padding:6px 12px;
   font-size:12.5px;font-weight:500}
-.btn:hover{background:var(--verde-pale);border-color:var(--verde-border,#C8E6C9)}
+.btn:hover{background:var(--verde-pale);border-color:var(--verde-border)}
 .btn.pri{background:var(--verde);border-color:var(--verde);color:#fff}
 .btn.pri:hover{background:var(--verde-medio)}
+
+/* pestañas internas del expediente */
+.subtabs{display:flex;gap:2px;padding:0 20px;background:var(--blanco);
+  border-bottom:1px solid var(--linea);position:sticky;top:0;z-index:19}
+.subtabs button{background:none;border:0;border-bottom:2px solid transparent;padding:9px 13px;
+  font-size:12.5px;font-weight:500;color:var(--suave)}
+.subtabs button:hover{color:var(--texto)}
+.subtabs button.on{color:var(--verde);border-bottom-color:var(--acento)}
 .lienzo{padding:15px 20px 30px}
 
 .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--linea);
@@ -111,10 +138,9 @@ tfoot td{font-weight:600;background:#F6F8F5;border-top:1px solid var(--linea);bo
 .eti.g{background:#EEF1EC;color:var(--suave)}
 .nada{padding:26px 14px;text-align:center;color:var(--tenue)}
 
-/* ── LÍNEA DE VIDA DE LA PARTIDA ── */
 .vida{display:flex;background:var(--blanco);border:1px solid var(--linea);border-radius:5px;
   overflow:hidden;margin-bottom:14px}
-.hito{flex:1;padding:11px 12px;border-right:1px solid var(--linea);position:relative;min-width:0}
+.hito{flex:1;padding:11px 12px;border-right:1px solid var(--linea);min-width:0}
 .hito:last-child{border-right:0}
 .hito .h{font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tenue)}
 .hito .fase-n{font-size:16px;font-weight:600;margin-top:4px;color:var(--tenue)}
@@ -133,10 +159,12 @@ tfoot td{font-weight:600;background:#F6F8F5;border-top:1px solid var(--linea);bo
 .par b{display:block;font-weight:500;margin-top:1px}
 .fila2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 
-@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.vida{flex-wrap:wrap}
-  .hito{flex:1 1 25%}}
+@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}
+  .vida{flex-wrap:wrap}.hito{flex:1 1 25%}}
 @media(max-width:900px){.app{grid-template-columns:1fr;grid-template-rows:50px auto 1fr 24px}
-  .lateral{max-height:160px}.fila2{grid-template-columns:1fr}}
+  .lateral{max-height:150px}.fila2{grid-template-columns:1fr}}
+@media print{.lateral,.barra,.pie,.util,.atras,.subtabs{display:none}
+  .app{display:block;height:auto}}
 
 #acceso{position:fixed;inset:0;background:var(--tinta);z-index:200;display:none;
   align-items:center;justify-content:center;padding:20px}
@@ -180,19 +208,16 @@ tfoot td{font-weight:600;background:#F6F8F5;border-top:1px solid var(--linea);bo
   </header>
 
   <nav class="lateral">
-    <div class="grupo">Partidas</div>
-    <button class="nav on" id="n-partidas" onclick="ir('partidas')">Todas las partidas
+    <div class="grupo">Tropical Báez</div>
+    <button class="nav on" id="n-partidas" onclick="voy('partidas')">Partidas
       <span class="n cero" id="b-part">0</span></button>
-    <button class="nav" id="n-expediente" onclick="ir('expediente')">Expediente</button>
-    <button class="nav" id="n-camara" onclick="ir('camara')">Cámara
+    <button class="nav" id="n-camara" onclick="voy('camara')">Cámara
       <span class="n cero" id="b-cam">0</span></button>
-
     <div class="grupo">Registrar</div>
     <a href="compras.html">Compras</a>
     <a href="almacen_v7.html">Almacén</a>
     <a href="calidad.html">Calidad</a>
     <a href="facturacion_v21.html">Ventas</a>
-
     <div class="grupo">Analizar</div>
     <a href="cuadro_mando.html">Cuadro de mandos</a>
     <a href="analisis_liquidaciones_v1.html">Liquidaciones</a>
@@ -201,92 +226,22 @@ tfoot td{font-weight:600;background:#F6F8F5;border-top:1px solid var(--linea);bo
   </nav>
 
   <main class="obra">
-
-  <!-- ══ PARTIDAS ══ -->
-  <section id="p-partidas">
     <div class="encab">
-      <div><h2>Partidas</h2><div class="sub">Cada contenedor con su vida entera. Pulsa una fila para abrirla.</div></div>
-      <div class="util">
-        <div><label for="f-fase">Fase</label><select id="f-fase" onchange="pintarPartidas()">
-          <option value="">Todas</option><option value="vivas">Solo vivas</option>
-          <option value="EN_TRANSITO">En tránsito</option><option value="EN_CAMARA">En cámara</option>
-          <option value="DESPACHANDO">Despachando</option><option value="FACTURADA">Facturada</option>
-          <option value="LIQUIDADA">Liquidada</option><option value="CERRADA">Cerrada</option>
-        </select></div>
-        <div><label for="f-fresc">Frescura</label><select id="f-fresc" onchange="pintarPartidas()">
-          <option value="">Todas</option><option value="CRITICO">Crítica</option>
-          <option value="VIGILAR">A vigilar</option><option value="OK">Correcta</option>
-        </select></div>
-        <div><label for="f-busca">Buscar</label>
-          <input id="f-busca" placeholder="Código, productor, naviera" oninput="pintarPartidas()"></div>
-        <button class="btn" onclick="exportar('t-part','partidas')">Exportar</button>
+      <div class="migas" id="migas"></div>
+      <div class="cab2">
+        <button class="atras" id="atras" onclick="subir()" hidden>← Volver</button>
+        <div><h2 id="titulo">Partidas</h2><div class="sub" id="subtitulo"></div></div>
+        <div class="util" id="util"></div>
       </div>
     </div>
-    <div class="lienzo">
-      <div class="kpis" id="kpis-part"></div>
-      <div class="caja"><div class="rej"><table id="t-part">
-        <thead><tr>
-          <th>Partida</th><th>Productor</th><th>Origen</th><th>Semana</th><th>Fase</th><th>Frescura</th>
-          <th class="num">Kilos</th><th class="num">En cámara</th><th class="num">€/kg landed</th>
-          <th class="num">Ingreso</th><th class="num">Resultado</th><th class="num">€/kg</th><th>Avisos</th>
-        </tr></thead>
-        <tbody id="b-part"></tbody>
-        <tfoot><tr><td colspan="6">Total</td><td class="num" id="pt-k">0</td><td class="num" id="pt-c">0</td>
-          <td></td><td class="num" id="pt-i">0,00</td><td class="num" id="pt-r">0,00</td>
-          <td colspan="2"></td></tr></tfoot>
-      </table></div></div>
-    </div>
-  </section>
-
-  <!-- ══ EXPEDIENTE ══ -->
-  <section id="p-expediente" hidden>
-    <div class="encab">
-      <div><h2 id="x-titulo">Expediente</h2><div class="sub" id="x-sub">Elige una partida en la lista</div></div>
-      <div class="util">
-        <div><label for="x-sel">Partida</label><select id="x-sel" onchange="abrirPartida(this.value)"></select></div>
-        <button class="btn" onclick="window.print()">Imprimir</button>
-      </div>
-    </div>
-    <div class="lienzo" id="x-cuerpo"><div class="nada">Elige una partida.</div></div>
-  </section>
-
-  <!-- ══ CÁMARA ══ -->
-  <section id="p-camara" hidden>
-    <div class="encab">
-      <div><h2>Cámara</h2><div class="sub">La fruta se muere. Lo más viejo primero.</div></div>
-      <div class="util">
-        <div><label for="c-alm">Almacén</label><select id="c-alm" onchange="pintarCamara()"></select></div>
-        <button class="btn" onclick="exportar('t-cam','camara')">Exportar</button>
-      </div>
-    </div>
-    <div class="lienzo">
-      <div class="kpis" id="kpis-cam"></div>
-      <div class="fila2">
-        <div class="caja"><h3>Por calibre <em>Lo vendible hoy</em></h3>
-          <div class="rej"><table><thead><tr><th>Calibre</th><th class="num">Cajas</th>
-            <th class="num">Kilos</th><th class="num">% del stock</th></tr></thead>
-            <tbody id="b-cal"></tbody></table></div></div>
-        <div class="caja"><h3>Por partida <em>Kilos parados</em></h3>
-          <div class="rej"><table><thead><tr><th>Partida</th><th class="num">Pallets</th>
-            <th class="num">Kilos</th><th class="num">Días máx.</th><th>Frescura</th></tr></thead>
-            <tbody id="b-cpart"></tbody></table></div></div>
-      </div>
-      <div class="caja"><h3>Pallets en cámara <em>Ordenados por antigüedad</em></h3>
-        <div class="rej"><table id="t-cam">
-          <thead><tr><th>Pallet</th><th>Partida</th><th>Lote</th><th>Productor</th><th>Almacén</th>
-            <th>Categoría</th><th class="num">Cajas</th><th class="num">Kilos</th>
-            <th class="num">Días</th><th>Frescura</th></tr></thead>
-          <tbody id="b-cam"></tbody>
-        </table></div></div>
-    </div>
-  </section>
-
+    <div class="subtabs" id="subtabs" hidden></div>
+    <div class="lienzo" id="lienzo"><div class="nada">Cargando…</div></div>
   </main>
 
   <footer class="pie">
     <span><span class="pt"></span> <span id="pie-conn">Conectando…</span></span>
     <span id="pie-reg">—</span><span id="pie-act">—</span>
-    <span style="margin-left:auto">Tropical Báez S.L.</span>
+    <span style="margin-left:auto"><kbd>Esc</kbd> volver · <kbd>←</kbd><kbd>→</kbd> partida · <kbd>/</kbd> buscar</span>
   </footer>
 </div>
 
@@ -298,7 +253,11 @@ const SB_URL = 'https://riidmxztyxldnojjkncx.supabase.co';
 const SB_KEY = 'sb_publishable_ZbMZbTdBcYnGceF_woayjQ_CCCEHRYS';
 
 let sb = null, sesion = null;
-let partidas = [], stock = [], abierta = null;
+let partidas = [], stock = [];
+let ruta = {vista:'partidas', id:null, sub:'resumen'};
+let filtros = {fase:'', frescura:'', busca:'', almacen:''};
+let detalles = {};          // caché de expedientes ya cargados
+let listaActual = [];       // partidas visibles: manda en anterior/siguiente
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
@@ -314,6 +273,8 @@ const FASES = ['EN_TRANSITO','EN_CAMARA','DESPACHANDO','FACTURADA','LIQUIDADA','
 const FASE_N = {EN_TRANSITO:'En tránsito', EN_CAMARA:'En cámara', DESPACHANDO:'Despachando',
   FACTURADA:'Facturada', LIQUIDADA:'Liquidada', CERRADA:'Cerrada', ABIERTA:'Abierta'};
 const VIVAS = ['EN_TRANSITO','EN_CAMARA','DESPACHANDO','ABIERTA'];
+const SUBS = [['resumen','Resumen'],['coste','Coste y calibres'],
+              ['calidad','Calidad'],['traza','Trazabilidad']];
 
 function etiFase(f){
   const cl = f === 'CERRADA' ? 'g' : (f === 'EN_TRANSITO' ? 'a' : 'v');
@@ -325,12 +286,48 @@ function etiFrescura(f, d){
   if (f === 'OK')      return '<span class="eti v">' + d + ' días</span>';
   return '<span class="eti g">sin stock</span>';
 }
-function campanaDe(p){
-  return p.campana || (p.semana_eta ? p.semana_eta.slice(0,4)
-       : (p.fecha_eta ? String(p.fecha_eta).slice(0,4) : '—'));
+const campanaDe = p => p.campana || (p.semana_eta ? p.semana_eta.slice(0,4)
+  : (p.fecha_eta ? String(p.fecha_eta).slice(0,4) : '—'));
+
+/* ══════════ RUTAS: la URL manda ══════════ */
+function leerRuta(){
+  const t = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
+  return {vista: t[0] || 'partidas', id: t[1] || null, sub: t[2] || 'resumen'};
+}
+function voy(vista, id, sub){
+  const h = '#/' + [vista, id, sub].filter(Boolean).join('/');
+  if (location.hash === h) router(); else location.hash = h;   // hash = entrada en el historial
+}
+function subir(){                       // "Volver" sube un nivel, no adivina el historial
+  if (ruta.vista === 'partidas' && ruta.id) voy('partidas');
+  else voy('partidas');
+}
+window.addEventListener('hashchange', router);
+
+function migas(pasos){
+  $('migas').innerHTML = pasos.map((p,i) => {
+    const sep = i ? '<span class="sep">›</span>' : '';
+    return sep + (p[1]
+      ? '<button onclick="' + p[1] + '">' + esc(p[0]) + '</button>'
+      : '<span class="aqui">' + esc(p[0]) + '</span>');
+  }).join('');
 }
 
-/* ══ ARRANQUE ══ */
+function router(){
+  ruta = leerRuta();
+  if (ruta.vista !== 'camara') ruta.vista = 'partidas';
+  $('n-partidas').classList.toggle('on', ruta.vista === 'partidas');
+  $('n-camara').classList.toggle('on',   ruta.vista === 'camara');
+  $('subtabs').hidden = true;
+  $('atras').hidden   = true;
+  document.querySelector('.obra').scrollTop = 0;
+
+  if (ruta.vista === 'camara')      vistaCamara();
+  else if (ruta.id)                 vistaExpediente(ruta.id, ruta.sub);
+  else                              vistaPartidas();
+}
+
+/* ══════════ ARRANQUE ══════════ */
 const cache = {};
 function loadScript(src){
   if (cache[src]) return cache[src];
@@ -360,10 +357,9 @@ async function entrar(){
   sesion = data.session; $('acceso').style.display = 'none'; await abrir();
 }
 $('ac-pass').addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
-
 async function abrir(){ $('g-user').textContent = sesion.user.email; await recargar(); }
 
-/* ══ DATOS ══ */
+/* ══════════ DATOS ══════════ */
 async function recargar(){
   $('pie-conn').textContent = 'Cargando…';
   const [p, s] = await Promise.all([
@@ -372,18 +368,13 @@ async function recargar(){
   ]);
   partidas = p.data || [];
   stock    = s.data || [];
+  detalles = {};
 
   const camps = [...new Set(partidas.map(campanaDe))].filter(x => x !== '—').sort().reverse();
   const vc = $('g-campana').value;
   $('g-campana').innerHTML = '<option value="">Todas</option>'
     + camps.map(c => '<option>' + esc(c) + '</option>').join('');
   if (vc) $('g-campana').value = vc;
-
-  const alm = [...new Set(stock.map(x => x.almacen_nombre || x.almacen).filter(Boolean))].sort();
-  const va = $('c-alm').value;
-  $('c-alm').innerHTML = '<option value="">Todos</option>'
-    + alm.map(a => '<option>' + esc(a) + '</option>').join('');
-  if (va) $('c-alm').value = va;
 
   const d = new Date();
   const j = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
@@ -396,55 +387,82 @@ async function recargar(){
   $('pie-conn').textContent = 'Conectado';
   repintar();
 }
-
 function enCampana(){
   const c = $('g-campana').value;
   return c ? partidas.filter(p => campanaDe(p) === c) : partidas;
 }
 function repintar(){
-  const ps = enCampana();
-  $('g-vivas').textContent = ps.filter(p => VIVAS.includes(p.fase)).length;
-  $('x-sel').innerHTML = '<option value="">— Elegir —</option>' + ps
-    .map(p => '<option value="' + p.contenedor_id + '">' + esc(p.codigo) + ' · '
-      + esc(FASE_N[p.fase] || p.fase) + '</option>').join('');
-  if (abierta) $('x-sel').value = abierta.contenedor_id;
-  pintarPartidas(); pintarCamara();
+  $('g-vivas').textContent = enCampana().filter(p => VIVAS.includes(p.fase)).length;
+  const crit = stock.filter(x => num(x.dias_camara) > 21).length;
+  marca('b-cam', crit, crit > 0);
+  router();
 }
+function marca(id, n, rojo){
+  const e = $(id); e.textContent = n;
+  e.classList.toggle('cero', !n); e.classList.toggle('rojo', !!rojo);
+}
+function reg(n){ $('pie-reg').textContent = (n == null) ? '—' : n0(n) + ' registros'; }
 
-/* ══ PARTIDAS ══ */
+/* ══════════ VISTA: PARTIDAS ══════════ */
+function filtrar(){
+  return enCampana().filter(p =>
+    (!filtros.fase || (filtros.fase === 'vivas' ? VIVAS.includes(p.fase) : p.fase === filtros.fase)) &&
+    (!filtros.frescura || p.frescura === filtros.frescura) &&
+    (!filtros.busca || [p.codigo, p.productores, p.naviera, p.exportador, p.origen_pais]
+        .join(' ').toLowerCase().includes(filtros.busca)))
+    .sort((a,b) => FASES.indexOf(a.fase) - FASES.indexOf(b.fase)
+      || String(b.fecha_eta || '').localeCompare(String(a.fecha_eta || '')));
+}
+function setFiltro(k, v){ filtros[k] = (k === 'busca') ? v.trim().toLowerCase() : v; vistaPartidas(true); }
+
 function avisos(p){
   const a = [];
-  if (p.frescura === 'CRITICO')      a.push('<span class="eti r">Cámara ' + p.dias_camara_max + ' d</span>');
-  if (num(p.no_conformes) > 0)       a.push('<span class="eti r">Calidad</span>');
-  if (num(p.docs_pendientes) > 0)    a.push('<span class="eti a">' + p.docs_pendientes + ' docs</span>');
-  if (num(p.liq_pendientes) > 0)     a.push('<span class="eti a">Liq.</span>');
-  if (num(p.reclam_abiertas) > 0)    a.push('<span class="eti r">Reclam.</span>');
-  if (num(p.compras_sin_validar) > 0)a.push('<span class="eti a">Compra</span>');
+  if (p.frescura === 'CRITICO')       a.push('<span class="eti r">Cámara ' + p.dias_camara_max + ' d</span>');
+  if (num(p.no_conformes) > 0)        a.push('<span class="eti r">Calidad</span>');
+  if (num(p.docs_pendientes) > 0)     a.push('<span class="eti a">' + p.docs_pendientes + ' docs</span>');
+  if (num(p.liq_pendientes) > 0)      a.push('<span class="eti a">Liq.</span>');
+  if (num(p.reclam_abiertas) > 0)     a.push('<span class="eti r">Reclam.</span>');
+  if (num(p.compras_sin_validar) > 0) a.push('<span class="eti a">Compra</span>');
   if (!p.definitivo && p.fase !== 'EN_TRANSITO') a.push('<span class="eti g">Provisional</span>');
   return a.join(' ') || '—';
 }
 
-function pintarPartidas(){
-  const ff = $('f-fase').value, fr = $('f-fresc').value;
-  const q = $('f-busca').value.trim().toLowerCase();
-  let filas = enCampana().filter(p =>
-    (!ff || (ff === 'vivas' ? VIVAS.includes(p.fase) : p.fase === ff)) &&
-    (!fr || p.frescura === fr) &&
-    (!q  || [p.codigo, p.productores, p.naviera, p.exportador, p.origen_pais]
-              .join(' ').toLowerCase().includes(q)));
-  filas.sort((a,b) => FASES.indexOf(a.fase) - FASES.indexOf(b.fase)
-    || String(b.fecha_eta || '').localeCompare(String(a.fecha_eta || '')));
+function vistaPartidas(soloTabla){
+  const filas = filtrar();
+  listaActual = filas;
+  marca('b-part', filas.length, false);
+  reg(filas.length);
 
-  const vivas = filas.filter(p => VIVAS.includes(p.fase));
+  if (!soloTabla){
+    migas([['Tropical Báez', null], ['Partidas', null]]);
+    $('titulo').textContent = 'Partidas';
+    $('subtitulo').textContent = 'Cada contenedor con su vida entera. Pulsa una fila para abrirla.';
+    $('util').innerHTML =
+      '<div><label for="f-fase">Fase</label><select id="f-fase" onchange="setFiltro(\'fase\',this.value)">'
+      + '<option value="">Todas</option><option value="vivas">Solo vivas</option>'
+      + FASES.map(f => '<option value="' + f + '">' + FASE_N[f] + '</option>').join('')
+      + '</select></div>'
+      + '<div><label for="f-fresc">Frescura</label><select id="f-fresc" onchange="setFiltro(\'frescura\',this.value)">'
+      + '<option value="">Todas</option><option value="CRITICO">Crítica</option>'
+      + '<option value="VIGILAR">A vigilar</option><option value="OK">Correcta</option></select></div>'
+      + '<div><label for="f-busca">Buscar</label><input id="f-busca" placeholder="Código, productor, naviera"'
+      + ' oninput="setFiltro(\'busca\',this.value)"></div>'
+      + '<button class="btn" onclick="exportar(\'t-part\',\'partidas\')">Exportar</button>';
+    $('f-fase').value = filtros.fase;
+    $('f-fresc').value = filtros.frescura;
+    $('f-busca').value = filtros.busca;
+  }
+
+  const vivas = filas.filter(p => VIVAS.includes(p.fase)).length;
   const crit  = filas.filter(p => p.frescura === 'CRITICO').length;
   const prov  = filas.filter(p => !p.definitivo).length;
   const kilos = filas.reduce((s,p) => s + num(p.kilos), 0);
-  const res   = filas.reduce((s,p) => s + num(p.resultado), 0);
-  const ing   = filas.reduce((s,p) => s + num(p.ingreso), 0);
   const cam   = filas.reduce((s,p) => s + num(p.kilos_en_stock), 0);
+  const ing   = filas.reduce((s,p) => s + num(p.ingreso), 0);
+  const res   = filas.reduce((s,p) => s + num(p.resultado), 0);
 
-  $('kpis-part').innerHTML = [
-    ['Partidas', n0(filas.length), n0(vivas.length) + ' vivas', false],
+  const kpis = [
+    ['Partidas', n0(filas.length), n0(vivas) + ' vivas', false],
     ['Kilos', n0(kilos), n0(cam) + ' kg aún en cámara', false],
     ['Ingreso', eur(ing), '', false],
     ['Resultado', eur(res), ing > 0 ? n2(100*res/ing) + '% de margen' : 'sin ingreso', res < 0],
@@ -453,8 +471,8 @@ function pintarPartidas(){
   ].map(x => '<div class="kpi"><span>' + esc(x[0]) + '</span><b>' + x[1] + '</b>'
     + '<i class="' + (x[3] ? 'mal' : '') + '">' + esc(x[2]) + '</i></div>').join('');
 
-  $('b-part').innerHTML = filas.length ? filas.map(p =>
-    '<tr class="click" onclick="abrirPartida(\'' + p.contenedor_id + '\')">'
+  const cuerpo = filas.length ? filas.map(p =>
+    '<tr class="click" onclick="voy(\'partidas\',\'' + p.contenedor_id + '\')">'
     + '<td><b>' + esc(p.codigo) + '</b>'
     + (p.matricula ? '<div class="mini">' + esc(p.matricula) + '</div>' : '') + '</td>'
     + '<td>' + esc(p.productores || p.exportador || '—') + '</td>'
@@ -466,112 +484,162 @@ function pintarPartidas(){
     + '<td class="num">' + n0(p.kilos_en_stock) + '</td>'
     + '<td class="num">' + (p.landed_cost_kg == null ? '—' : n3(p.landed_cost_kg)) + '</td>'
     + '<td class="num">' + n2(p.ingreso) + '</td>'
-    + '<td class="num">' + (num(p.resultado) < 0 ? '<span class="mal">' + n2(p.resultado) + '</span>' : n2(p.resultado)) + '</td>'
+    + '<td class="num">' + (num(p.resultado) < 0
+        ? '<span class="mal">' + n2(p.resultado) + '</span>' : n2(p.resultado)) + '</td>'
     + '<td class="num">' + (p.resultado_kg == null ? '—' : n3(p.resultado_kg)) + '</td>'
     + '<td>' + avisos(p) + '</td></tr>').join('')
     : '<tr><td colspan="13" class="nada">No hay partidas con estos filtros.</td></tr>';
 
-  $('pt-k').textContent = n0(kilos); $('pt-c').textContent = n0(cam);
-  $('pt-i').textContent = n2(ing);   $('pt-r').textContent = n2(res);
-  marca('b-part', filas.length, false);
-  reg(filas.length);
-}
-function marca(id, n, rojo){
-  const e = $(id); e.textContent = n;
-  e.classList.toggle('cero', !n); e.classList.toggle('rojo', !!rojo);
+  $('lienzo').innerHTML = '<div class="kpis">' + kpis + '</div>'
+    + '<div class="caja"><div class="rej"><table id="t-part"><thead><tr>'
+    + '<th>Partida</th><th>Productor</th><th>Origen</th><th>Semana</th><th>Fase</th><th>Frescura</th>'
+    + '<th class="num">Kilos</th><th class="num">En cámara</th><th class="num">€/kg landed</th>'
+    + '<th class="num">Ingreso</th><th class="num">Resultado</th><th class="num">€/kg</th><th>Avisos</th>'
+    + '</tr></thead><tbody>' + cuerpo + '</tbody><tfoot><tr>'
+    + '<td colspan="6">Total</td><td class="num">' + n0(kilos) + '</td>'
+    + '<td class="num">' + n0(cam) + '</td><td></td><td class="num">' + n2(ing) + '</td>'
+    + '<td class="num">' + n2(res) + '</td><td colspan="2"></td></tr></tfoot></table></div></div>';
 }
 
-/* ══ EXPEDIENTE ══ */
-async function abrirPartida(id){
-  if (!id) return;
+/* ══════════ VISTA: EXPEDIENTE ══════════ */
+async function vistaExpediente(id, sub){
   const p = partidas.find(x => x.contenedor_id === id);
-  if (!p) return;
-  abierta = p;
-  ir('expediente');
-  $('x-sel').value = id;
-  $('x-titulo').textContent = p.codigo;
-  $('x-sub').textContent = (p.productores || p.exportador || 'sin productor')
-    + ' · ' + (p.origen_pais || '—') + ' · campaña ' + campanaDe(p);
-  $('x-cuerpo').innerHTML = '<div class="nada">Cargando el expediente…</div>';
+  if (!p){ voy('partidas'); return; }
+  if (!listaActual.length) listaActual = filtrar();
+  const i = listaActual.findIndex(x => x.contenedor_id === id);
+  const ant = i > 0 ? listaActual[i-1] : null;
+  const sig = i >= 0 && i < listaActual.length - 1 ? listaActual[i+1] : null;
 
-  const [lc, cal, tr, ins, rec] = await Promise.all([
-    sb.from('erp_v_landed_cost').select('*').eq('contenedor_id', id).maybeSingle(),
-    sb.from('erp_v_partida_calibre').select('*').eq('contenedor_id', id),
-    sb.from('erp_v_traza').select('*').eq('contenedor', p.codigo),
-    sb.from('erp_v_inspeccion').select('*').eq('contenedor_id', id),
-    sb.from('erp_v_reclamacion').select('*').eq('contenedor_id', id)
-  ]);
-  pintarExpediente(p, lc.data, cal.data || [], tr.data || [], ins.data || [], rec.data || []);
+  migas([['Tropical Báez', null], ['Partidas', "voy('partidas')"], [p.codigo, null]]);
+  $('atras').hidden = false;
+  $('atras').textContent = '← Partidas';
+  $('titulo').textContent = p.codigo;
+  $('subtitulo').textContent = (p.productores || p.exportador || 'sin productor')
+    + ' · ' + (p.origen_pais || '—') + ' · campaña ' + campanaDe(p)
+    + (i >= 0 ? '  ·  ' + (i+1) + ' de ' + listaActual.length : '');
+  $('util').innerHTML = '<div class="pasa">'
+    + '<button ' + (ant ? 'onclick="voy(\'partidas\',\'' + ant.contenedor_id + '\',\'' + sub + '\')"' : 'disabled')
+    + ' title="Partida anterior">‹</button>'
+    + '<button ' + (sig ? 'onclick="voy(\'partidas\',\'' + sig.contenedor_id + '\',\'' + sub + '\')"' : 'disabled')
+    + ' title="Partida siguiente">›</button></div>'
+    + '<button class="btn" onclick="window.print()">Imprimir</button>';
+
+  $('subtabs').hidden = false;
+  $('subtabs').innerHTML = SUBS.map(s =>
+    '<button class="' + (s[0] === sub ? 'on' : '') + '" onclick="voy(\'partidas\',\''
+    + id + '\',\'' + s[0] + '\')">' + s[1] + '</button>').join('');
+
+  if (!detalles[id]){
+    $('lienzo').innerHTML = '<div class="nada">Cargando el expediente…</div>';
+    const [lc, cal, tr, ins, rec] = await Promise.all([
+      sb.from('erp_v_landed_cost').select('*').eq('contenedor_id', id).maybeSingle(),
+      sb.from('erp_v_partida_calibre').select('*').eq('contenedor_id', id),
+      sb.from('erp_v_traza').select('*').eq('contenedor', p.codigo),
+      sb.from('erp_v_inspeccion').select('*').eq('contenedor_id', id),
+      sb.from('erp_v_reclamacion').select('*').eq('contenedor_id', id)
+    ]);
+    detalles[id] = {lc:lc.data, cal:cal.data||[], tr:tr.data||[], ins:ins.data||[], rec:rec.data||[]};
+    if (leerRuta().id !== id) return;      // se cambió de partida mientras cargaba
+  }
+  const d = detalles[id];
+  reg(d.tr.length);
+  $('lienzo').innerHTML = pintaSub(p, d, sub);
 }
 
-function hito(titulo, hecho, aqui, cifra, pie){
+function hito(t, hecho, aqui, cifra, pie){
   return '<div class="hito' + (hecho ? ' hecho' : '') + (aqui ? ' aqui' : '') + '">'
-    + '<div class="h">' + esc(titulo) + '</div>'
-    + '<div class="fase-n">' + cifra + '</div>'
+    + '<div class="h">' + esc(t) + '</div><div class="fase-n">' + cifra + '</div>'
     + '<div class="p">' + esc(pie) + '</div></div>';
 }
 
-function pintarExpediente(p, lc, cal, tr, ins, rec){
-  const c = lc || {};
+function pintaSub(p, d, sub){
+  if (sub === 'coste')   return bloqueCoste(p, d);
+  if (sub === 'calidad') return bloqueCalidad(p, d);
+  if (sub === 'traza')   return bloqueTraza(p, d);
+  return bloqueResumen(p, d);
+}
+
+function bloqueResumen(p, d){
   const vida = [
-    hito('Compra', num(p.pedidos) > 0 || num(p.coste_compra_eur) > 0,  p.fase === 'ABIERTA',
+    hito('Compra', num(p.pedidos) > 0 || num(p.coste_compra_eur) > 0, p.fase === 'ABIERTA',
       eur(p.coste_compra_eur), num(p.facturas_compra) + ' facturas de proveedor'),
-    hito('Tránsito', !!p.fecha_carga, p.fase === 'EN_TRANSITO',
-      fec(p.fecha_carga), p.naviera || 'sin naviera'),
-    hito('Recepción', !!p.fecha_descarga, false,
-      fec(p.fecha_descarga), n0(p.pallets) + ' pallets · ' + n0(p.kilos) + ' kg'),
+    hito('Tránsito', !!p.fecha_carga, p.fase === 'EN_TRANSITO', fec(p.fecha_carga), p.naviera || 'sin naviera'),
+    hito('Recepción', !!p.fecha_descarga, false, fec(p.fecha_descarga),
+      n0(p.pallets) + ' pallets · ' + n0(p.kilos) + ' kg'),
     hito('Cámara', num(p.pallets_en_camara) > 0 || num(p.albaranes) > 0, p.fase === 'EN_CAMARA',
       n0(p.kilos_en_stock) + ' kg',
       p.dias_camara_max == null ? 'sin stock' : 'hasta ' + p.dias_camara_max + ' días'),
-    hito('Despacho', num(p.albaranes) > 0, p.fase === 'DESPACHANDO',
-      n0(p.albaranes), 'albaranes emitidos'),
-    hito('Factura', num(p.facturas_venta) > 0, p.fase === 'FACTURADA',
-      eur(p.facturado), eur(p.cobrado) + ' cobrado'),
+    hito('Despacho', num(p.albaranes) > 0, p.fase === 'DESPACHANDO', n0(p.albaranes), 'albaranes emitidos'),
+    hito('Factura', num(p.facturas_venta) > 0, p.fase === 'FACTURADA', eur(p.facturado), eur(p.cobrado) + ' cobrado'),
     hito('Liquidación', num(p.liquidaciones) > 0, p.fase === 'LIQUIDADA',
       n0(p.liquidaciones), num(p.liq_pendientes) + ' pendientes'),
     hito('Cierre', p.fase === 'CERRADA', p.fase === 'CERRADA',
       p.definitivo ? 'Definitivo' : 'Provisional', fec(p.cerrado_en))
   ].join('');
 
+  const kpis = [
+    ['Kilos', n0(p.kilos), n0(p.pallets) + ' pallets', false],
+    ['Landed cost', eur(p.landed_cost),
+      (p.landed_cost_kg == null ? '—' : n3(p.landed_cost_kg) + ' €/kg'), !p.coste_confirmado],
+    ['Ingreso', eur(p.ingreso), n0(p.facturas_venta) + ' facturas', false],
+    ['Resultado', eur(p.resultado),
+      (p.resultado_kg == null ? '—' : n3(p.resultado_kg) + ' €/kg'), num(p.resultado) < 0],
+    ['Margen', num(p.ingreso) > 0 ? n2(100*num(p.resultado)/num(p.ingreso)) + '%' : '—',
+      p.definitivo ? 'definitivo' : 'provisional', !p.definitivo],
+    ['Calidad', n0(p.inspecciones) + ' insp.',
+      num(p.no_conformes) ? p.no_conformes + ' no conformes' : 'sin incidencias', num(p.no_conformes) > 0]
+  ].map(x => '<div class="kpi"><span>' + esc(x[0]) + '</span><b>' + x[1] + '</b>'
+      + '<i class="' + (x[3] ? 'mal' : '') + '">' + esc(x[2]) + '</i></div>').join('');
+
   const ident = [
     ['Matrícula', p.matricula], ['BL', p.bl], ['Precinto', p.precinto || p.precintos],
     ['Naviera', p.naviera], ['Exportador', p.exportador], ['Proveedor', p.proveedor],
     ['Origen', p.origen_pais], ['Destino', p.destino], ['Régimen', p.regimen],
     ['Canal', p.canal], ['Modalidad', p.modalidad], ['Campaña', campanaDe(p)],
-    ['Productores', p.productores], ['Variedades', p.variedades],
+    ['Productores', p.productores], ['Variedades', p.variedades], ['Lotes', p.lotes],
     ['Carga', fec(p.fecha_carga)], ['ETA', fec(p.fecha_eta)], ['Descarga', fec(p.fecha_descarga)],
-    ['Tipo de cambio', p.tipo_cambio_compra]
+    ['Tipo de cambio', p.tipo_cambio_compra], ['Expediente', p.expediente_completo ? 'Completo'
+      : p.docs_pendientes + ' documentos pendientes']
   ].map(x => '<div class="par"><span>' + esc(x[0]) + '</span><b>'
       + esc(x[1] == null || x[1] === '' ? '—' : x[1]) + '</b></div>').join('');
 
-  const costes = [
-    ['Mercancía', c.coste_mercancia], ['Logística', c.costes_logisticos],
-    ['Aduana', c.costes_aduana], ['Almacén', c.costes_almacen],
-    ['Comercial', c.costes_comerciales]
-  ].filter(x => num(x[1]) !== 0);
-  const totalC = num(c.landed_cost);
-  const filasC = costes.map(x =>
-    '<tr><td>' + esc(x[0]) + '</td><td class="num">' + n2(x[1]) + '</td>'
-    + '<td class="num">' + (totalC > 0 ? n2(100*num(x[1])/totalC) + '%' : '—') + '</td>'
-    + '<td class="num">' + (num(p.kilos) > 0 ? n3(num(x[1])/num(p.kilos)) : '—') + '</td></tr>').join('');
+  return '<div class="vida">' + vida + '</div><div class="kpis">' + kpis + '</div>'
+    + '<div class="caja"><h3>Identificación</h3><div class="cuerpo"><div class="pares">'
+    + ident + '</div></div></div>';
+}
 
-  const filasCal = cal.length ? cal.slice().sort((a,b) => num(b.kilos) - num(a.kilos)).map(x =>
+function bloqueCoste(p, d){
+  const c = d.lc || {};
+  const total = num(c.landed_cost);
+  const filas = [['Mercancía', c.coste_mercancia], ['Logística', c.costes_logisticos],
+    ['Aduana', c.costes_aduana], ['Almacén', c.costes_almacen], ['Comercial', c.costes_comerciales]]
+    .filter(x => num(x[1]) !== 0)
+    .map(x => '<tr><td>' + esc(x[0]) + '</td><td class="num">' + n2(x[1]) + '</td>'
+      + '<td class="num">' + (total > 0 ? n2(100*num(x[1])/total) + '%' : '—') + '</td>'
+      + '<td class="num">' + (num(p.kilos) > 0 ? n3(num(x[1])/num(p.kilos)) : '—') + '</td></tr>').join('');
+
+  const cal = d.cal.length ? d.cal.slice().sort((a,b) => num(b.kilos) - num(a.kilos)).map(x =>
     '<tr><td><b>' + esc(x.calibre) + '</b></td><td>' + esc(x.categoria) + '</td>'
     + '<td class="num">' + n0(x.pallets) + '</td><td class="num">' + n0(x.cajas) + '</td>'
     + '<td class="num">' + n2(x.kilos) + '</td>'
     + '<td class="num">' + n2(x.kilos_en_camara) + '</td></tr>').join('')
     : '<tr><td colspan="6" class="nada">Sin calibres registrados.</td></tr>';
 
-  const filasT = tr.length ? tr.slice(0,40).map(x =>
-    '<tr><td>' + esc(x.codigo_traza || x.codigo_interno) + '</td>'
-    + '<td>' + esc(x.lote || '—') + '</td><td>' + esc(x.almacen || '—') + '</td>'
-    + '<td>' + esc(x.estado) + '</td><td>' + esc(x.albaran || '—') + '</td>'
-    + '<td>' + esc(x.cliente || '—') + '</td><td>' + esc(x.factura_numero || '—') + '</td>'
-    + '<td class="num">' + n2(x.kilos_inicial) + '</td>'
-    + '<td class="num">' + n2(x.kilos_actual) + '</td></tr>').join('')
-    : '<tr><td colspan="9" class="nada">Sin pallets registrados.</td></tr>';
+  return '<div class="fila2">'
+    + '<div class="caja"><h3>Coste puesto en almacén <em>' + eur(total) + '</em></h3><div class="rej"><table>'
+    + '<thead><tr><th>Concepto</th><th class="num">Importe</th><th class="num">%</th>'
+    + '<th class="num">€/kg</th></tr></thead><tbody>'
+    + (filas || '<tr><td colspan="4" class="nada">Sin costes imputados.</td></tr>')
+    + '</tbody><tfoot><tr><td>Total</td><td class="num">' + n2(total) + '</td><td></td>'
+    + '<td class="num">' + (c.landed_cost_kg == null ? '—' : n3(c.landed_cost_kg))
+    + '</td></tr></tfoot></table></div></div>'
+    + '<div class="caja"><h3>Calibres</h3><div class="rej"><table id="t-cal"><thead><tr><th>Calibre</th>'
+    + '<th>Cat.</th><th class="num">Pallets</th><th class="num">Cajas</th><th class="num">Kilos</th>'
+    + '<th class="num">En cámara</th></tr></thead><tbody>' + cal + '</tbody></table></div></div></div>';
+}
 
-  const filasI = ins.length ? ins.map(x =>
+function bloqueCalidad(p, d){
+  const ins = d.ins.length ? d.ins.map(x =>
     '<tr><td>' + fec(x.fecha) + '</td><td>' + esc(x.momento) + '</td>'
     + '<td>' + esc(x.inspector || '—') + '</td>'
     + '<td class="num">' + (x.materia_seca == null ? '—' : n2(x.materia_seca)) + '</td>'
@@ -580,9 +648,9 @@ function pintarExpediente(p, lc, cal, tr, ins, rec){
         : x.resultado === 'OBSERVADO' ? '<span class="eti a">Observado</span>'
         : '<span class="eti v">Conforme</span>') + '</td>'
     + '<td>' + esc(x.observaciones || '') + '</td></tr>').join('')
-    : '<tr><td colspan="7" class="nada">Sin inspecciones.</td></tr>';
+    : '<tr><td colspan="7" class="nada">Sin inspecciones. Se registran en el módulo de Calidad.</td></tr>';
 
-  const filasR = rec.length ? rec.map(x =>
+  const rec = d.rec.length ? d.rec.map(x =>
     '<tr><td>' + esc(x.codigo || '—') + '</td><td>' + fec(x.fecha_aviso) + '</td>'
     + '<td>' + esc(x.cliente || '—') + '</td><td>' + esc(x.motivo) + '</td>'
     + '<td class="num">' + n2(x.importe_reclamado) + '</td>'
@@ -590,55 +658,48 @@ function pintarExpediente(p, lc, cal, tr, ins, rec){
     + '<td>' + esc(x.estado) + '</td></tr>').join('')
     : '<tr><td colspan="7" class="nada">Sin reclamaciones.</td></tr>';
 
-  $('x-cuerpo').innerHTML =
-    '<div class="vida">' + vida + '</div>'
-    + '<div class="kpis">' + [
-        ['Kilos', n0(p.kilos), n0(p.pallets) + ' pallets', false],
-        ['Landed cost', eur(p.landed_cost), (p.landed_cost_kg == null ? '—' : n3(p.landed_cost_kg) + ' €/kg'),
-          !p.coste_confirmado],
-        ['Ingreso', eur(p.ingreso), n0(p.facturas_venta) + ' facturas', false],
-        ['Resultado', eur(p.resultado), (p.resultado_kg == null ? '—' : n3(p.resultado_kg) + ' €/kg'),
-          num(p.resultado) < 0],
-        ['Margen', num(p.ingreso) > 0 ? n2(100*num(p.resultado)/num(p.ingreso)) + '%' : '—',
-          p.definitivo ? 'definitivo' : 'provisional', !p.definitivo],
-        ['Calidad', n0(p.inspecciones) + ' insp.',
-          num(p.no_conformes) ? p.no_conformes + ' no conformes' : 'sin incidencias', num(p.no_conformes) > 0]
-      ].map(x => '<div class="kpi"><span>' + esc(x[0]) + '</span><b>' + x[1] + '</b>'
-          + '<i class="' + (x[3] ? 'mal' : '') + '">' + esc(x[2]) + '</i></div>').join('') + '</div>'
-
-    + '<div class="caja"><h3>Identificación</h3><div class="cuerpo"><div class="pares">' + ident + '</div></div></div>'
-
-    + '<div class="fila2">'
-    + '<div class="caja"><h3>Coste puesto en almacén <em>' + eur(totalC) + '</em></h3>'
-    + '<div class="rej"><table><thead><tr><th>Concepto</th><th class="num">Importe</th>'
-    + '<th class="num">%</th><th class="num">€/kg</th></tr></thead><tbody>'
-    + (filasC || '<tr><td colspan="4" class="nada">Sin costes imputados.</td></tr>')
-    + '</tbody></table></div></div>'
-    + '<div class="caja"><h3>Calibres</h3><div class="rej"><table><thead><tr><th>Calibre</th>'
-    + '<th>Cat.</th><th class="num">Pallets</th><th class="num">Cajas</th><th class="num">Kilos</th>'
-    + '<th class="num">En cámara</th></tr></thead><tbody>' + filasCal + '</tbody></table></div></div>'
-    + '</div>'
-
-    + '<div class="caja"><h3>Calidad <em>Inspecciones de esta partida</em></h3><div class="rej"><table>'
+  return '<div class="caja"><h3>Inspecciones <em>Materia seca media: '
+    + (p.materia_seca == null ? '—' : n2(p.materia_seca) + '%') + '</em></h3><div class="rej"><table id="t-ins">'
     + '<thead><tr><th>Fecha</th><th>Momento</th><th>Inspector</th><th class="num">Mat. seca</th>'
     + '<th class="num">Temp.</th><th>Resultado</th><th>Observaciones</th></tr></thead><tbody>'
-    + filasI + '</tbody></table></div></div>'
-
-    + '<div class="caja"><h3>Reclamaciones</h3><div class="rej"><table>'
-    + '<thead><tr><th>Código</th><th>Aviso</th><th>Cliente</th><th>Motivo</th>'
-    + '<th class="num">Reclamado</th><th class="num">Aceptado</th><th>Estado</th></tr></thead><tbody>'
-    + filasR + '</tbody></table></div></div>'
-
-    + '<div class="caja"><h3>Trazabilidad <em>Dónde ha ido cada pallet</em></h3><div class="rej"><table>'
-    + '<thead><tr><th>Pallet</th><th>Lote</th><th>Almacén</th><th>Estado</th><th>Albarán</th>'
-    + '<th>Cliente</th><th>Factura</th><th class="num">Kilos entrada</th>'
-    + '<th class="num">Kilos hoy</th></tr></thead><tbody>' + filasT + '</tbody></table></div></div>';
+    + ins + '</tbody></table></div></div>'
+    + '<div class="caja"><h3>Reclamaciones</h3><div class="rej"><table id="t-rec"><thead><tr>'
+    + '<th>Código</th><th>Aviso</th><th>Cliente</th><th>Motivo</th><th class="num">Reclamado</th>'
+    + '<th class="num">Aceptado</th><th>Estado</th></tr></thead><tbody>' + rec + '</tbody></table></div></div>';
 }
 
-/* ══ CÁMARA ══ */
-function pintarCamara(){
-  const fa = $('c-alm').value;
-  const st = stock.filter(x => !fa || (x.almacen_nombre || x.almacen) === fa);
+function bloqueTraza(p, d){
+  const tr = d.tr.length ? d.tr.map(x =>
+    '<tr><td>' + esc(x.codigo_traza || x.codigo_interno) + '</td>'
+    + '<td>' + esc(x.lote || '—') + '</td><td>' + esc(x.productor || '—') + '</td>'
+    + '<td>' + esc(x.almacen || '—') + '</td><td>' + esc(x.estado) + '</td>'
+    + '<td>' + esc(x.albaran || '—') + '</td><td>' + esc(x.cliente || '—') + '</td>'
+    + '<td>' + esc(x.factura_numero || '—') + '</td>'
+    + '<td class="num">' + n2(x.kilos_inicial) + '</td>'
+    + '<td class="num">' + n2(x.kilos_actual) + '</td></tr>').join('')
+    : '<tr><td colspan="10" class="nada">Sin pallets registrados.</td></tr>';
+
+  return '<div class="caja"><h3>Trazabilidad <em>' + d.tr.length + ' pallets</em></h3>'
+    + '<div class="rej"><table id="t-tr"><thead><tr><th>Pallet</th><th>Lote</th><th>Productor</th>'
+    + '<th>Almacén</th><th>Estado</th><th>Albarán</th><th>Cliente</th><th>Factura</th>'
+    + '<th class="num">Kilos entrada</th><th class="num">Kilos hoy</th></tr></thead><tbody>'
+    + tr + '</tbody></table></div></div>';
+}
+
+/* ══════════ VISTA: CÁMARA ══════════ */
+function vistaCamara(){
+  migas([['Tropical Báez', null], ['Cámara', null]]);
+  $('titulo').textContent = 'Cámara';
+  $('subtitulo').textContent = 'La fruta se muere. Lo más viejo primero.';
+  const alm = [...new Set(stock.map(x => x.almacen_nombre || x.almacen).filter(Boolean))].sort();
+  $('util').innerHTML = '<div><label for="c-alm">Almacén</label>'
+    + '<select id="c-alm" onchange="setFiltro(\'almacen\',this.value)"><option value="">Todos</option>'
+    + alm.map(a => '<option>' + esc(a) + '</option>').join('') + '</select></div>'
+    + '<button class="btn" onclick="exportar(\'t-cam\',\'camara\')">Exportar</button>';
+  $('c-alm').value = filtros.almacen;
+
+  const st = stock.filter(x => !filtros.almacen || (x.almacen_nombre || x.almacen) === filtros.almacen);
+  reg(st.length);
   const kilos = st.reduce((s,x) => s + num(x.kilos_actual), 0);
   const cajas = st.reduce((s,x) => s + num(x.cajas_actual), 0);
   const crit  = st.filter(x => num(x.dias_camara) > 21);
@@ -646,7 +707,7 @@ function pintarCamara(){
   const cd    = st.filter(x => x.dias_camara != null);
   const media = cd.length ? cd.reduce((s,x) => s + num(x.dias_camara), 0) / cd.length : null;
 
-  $('kpis-cam').innerHTML = [
+  const kpis = [
     ['Kilos', n0(kilos), n0(st.length) + ' pallets', false],
     ['Cajas', n0(cajas), '', false],
     ['Días medios', media == null ? '—' : n0(media), 'en cámara', false],
@@ -656,63 +717,82 @@ function pintarCamara(){
       'hay que sacarlos', crit.length > 0]
   ].map(x => '<div class="kpi"><span>' + esc(x[0]) + '</span><b>' + x[1] + '</b>'
     + '<i class="' + (x[3] ? 'mal' : '') + '">' + esc(x[2]) + '</i></div>').join('');
-  marca('b-cam', crit.length, crit.length > 0);
 
-  const cal = {};
-  st.forEach(x => {
-    const c = x.categoria || 'Sin categoría';
-    if (!cal[c]) cal[c] = {cajas:0, kilos:0};
-    cal[c].cajas += num(x.cajas_actual); cal[c].kilos += num(x.kilos_actual);
-  });
-  const kc = Object.keys(cal).sort((a,b) => cal[b].kilos - cal[a].kilos);
-  $('b-cal').innerHTML = kc.length ? kc.map(c =>
-    '<tr><td><b>' + esc(c) + '</b></td><td class="num">' + n0(cal[c].cajas) + '</td>'
-    + '<td class="num">' + n2(cal[c].kilos) + '</td>'
-    + '<td class="num">' + (kilos > 0 ? n2(100*cal[c].kilos/kilos) + '%' : '—') + '</td></tr>').join('')
+  const cat = {};
+  st.forEach(x => { const c = x.categoria || 'Sin categoría';
+    if (!cat[c]) cat[c] = {cajas:0, kilos:0};
+    cat[c].cajas += num(x.cajas_actual); cat[c].kilos += num(x.kilos_actual); });
+  const kc = Object.keys(cat).sort((a,b) => cat[b].kilos - cat[a].kilos);
+  const fCat = kc.length ? kc.map(c =>
+    '<tr><td><b>' + esc(c) + '</b></td><td class="num">' + n0(cat[c].cajas) + '</td>'
+    + '<td class="num">' + n2(cat[c].kilos) + '</td>'
+    + '<td class="num">' + (kilos > 0 ? n2(100*cat[c].kilos/kilos) + '%' : '—') + '</td></tr>').join('')
     : '<tr><td colspan="4" class="nada">Sin existencias.</td></tr>';
 
   const pp = {};
-  st.forEach(x => {
-    const c = x.contenedor || '—';
+  st.forEach(x => { const c = x.contenedor || '—';
     if (!pp[c]) pp[c] = {pallets:0, kilos:0, dias:0};
     pp[c].pallets++; pp[c].kilos += num(x.kilos_actual);
-    pp[c].dias = Math.max(pp[c].dias, num(x.dias_camara));
-  });
+    pp[c].dias = Math.max(pp[c].dias, num(x.dias_camara)); });
   const kp = Object.keys(pp).sort((a,b) => pp[b].dias - pp[a].dias);
-  $('b-cpart').innerHTML = kp.length ? kp.map(c => {
+  const fPart = kp.length ? kp.map(c => {
+    const p = partidas.find(z => z.codigo === c);
     const f = pp[c].dias > 21 ? 'CRITICO' : pp[c].dias > 14 ? 'VIGILAR' : 'OK';
-    return '<tr><td><b>' + esc(c) + '</b></td><td class="num">' + n0(pp[c].pallets) + '</td>'
+    return '<tr' + (p ? ' class="click" onclick="voy(\'partidas\',\'' + p.contenedor_id + '\')"' : '') + '>'
+      + '<td><b>' + esc(c) + '</b></td><td class="num">' + n0(pp[c].pallets) + '</td>'
       + '<td class="num">' + n2(pp[c].kilos) + '</td><td class="num">' + n0(pp[c].dias) + '</td>'
       + '<td>' + etiFrescura(f, pp[c].dias) + '</td></tr>';
   }).join('') : '<tr><td colspan="5" class="nada">Sin existencias.</td></tr>';
 
-  $('b-cam').innerHTML = st.length ? st.slice()
-    .sort((a,b) => num(b.dias_camara) - num(a.dias_camara)).map(x => {
-      const d = num(x.dias_camara);
-      const f = d > 21 ? 'CRITICO' : d > 14 ? 'VIGILAR' : 'OK';
-      return '<tr><td>' + esc(x.pallet) + '</td><td>' + esc(x.contenedor || '—') + '</td>'
-        + '<td>' + esc(x.lote || '—') + '</td><td>' + esc(x.productor || '—') + '</td>'
-        + '<td>' + esc(x.almacen_nombre || x.almacen || '—') + '</td>'
-        + '<td>' + esc(x.categoria || '—') + '</td>'
-        + '<td class="num">' + n0(x.cajas_actual) + '</td>'
-        + '<td class="num">' + n2(x.kilos_actual) + '</td>'
-        + '<td class="num">' + (x.dias_camara == null ? '—' : d) + '</td>'
-        + '<td>' + etiFrescura(f, d) + '</td></tr>';
-    }).join('') : '<tr><td colspan="10" class="nada">No hay pallets en cámara.</td></tr>';
+  const fCam = st.length ? st.slice().sort((a,b) => num(b.dias_camara) - num(a.dias_camara)).map(x => {
+    const dd = num(x.dias_camara);
+    const f = dd > 21 ? 'CRITICO' : dd > 14 ? 'VIGILAR' : 'OK';
+    return '<tr><td>' + esc(x.pallet) + '</td><td>' + esc(x.contenedor || '—') + '</td>'
+      + '<td>' + esc(x.lote || '—') + '</td><td>' + esc(x.productor || '—') + '</td>'
+      + '<td>' + esc(x.almacen_nombre || x.almacen || '—') + '</td>'
+      + '<td>' + esc(x.categoria || '—') + '</td>'
+      + '<td class="num">' + n0(x.cajas_actual) + '</td>'
+      + '<td class="num">' + n2(x.kilos_actual) + '</td>'
+      + '<td class="num">' + (x.dias_camara == null ? '—' : dd) + '</td>'
+      + '<td>' + etiFrescura(f, dd) + '</td></tr>';
+  }).join('') : '<tr><td colspan="10" class="nada">No hay pallets en cámara.</td></tr>';
+
+  $('lienzo').innerHTML = '<div class="kpis">' + kpis + '</div><div class="fila2">'
+    + '<div class="caja"><h3>Por categoría <em>Lo vendible hoy</em></h3><div class="rej"><table><thead><tr>'
+    + '<th>Categoría</th><th class="num">Cajas</th><th class="num">Kilos</th>'
+    + '<th class="num">% del stock</th></tr></thead><tbody>' + fCat + '</tbody></table></div></div>'
+    + '<div class="caja"><h3>Por partida <em>Pulsa para abrir el expediente</em></h3><div class="rej">'
+    + '<table><thead><tr><th>Partida</th><th class="num">Pallets</th><th class="num">Kilos</th>'
+    + '<th class="num">Días máx.</th><th>Frescura</th></tr></thead><tbody>' + fPart
+    + '</tbody></table></div></div></div>'
+    + '<div class="caja"><h3>Pallets en cámara <em>Ordenados por antigüedad</em></h3><div class="rej">'
+    + '<table id="t-cam"><thead><tr><th>Pallet</th><th>Partida</th><th>Lote</th><th>Productor</th>'
+    + '<th>Almacén</th><th>Categoría</th><th class="num">Cajas</th><th class="num">Kilos</th>'
+    + '<th class="num">Días</th><th>Frescura</th></tr></thead><tbody>' + fCam
+    + '</tbody></table></div></div>';
 }
 
-/* ══ NAVEGACIÓN ══ */
-const PANT = ['partidas','expediente','camara'];
-function ir(p){
-  PANT.forEach(n => { $('p-' + n).hidden = (n !== p); $('n-' + n).classList.toggle('on', n === p); });
-  document.querySelector('.obra').scrollTop = 0;
-  if (p === 'partidas') reg(enCampana().length);
-  if (p === 'camara')   reg(stock.length);
-}
-function reg(n){ $('pie-reg').textContent = (n == null) ? '—' : n0(n) + ' registros'; }
+/* ══════════ TECLADO ══════════ */
+document.addEventListener('keydown', e => {
+  const escribiendo = /^(INPUT|SELECT|TEXTAREA)$/.test((e.target.tagName || ''));
+  if (e.key === 'Escape' && !escribiendo && ruta.id){ subir(); return; }
+  if (e.key === '/' && !escribiendo){
+    e.preventDefault();
+    if (ruta.vista !== 'partidas' || ruta.id) voy('partidas');
+    setTimeout(() => { const b = $('f-busca'); if (b) b.focus(); }, 60);
+    return;
+  }
+  if (!ruta.id || escribiendo) return;
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight'){
+    const i = listaActual.findIndex(x => x.contenedor_id === ruta.id);
+    const j = e.key === 'ArrowLeft' ? i-1 : i+1;
+    if (i >= 0 && j >= 0 && j < listaActual.length)
+      voy('partidas', listaActual[j].contenedor_id, ruta.sub);
+  }
+});
 
 function exportar(tid, nombre){
-  const t = $(tid);
+  const t = $(tid); if (!t) return;
   const csv = '\uFEFF' + [...t.querySelectorAll('tr')].map(tr =>
     [...tr.querySelectorAll('th,td')].map(c =>
       '"' + c.innerText.replace(/\s+/g,' ').trim().replace(/"/g,'""') + '"').join(';')).join('\n');
