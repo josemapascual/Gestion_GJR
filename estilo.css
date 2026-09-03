@@ -252,3 +252,97 @@ table{border-collapse:collapse !important}
 
 /* Botones: sin sombra ni mayúsculas */
 .btn{text-transform:none !important;letter-spacing:0 !important}
+
+/* ══════════════════════════════════════════════════════════════
+   13. Liquidaciones (analisis_liquidaciones_v1.html)
+   Este módulo no comparte el vocabulario del resto: tiene su
+   propia cabecera (.gjr-header), sus pestañas (.tab) y sus
+   indicadores (.kpis / .kpi-val). Se igualan aquí.
+   ══════════════════════════════════════════════════════════════ */
+
+.gjr-header{
+  background:var(--tinta) !important;
+  border-bottom:2px solid var(--acento) !important;
+  box-shadow:none !important;
+  padding:0 16px !important;
+  min-height:50px; gap:12px !important;
+}
+.gjr-header img{height:25px !important}
+.gjr-header h1{font-size:15px !important;letter-spacing:0 !important}
+.gjr-header span{font-size:11px !important;opacity:.62 !important}
+.gjr-header-back, .gjr-header .user-chip{
+  border-radius:4px !important;
+  padding:5px 11px !important;
+  font-weight:500 !important;
+  background:rgba(255,255,255,.1) !important;
+  border:1px solid rgba(255,255,255,.22) !important;
+  letter-spacing:0 !important;
+}
+
+/* Pestañas: eran una franja verde con versalitas espaciadas */
+.tabs{background:var(--blanco) !important;border-bottom:1px solid var(--linea) !important;
+  padding:0 16px !important}
+.tab{
+  color:var(--texto-suave) !important;
+  text-transform:none !important;
+  letter-spacing:0 !important;
+  font-size:12.5px !important;
+  padding:9px 13px !important;
+}
+.tab:hover{color:var(--texto) !important}
+.tab.active{
+  color:var(--verde) !important;
+  border-bottom-color:var(--acento) !important;
+  font-weight:600 !important;
+}
+
+/* Área de trabajo al ancho de las demás pantallas */
+main{max-width:none !important;padding:15px 20px 30px !important}
+
+/* Indicadores: en rejilla pegada, cifra más contenida */
+.kpis{gap:1px !important;background:var(--linea);border:1px solid var(--linea);
+  border-radius:var(--radio);overflow:hidden;margin-bottom:14px}
+.kpis .kpi{
+  border:0 !important; border-radius:0 !important; box-shadow:none !important;
+  padding:10px 13px !important;
+}
+.kpi-lab{font-size:9.5px !important;letter-spacing:.07em !important}
+.kpi-val{font-family:'DM Sans',system-ui,sans-serif !important;font-size:17px !important;
+  font-weight:600 !important;color:var(--texto) !important;margin-top:3px !important}
+.kpi-sub{font-size:11px !important;margin-top:1px !important}
+
+/* Tablas: cabecera clara en vez de verde pálido */
+th{background:#F6F8F5 !important;color:var(--texto-suave) !important;
+  border-bottom:1px solid var(--linea) !important;letter-spacing:.06em !important}
+td{border-bottom:1px solid #EEF2EC !important}
+td.n, th.n{text-align:right !important}
+tbody tr:hover{background:#F8FBF7 !important}
+tr.clickable{cursor:pointer}
+
+/* Etiquetas de estado con las formas del resto */
+.chip{border-radius:3px !important;letter-spacing:.04em !important;border:0 !important;
+  padding:2px 7px !important;font-size:10px !important}
+.chip.ok  {background:var(--verde-pale) !important;color:var(--verde) !important}
+.chip.rev {background:var(--ambar-bg) !important;color:var(--ambar) !important}
+.chip.err {background:var(--error-bg) !important;color:var(--error) !important}
+.chip.gris{background:#EEF1EC !important;color:var(--texto-suave) !important}
+.pos{color:var(--verde) !important}
+.neg{color:var(--error) !important}
+
+/* Botones: eran altos, con versalitas y muy redondeados */
+button, .btn{
+  padding:6px 12px !important; border-radius:4px !important;
+  font-size:12.5px !important; font-weight:500 !important; letter-spacing:0 !important;
+}
+.btn-sm{padding:3px 9px !important;font-size:11.5px !important}
+.btn-outline{border-width:1px !important;background:var(--blanco) !important}
+.btn-gold{color:#3A2A00 !important}
+
+/* Fichas, avisos y panel lateral */
+.card-note{font-size:11.5px !important}
+.status-bar{border-radius:4px !important;border:0 !important;padding:8px 11px !important}
+.panel{background:var(--fondo) !important;padding:16px 20px !important}
+.panel-head h2{font-size:17px !important}
+#login{background:var(--tinta) !important}
+.login-box{border-radius:6px !important}
+.foot{font-size:11px !important;color:var(--tenue) !important}
