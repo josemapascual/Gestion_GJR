@@ -105,6 +105,19 @@ tfoot td{font-weight:600;background:#F6F8F5;border-top:1px solid var(--linea);bo
   font-size:11.5px;line-height:1.5}
 .tot{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #EEF2EC}
 .tot:last-child{border-bottom:0;font-weight:600;font-size:15px;padding-top:8px}
+.corregir{border:1px solid var(--ambar);background:var(--ambar-pale);border-radius:5px;
+  padding:12px 14px;margin-top:12px}
+.corregir h4{margin:0 0 4px;font-size:13px;color:var(--ambar)}
+.corregir p{margin:0 0 10px;font-size:11.5px;color:var(--suave)}
+.corregir .fila{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
+.corregir label{display:block;font-size:9.5px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--tenue);margin-bottom:3px}
+.corregir select,.corregir textarea{width:100%;border:1px solid var(--linea);border-radius:4px;
+  padding:6px 9px;background:var(--blanco);font-size:12.5px}
+.hist{font-size:11.5px}
+.hist div{padding:5px 0;border-bottom:1px solid #EEF2EC}
+.hist div:last-child{border-bottom:0}
+.hist b{color:var(--texto)}
 
 @media(max-width:1000px){.kpis{grid-template-columns:repeat(3,1fr)}}
 @media print{.barra,.filtros,.ov{display:none}.ficha{position:static;transform:none;box-shadow:none;width:auto}}
@@ -448,11 +461,74 @@ async function abrir(clase, id){
     ? '<a class="btn" href="facturacion_v21.html">Abrir en Ventas</a>'
     : '<a class="btn" href="compras.html">Abrir en Compras</a>';
 
+  let hist = '', corr = '';
+  if (f.clase === 'VENTA'){
+    const {data:cs} = await sb.from('erp_documento_cambio').select('*')
+      .eq('documento_id', f.id).order('creado_en', {ascending:false});
+    if (cs && cs.length){
+      hist = '<div class="bloque"><h3>Correcciones · ' + cs.length + '</h3><div class="hist">'
+        + cs.map(c => '<div><b>' + esc(c.campo) + '</b> · '
+            + fec(c.creado_en) + ' · ' + esc(c.usuario || '')
+            + '<br><span class="mini">' + esc((c.valor_antes || '—').slice(0,70))
+            + '  →  ' + esc((c.valor_despues || '—').slice(0,70)) + '</span>'
+            + '<br><span class="mini">' + esc(c.motivo) + '</span></div>').join('')
+        + '</div></div>';
+    }
+    corr = '<div class="corregir">'
+      + '<h4>Corregir la clasificación</h4>'
+      + '<p>Cambia el régimen y la mención legal dejando registro de quién, cuándo y por qué. '
+      + 'No admite cambios que alteren la cuota de IVA: eso exige rectificativa.</p>'
+      + '<div class="fila">'
+      + '<div><label for="c-reg">Régimen</label><select id="c-reg">'
+      + REGIMENES.map(r => '<option value="' + r[0] + '"' + (r[0] === f.regimen ? ' selected' : '')
+          + '>' + esc(r[1]) + '</option>').join('') + '</select></div>'
+      + '<div><label for="c-pais">Emitida con</label><select id="c-pais">'
+      + '<option value="ES"' + (f.pais_emisor !== 'NL' ? ' selected' : '') + '>España</option>'
+      + '<option value="NL"' + (f.pais_emisor === 'NL' ? ' selected' : '') + '>Países Bajos</option>'
+      + '</select></div></div>'
+      + '<label for="c-motivo">Motivo · obligatorio</label>'
+      + '<textarea id="c-motivo" rows="2" placeholder="Por qué la clasificación anterior era incorrecta"></textarea>'
+      + '<div id="c-msg" class="mini" style="margin-top:7px"></div>'
+      + '<button class="btn" style="margin-top:9px" id="c-btn" onclick="corregir()">Guardar corrección</button>'
+      + '</div>';
+  }
+
   $('x-cuerpo').innerHTML = cab + fis + tabLin + tot
-    + '<div style="display:flex;gap:8px;margin-top:6px">' + ir
+    + '<div style="display:flex;gap:8px;margin:6px 0 4px">' + ir
     + '<button class="btn" onclick="window.print()">Imprimir</button>'
     + (f.url ? '<a class="btn" href="' + esc(f.url) + '" target="_blank" rel="noopener">Ver archivo</a>' : '')
-    + '</div>';
+    + '</div>' + hist + corr;
+}
+
+const REGIMENES = [
+  ['NACIONAL','Nacional'], ['INTRACOMUNITARIO','Intracomunitaria'],
+  ['EXPORTACION','Exportación'], ['CANARIAS_CEUTA_MELILLA','Canarias, Ceuta y Melilla'],
+  ['TRANSITO_NO_SUJETA','No sujeta · venta en tránsito'],
+  ['INVERSION_NL','Inversión del sujeto pasivo · NL'], ['TRIANGULAR_NL','Triangular · NL']
+];
+
+async function corregir(){
+  if (!abierta) return;
+  const motivo = $('c-motivo').value.trim();
+  const msg = $('c-msg');
+  if (motivo.length < 15){
+    msg.innerHTML = '<span class="mal">Explica el motivo: queda guardado y es lo que justifica el cambio.</span>';
+    return;
+  }
+  $('c-btn').disabled = true;
+  msg.textContent = 'Guardando…';
+  const {data, error} = await sb.rpc('erp_corregir_clasificacion', {
+    p_documento_id: abierta.id,
+    p_regimen:      $('c-reg').value,
+    p_pais_emisor:  $('c-pais').value,
+    p_motivo:       motivo
+  });
+  $('c-btn').disabled = false;
+  if (error){ msg.innerHTML = '<span class="mal">' + esc(error.message) + '</span>'; return; }
+  if (!data || !data.length){ msg.textContent = 'No había nada que cambiar.'; return; }
+  const id = abierta.id, clase = abierta.clase;
+  await recargar();
+  abrir(clase, id);
 }
 
 function cerrar(){
