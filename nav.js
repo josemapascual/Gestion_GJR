@@ -22,9 +22,11 @@
         ['Almacén',          'almacen_v7.html'],
         ['Calidad',          'calidad.html'],
         ['Ventas',           'facturacion_v21.html'],
+        ['Facturas',         'facturas.html'],
         ['Liquidaciones',    'analisis_liquidaciones_v1.html'],
         ['Gestión',          'gestion.html'],
-        ['Manual',           'manual.html']
+        ['Manual',           'manual.html'],
+        ['Facturar',         'manual_facturacion.html']
       ]
     },
     gjr: {
