@@ -378,7 +378,7 @@ tbody tr:hover{background:#FAFCF9}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
-<link rel="stylesheet" href="estilo.css">
+<link rel="stylesheet" href="estilo.css?v=3">
 </head>
 <body>
 
@@ -543,6 +543,19 @@ tbody tr:hover{background:#FAFCF9}
       <div>
         <label for="e-regimen">Régimen fiscal de esta operación</label>
         <select id="e-regimen" onchange="alCambiarRegimen()"></select>
+      </div>
+    </div>
+    <div class="grid g2" style="margin-bottom:12px">
+      <div>
+        <label for="e-pais-emisor">Facturas con la identificación de</label>
+        <select id="e-pais-emisor" onchange="alCambiarEmisor()">
+          <option value="ES">España — NIF-IVA español</option>
+          <option value="NL">Países Bajos — representante fiscal</option>
+        </select>
+      </div>
+      <div>
+        <label>Se declara en</label>
+        <div id="e-declara" class="status-bar" style="margin:0"></div>
       </div>
     </div>
     <div class="grid g2" style="margin-bottom:12px">
@@ -1222,7 +1235,7 @@ document.addEventListener('keydown', e => {
 /* ── CARGA DE DATOS ─────────────────────────────────────────── */
 async function cargarTodo(){
   const [e, c, d, k, r, cu, se] = await Promise.all([
-    sb.from('erp_empresa').select('id,codigo,razon_social,regimen,pais'),
+    sb.from('erp_empresa').select('id,codigo,razon_social,regimen,pais,eori,nif_iva_es,nif_iva_nl,repfiscal_nombre'),
     sb.from('erp_cliente').select('*').order('razon_social'),
     sb.from('erp_documento').select('*, erp_cliente(razon_social), erp_documento_linea(*)')
       .order('created_at',{ascending:false}).limit(500),
@@ -1413,8 +1426,44 @@ function regimenActual(){
   return cli ? (cli.regimen_fiscal || 'NACIONAL') : 'NACIONAL';
 }
 
+/* País bajo cuya identificación se emite. Por defecto el de la empresa,
+   pero al importar en Rotterdam se factura con el alta holandesa. */
+function paisEmisor(){
+  const s = $('e-pais-emisor');
+  return (s && s.value) ? s.value : EMPS[EMPRESA].pais;
+}
+
+/* Dónde se declara: en tránsito no tributa en ningún Estado miembro;
+   lo emitido con el alta holandesa va a la declaración holandesa. */
+function declaraEn(){
+  if (regimenActual() === 'TRANSITO_NO_SUJETA') return 'NINGUNA';
+  return paisEmisor() === 'NL' ? 'NL' : 'ES';
+}
+
+function alCambiarEmisor(){
+  refrescarRegimenSelect(val('e-regimen'));
+  pintarDeclara();
+  render();
+}
+
+function pintarDeclara(){
+  const d = $('e-declara'); if(!d) return;
+  const emp = EMPS[EMPRESA] || {};
+  const nif = paisEmisor() === 'NL' ? emp.nif_iva_nl : emp.nif_iva_es;
+  const donde = {
+    ES: 'España — modelos 303 y 349',
+    NL: 'Países Bajos — BTW-aangifte y opgaaf ICP. No entra en el 303 ni en el 349',
+    NINGUNA: 'En ningún país — no sujeta. Solo cuenta para el Impuesto de Sociedades'
+  }[declaraEn()];
+  const falta = !nif && declaraEn() !== 'NINGUNA';
+  d.className = 'status-bar' + (falta ? ' error' : '');
+  d.textContent = donde + (falta
+    ? '  ·  Falta el NIF-IVA ' + (paisEmisor() === 'NL' ? 'holandés' : 'español') + ' en la ficha de la empresa'
+    : (nif ? '  ·  ' + nif : ''));
+}
+
 function ivaPara(tipoLinea){
-  const pais = EMPS[EMPRESA].pais;
+  const pais = paisEmisor();
   const reg = regimenActual();
   const r = regimenIva.find(x => x.pais_emisor === pais
               && x.regimen === reg && x.tipo_linea === tipoLinea);
@@ -1436,6 +1485,7 @@ function refrescarRegimenSelect(sel){
 }
 
 function alCambiarRegimen(){
+  pintarDeclara();
   lineas.forEach(l => { l.iva_pct = num(ivaPara(l.tipo_linea).iva_pct); });
   pintarRegimenChip(); pintarLineas(); pintarTotales();
 }
@@ -1855,6 +1905,11 @@ async function guardar(emitir){
     empresa_id: empresaId(),
     cliente_id: cliente,
     regimen_fiscal: val('e-regimen') || (clienteActual() || {}).regimen_fiscal || 'NACIONAL',
+    pais_emisor: paisEmisor(),
+    nif_emisor: (paisEmisor() === 'NL'
+                  ? (EMPS[EMPRESA] || {}).nif_iva_nl
+                  : (EMPS[EMPRESA] || {}).nif_iva_es) || null,
+    declara_en: declaraEn(),
     serie: val('e-serie') || serieDe(tipo),
     fecha: val('e-fecha') || hoy(),
     fecha_vencimiento: val('e-venc') || null,
@@ -3298,6 +3353,6 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── ARRANQUE ───────────────────────────────────────────────── */
 arrancar();
 </script>
-<script src="nav.js"></script>
+<script src="nav.js?v=3"></script>
 </body>
 </html>
