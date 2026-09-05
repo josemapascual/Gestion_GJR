@@ -126,35 +126,68 @@ tfoot td{font-weight:600;background:#F6F8F5;border-top:1px solid var(--linea);bo
   @page{size:A4;margin:16mm 15mm}
 }
 #impresion{display:none}
-.fac{font-family:'DM Sans',system-ui,sans-serif;color:#16211A;font-size:11px;line-height:1.45}
-.fac .cab{display:flex;align-items:flex-start;gap:16px;padding-bottom:12px;
-  border-bottom:2px solid var(--verde)}
-.fac .cab img{height:44px}
-.fac .emisor{font-size:10.5px;line-height:1.5}
-.fac .emisor b{display:block;font-size:14px;font-family:'DM Serif Display',Georgia,serif;font-weight:400}
-.fac .num{margin-left:auto;text-align:right}
-.fac .num .t{font-family:'DM Serif Display',Georgia,serif;font-size:19px}
-.fac .num .n{font-size:15px;font-weight:600;margin-top:2px}
-.fac .partes{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:14px 0}
-.fac .parte span{display:block;font-size:8.5px;font-weight:600;letter-spacing:.08em;
-  text-transform:uppercase;color:#8A948C;margin-bottom:3px}
-.fac .datos{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 14px;margin:12px 0;
-  padding:9px 0;border-top:1px solid #D9E1D6;border-bottom:1px solid #D9E1D6}
-.fac .datos div span{display:block;font-size:8.5px;font-weight:600;letter-spacing:.07em;
-  text-transform:uppercase;color:#8A948C}
-.fac table{width:100%;border-collapse:collapse;font-size:10.5px;margin-top:10px}
-.fac th{background:#F1F4F0;text-align:left;font-size:8.5px;letter-spacing:.06em;
-  text-transform:uppercase;color:#5F6B62;padding:6px 7px;border-bottom:1px solid #D9E1D6}
-.fac td{padding:5px 7px;border-bottom:1px solid #EEF2EC}
-.fac td.n,.fac th.n{text-align:right}
-.fac .totales{margin-left:auto;width:280px;margin-top:12px}
-.fac .totales div{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #EEF2EC}
-.fac .totales div:last-child{border-bottom:0;border-top:2px solid var(--verde);
-  font-weight:600;font-size:14px;padding-top:7px}
-.fac .legal{margin-top:16px;padding:9px 11px;background:#F1F4F0;border:1px solid #D9E1D6;
-  border-radius:3px;font-size:9.5px;line-height:1.5}
-.fac .pie{margin-top:14px;padding-top:9px;border-top:1px solid #D9E1D6;
-  font-size:9px;color:#5F6B62;line-height:1.5}
+.fac{font-family:'DM Sans',system-ui,sans-serif;color:#1A1A1A;font-size:9.5px;line-height:1.4}
+.fac .top{display:flex;align-items:flex-start;padding-bottom:14px;border-bottom:2.5px solid var(--verde)}
+.fac .top img{height:46px}
+.fac .top .der{margin-left:auto;text-align:right}
+.fac .top .rot{font-size:9px;font-weight:700;letter-spacing:.22em;color:var(--verde)}
+.fac .top .nro{font-family:'DM Serif Display',Georgia,serif;font-size:30px;line-height:1.05;margin-top:1px}
+.fac .top .norma{font-size:8px;color:#9AA39C;margin-top:3px}
+
+.fac .partes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.fac .parte{border:1px solid #D9E1D6;border-radius:4px;padding:11px 13px}
+.fac .parte .rot{font-size:8px;font-weight:700;letter-spacing:.16em;color:var(--verde);margin-bottom:5px}
+.fac .parte b{display:block;font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:14px;margin-bottom:4px}
+.fac .parte div{color:#5F6B62;line-height:1.55}
+
+.fac .rej{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #D9E1D6;border-radius:4px;overflow:hidden}
+.fac .rej > div{padding:8px 11px;border-right:1px solid #D9E1D6;border-bottom:1px solid #D9E1D6}
+.fac .rej > div:nth-child(4n){border-right:0}
+.fac .rej > div:nth-last-child(-n+4){border-bottom:0}
+.fac .rej span{display:block;font-size:7.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#9AA39C;margin-bottom:2px}
+
+.fac table.lin{width:100%;border-collapse:collapse;margin-top:16px}
+.fac table.lin th{text-align:left;font-size:7.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--verde);padding:7px 8px;border-bottom:1.5px solid var(--verde)}
+.fac table.lin td{padding:7px 8px;border-bottom:1px solid #EDF1EC;vertical-align:top}
+.fac table.lin tr:nth-child(even) td{background:#F7FAF6}
+.fac table.lin .pos{color:#9AA39C;font-size:8.5px;width:26px}
+.fac table.lin .den{font-weight:600;font-size:10px}
+.fac table.lin .sub{color:#5F6B62;font-size:8px;margin-top:2px}
+.fac table.lin .sub b{color:#1A1A1A;font-weight:600}
+.fac table.lin .n{text-align:right;white-space:nowrap}
+
+.fac table.imp{width:100%;border-collapse:collapse;margin-top:14px}
+.fac table.imp th{text-align:left;font-size:7.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:#9AA39C;padding:6px 8px;border-bottom:1px solid #D9E1D6}
+.fac table.imp td{padding:6px 8px;border-bottom:1px solid #EDF1EC}
+.fac table.imp .n{text-align:right}
+.fac table.imp .cat{color:var(--verde);font-weight:700}
+
+.fac .abajo{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;margin-top:18px}
+.fac .banco{border:1px solid #D9E1D6;border-radius:4px;overflow:hidden}
+.fac .banco .rot{font-size:7.5px;font-weight:700;letter-spacing:.14em;color:var(--verde);
+  padding:8px 11px;border-bottom:1px solid #D9E1D6}
+.fac .banco table{width:100%;border-collapse:collapse;font-size:8.5px}
+.fac .banco td{padding:5px 11px;border-bottom:1px solid #EDF1EC}
+.fac .banco td:first-child{color:#9AA39C;width:76px}
+.fac .banco tr:last-child td{border-bottom:0}
+.fac .nota{border-left:3px solid var(--verde-medio);background:#F1F7F0;border-radius:0 3px 3px 0;
+  padding:9px 12px;margin-top:10px;font-size:8.5px;line-height:1.5}
+.fac .nota .rot{font-size:7.5px;font-weight:700;letter-spacing:.14em;color:var(--verde);margin-bottom:3px}
+.fac .logi{border-left:3px solid var(--acento);background:#FFFAEE;border-radius:0 3px 3px 0;
+  padding:8px 12px;margin-top:8px;font-size:8.5px;color:#5F6B62}
+
+.fac .sumas div{display:flex;justify-content:space-between;padding:7px 12px;border-bottom:1px solid #EDF1EC}
+.fac .sumas div:first-child{border-top:1px solid #D9E1D6}
+.fac .granTotal{display:flex;margin-top:10px;border-radius:4px;overflow:hidden}
+.fac .granTotal .et{background:#F1F7F0;color:var(--verde);font-family:'DM Serif Display',Georgia,serif;
+  font-size:15px;padding:14px 16px;flex:1;display:flex;align-items:center}
+.fac .granTotal .im{background:var(--verde);color:#fff;font-family:'DM Serif Display',Georgia,serif;
+  font-size:20px;padding:14px 16px;text-align:right;flex:1.1;display:flex;align-items:center;justify-content:flex-end}
+.fac .peso{text-align:right;font-size:8px;color:#9AA39C;margin-top:5px}
+.fac .pie{margin-top:20px;padding-top:9px;border-top:1px solid #D9E1D6;text-align:center;
+  font-size:7.5px;letter-spacing:.05em;color:#9AA39C}
 
 #acceso{position:fixed;inset:0;background:var(--tinta);z-index:200;display:none;
   align-items:center;justify-content:center;padding:20px}
@@ -587,68 +620,140 @@ async function montarFactura(f){
     const {data} = await sb.from('erp_empresa').select('*').eq('codigo','TB').maybeSingle();
     empresa = data || {};
   }
-  const r = await sb.from('erp_documento_linea').select('*')
-    .eq('documento_id', f.id).order('orden');
-  const lineas = r.data || [];
+  /* La vista de listado no trae todos los campos de la factura: aquí se pide
+     el documento completo, el cliente, el contenedor y la cuenta bancaria. */
+  const [doc, lin] = await Promise.all([
+    sb.from('erp_documento').select('*').eq('id', f.id).maybeSingle(),
+    sb.from('erp_documento_linea').select('*').eq('documento_id', f.id).order('orden')
+  ]);
+  const D = doc.data || {};
+  const lineas = lin.data || [];
 
-  const nl  = f.pais_emisor === 'NL';
-  const nif = f.nif_emisor || (nl ? empresa.nif_iva_nl : empresa.nif_iva_es) || empresa.identificacion || '';
-  const sinIva = f.regimen === 'INVERSION_NL';   // no debe figurar ni tipo ni total con IVA
+  const [cli, cont, cta, reg] = await Promise.all([
+    D.cliente_id    ? sb.from('erp_cliente').select('*').eq('id', D.cliente_id).maybeSingle()       : {data:null},
+    D.contenedor_id ? sb.from('erp_contenedor').select('*').eq('id', D.contenedor_id).maybeSingle() : {data:null},
+    D.cuenta_id     ? sb.from('erp_cuenta_bancaria').select('*').eq('id', D.cuenta_id).maybeSingle()
+                    : sb.from('erp_cuenta_bancaria').select('*').eq('moneda', D.moneda || 'EUR')
+                        .eq('activa', true).order('predeterminada', {ascending:false}).limit(1).maybeSingle(),
+    sb.from('erp_regimen_iva').select('*')
+      .eq('pais_emisor', D.pais_emisor || 'ES')
+      .eq('regimen', D.regimen_fiscal).eq('tipo_linea','MERCANCIA').maybeSingle()
+  ]);
+  const C = cli.data || {}, K = cont.data || {}, B = cta.data || {}, R = reg.data || {};
 
-  const filas = lineas.length ? lineas.map(l =>
-      '<tr><td>' + esc(l.descripcion || '') + '</td>'
-      + '<td>' + esc(l.calibre || '') + '</td>'
-      + '<td>' + esc(l.categoria || '') + '</td>'
-      + '<td>' + esc(l.lote || '') + '</td>'
-      + '<td class="n">' + n0(l.cajas) + '</td>'
+  const nl     = D.pais_emisor === 'NL';
+  const nif    = D.nif_emisor || (nl ? empresa.nif_iva_nl : empresa.nif_iva_es) || empresa.identificacion || '';
+  const sinIva = D.regimen_fiscal === 'INVERSION_NL';
+  const dir    = [empresa.direccion, empresa.ciudad, empresa.pais].filter(Boolean).join(', ');
+  const cat    = R.categoria_iva || (num(D.iva_pct) > 0 ? 'S' : 'K');
+  const pesoKg = num(D.peso_neto_kg) || lineas.reduce((s,l) => s + num(l.peso_neto_kg || l.cantidad), 0);
+
+  const dato = (t, v) => '<div><span>' + esc(t) + '</span>' + (v == null || v === '' ? '—' : v) + '</div>';
+
+  const filas = lineas.length ? lineas.map(function(l, i){
+    const bultos = num(l.cajas) && num(l.peso_caja_kg)
+      ? n0(l.cajas) + ' x ' + n0(l.peso_caja_kg) + ' kg' : (num(l.cajas) ? n0(l.cajas) : '');
+    const sub = [
+      l.variedad     ? 'Variedad <b>' + esc(l.variedad) + '</b>' : '',
+      l.categoria    ? 'Categoría <b>' + esc(l.categoria) + '</b>' : '',
+      l.calibre      ? 'Calibre <b>' + esc(l.calibre) + '</b>' : '',
+      bultos         ? 'Bultos <b>' + bultos + '</b>' : '',
+      l.lote         ? 'Lote <b>' + esc(l.lote) + '</b>' : '',
+      l.pais_origen  ? 'Origen <b>' + esc(l.pais_origen) + '</b>' : ''
+    ].filter(Boolean).join(' · ');
+    return '<tr><td class="pos">' + ((i + 1) * 10) + '</td>'
+      + '<td><div class="den">' + esc(l.descripcion || '') + '</div>'
+      + (sub ? '<div class="sub">' + sub + '</div>' : '') + '</td>'
       + '<td class="n">' + n2(l.cantidad) + '</td>'
-      + '<td class="n">' + n3(l.precio_unitario) + '</td>'
-      + '<td class="n">' + n2(l.importe) + '</td></tr>').join('')
-    : '<tr><td colspan="8">' + esc(f.concepto || 'Sin líneas de detalle') + '</td></tr>';
-
-  const tot = '<div><span>Base imponible</span><span>' + n2(f.base) + ' ' + esc(f.moneda) + '</span></div>'
-    + (sinIva ? '' : '<div><span>IVA</span><span>' + n2(f.cuota) + ' ' + esc(f.moneda) + '</span></div>')
-    + (f.moneda !== 'EUR' && f.tipo_cambio
-        ? '<div><span>Tipo de cambio</span><span>' + n3(f.tipo_cambio) + '</span></div>' : '')
-    + '<div><span>Total</span><span>' + n2(sinIva ? f.base : f.total) + ' ' + esc(f.moneda) + '</span></div>';
+      + '<td class="n" style="color:#9AA39C">' + esc(l.unidad === 'KG' ? 'KGM' : (l.unidad || '')) + '</td>'
+      + '<td class="n">' + n2(l.precio_unitario) + ' ' + esc(D.moneda) + '</td>'
+      + '<td class="n" style="color:#9AA39C">' + esc(cat) + '</td>'
+      + '<td class="n"><b>' + n2(l.importe) + ' ' + esc(D.moneda) + '</b></td></tr>';
+  }).join('') : '<tr><td colspan="7">' + esc(D.concepto || 'Sin líneas de detalle') + '</td></tr>';
 
   $('impresion').innerHTML = '<div class="fac">'
-    + '<div class="cab"><img src="' + LOGO_TB + '" alt="">'
-    + '<div class="emisor"><b>' + esc(empresa.razon_social || 'Tropical Báez S.L.') + '</b>'
-    + esc(empresa.direccion || '') + '<br>' + esc(empresa.ciudad || '') + '<br>'
-    + esc(empresa.pais || 'España') + '<br><b style="font-size:10.5px;font-family:inherit;font-weight:600">'
-    + esc(nif) + '</b></div>'
-    + '<div class="num"><div class="t">' + (f.tipo === 'RECTIFICATIVA' ? 'Factura rectificativa' : 'Factura') + '</div>'
-    + '<div class="n">' + esc(f.referencia || '') + '</div>'
-    + '<div style="font-size:10px;color:#5F6B62;margin-top:3px">' + fec(f.fecha) + '</div></div></div>'
+
+    /* Cabecera: solo el logo. Los datos de la empresa van una vez, en EMISOR. */
+    + '<div class="top"><img src="' + LOGO_TB + '" alt="">'
+    + '<div class="der"><div class="rot">' + (D.tipo === 'RECTIFICATIVA' ? 'RECTIFICATIVA' : 'FACTURA') + '</div>'
+    + '<div class="nro">' + esc(f.referencia || '') + '</div>'
+    + '<div class="norma">Tipo de documento 380 · EN 16931</div></div></div>'
 
     + '<div class="partes">'
-    + '<div class="parte"><span>Cliente</span><b>' + esc(f.contraparte || '') + '</b><br>'
-    + esc(f.nif || '') + '<br>' + esc(f.pais || '') + '</div>'
-    + '<div class="parte"><span>Vencimiento</span>' + fec(f.fecha_vencimiento) + '</div>'
+    + '<div class="parte"><div class="rot">EMISOR</div><b>' + esc(empresa.razon_social || '') + '</b>'
+    + '<div>CIF: ' + esc(empresa.identificacion || '') + '<br>'
+    + ((nl || D.regimen_fiscal === 'INTRACOMUNITARIO') && nif
+        ? 'NIF-IVA: ' + esc(nif) + '<br>' : '')
+    + esc(empresa.direccion || '') + '<br>' + esc([empresa.ciudad, empresa.pais].filter(Boolean).join(', ')) + '</div></div>'
+    + '<div class="parte"><div class="rot">DESTINATARIO</div><b>' + esc(C.razon_social || f.contraparte || '') + '</b>'
+    + '<div>' + esc(C.direccion_fiscal || '') + '<br>'
+    + esc([C.ciudad, C.pais].filter(Boolean).join(' ')) + '<br>'
+    + 'NIF / VAT: ' + esc(C.cif_vat || f.nif || '') + '</div></div></div>'
+
+    + '<div class="rej">'
+    + dato('Fecha de factura', fec(D.fecha))
+    + dato('Fecha de operación', fec(D.fecha_operacion))
+    + dato('Vencimiento', fec(D.fecha_vencimiento))
+    + dato('Moneda', esc(D.moneda))
+    + dato('Condiciones de pago', esc(D.condiciones_pago || D.forma_pago))
+    + dato('Su referencia', esc(D.sif_referencia))
+    + dato('Nº de pedido', esc(D.ref_pedido))
+    + dato('Contrato', esc(D.ref_contrato))
+    + dato('Incoterm', esc(D.incoterm))
+    + dato('Contenedor', esc(K.matricula || f.contenedor))
+    + dato('Bill of lading', esc(K.bl))
+    + dato('Peso neto', pesoKg ? n2(pesoKg) + ' kg' : null)
     + '</div>'
 
-    + '<div class="datos">'
-    + '<div><span>Contenedor</span>' + esc(f.contenedor || '—') + '</div>'
-    + '<div><span>Incoterm</span>' + esc(f.incoterm || '—') + '</div>'
-    + '<div><span>Moneda</span>' + esc(f.moneda || '') + '</div>'
-    + '<div><span>Régimen</span>' + esc(REG[f.regimen] || f.regimen || '') + '</div>'
-    + '</div>'
+    + '<table class="lin"><thead><tr><th>Pos.</th><th>Denominación</th>'
+    + '<th class="n">Cantidad</th><th class="n">UM</th><th class="n">Precio</th>'
+    + '<th class="n">IVA</th><th class="n">Importe</th></tr></thead><tbody>' + filas + '</tbody></table>'
 
-    + '<table><thead><tr><th>Descripción</th><th>Calibre</th><th>Cat.</th><th>Lote</th>'
-    + '<th class="n">Cajas</th><th class="n">Kilos</th><th class="n">' + esc(f.moneda) + '/kg</th>'
-    + '<th class="n">Importe</th></tr></thead><tbody>' + filas + '</tbody></table>'
+    + '<table class="imp"><thead><tr><th>Cat.</th><th>Concepto impositivo</th>'
+    + '<th class="n">Base</th><th class="n">Tipo</th><th class="n">Cuota</th></tr></thead><tbody>'
+    + '<tr><td class="cat">' + esc(cat) + '</td>'
+    + '<td>' + esc(D.iva_label || R.etiqueta || '') + '</td>'
+    + '<td class="n">' + n2(D.subtotal) + ' ' + esc(D.moneda) + '</td>'
+    + '<td class="n">' + (sinIva || !num(D.iva_pct) ? '—' : n2(D.iva_pct) + ' %') + '</td>'
+    + '<td class="n">' + (sinIva || !num(D.impuestos) ? '—' : n2(D.impuestos) + ' ' + esc(D.moneda)) + '</td>'
+    + '</tr></tbody></table>'
 
-    + '<div class="totales">' + tot + '</div>'
-
-    + (f.nota_fiscal ? '<div class="legal">' + esc(f.nota_fiscal) + '</div>' : '')
+    + '<div class="abajo"><div>'
+    + (B.iban
+        ? '<div class="banco"><div class="rot">CUENTA EN ' + esc((B.moneda || 'EUR').toUpperCase())
+          + (B.banco ? ' — ' + esc(B.banco).toUpperCase() : '') + '</div><table>'
+          + '<tr><td>Banco</td><td>' + esc(B.banco || '') + '</td></tr>'
+          + '<tr><td>IBAN</td><td>' + esc(B.iban) + '</td></tr>'
+          + (B.swift ? '<tr><td>SWIFT / BIC</td><td>' + esc(B.swift) + '</td></tr>' : '')
+          + '<tr><td>Beneficiario</td><td>' + esc(empresa.razon_social || '') + '</td></tr>'
+          + '</table></div>' : '')
+    + (D.nota_fiscal
+        ? '<div class="nota"><div class="rot">RÉGIMEN FISCAL APLICADO</div>' + esc(D.nota_fiscal) + '</div>' : '')
     + (nl && empresa.repfiscal_mencion
-        ? '<div class="legal">' + esc(empresa.repfiscal_mencion).replace(/\n/g,'<br>') + '</div>' : '')
+        ? '<div class="nota"><div class="rot">REPRESENTACIÓN FISCAL</div>'
+          + esc(empresa.repfiscal_mencion).replace(/\n/g, '<br>') + '</div>' : '')
+    + ([K.booking ? 'Booking ' + esc(K.booking) : '',
+        (K.precinto || K.precintos) ? 'Precinto ' + esc(K.precinto || K.precintos) : '',
+        K.destino ? 'Destino ' + esc(K.destino) : ''].filter(Boolean).length
+        ? '<div class="logi">' + [K.booking ? 'Booking ' + esc(K.booking) : '',
+            (K.precinto || K.precintos) ? 'Precinto ' + esc(K.precinto || K.precintos) : '',
+            K.destino ? 'Destino ' + esc(K.destino) : ''].filter(Boolean).join(' · ') + '</div>' : '')
+    + (D.observaciones ? '<div class="logi">' + esc(D.observaciones) + '</div>' : '')
+    + '</div><div>'
+    + '<div class="sumas">'
+    + '<div><span>Base imponible</span><span>' + n2(D.subtotal) + ' ' + esc(D.moneda) + '</span></div>'
+    + '<div><span>Impuestos</span><span>' + (sinIva ? '—' : n2(D.impuestos)) + '</span></div>'
+    + (D.moneda !== 'EUR' && num(D.tipo_cambio)
+        ? '<div><span>Tipo de cambio</span><span>' + n3(D.tipo_cambio) + '</span></div>'
+          + '<div><span>Contravalor</span><span>' + n2(num(D.total) * num(D.tipo_cambio)) + ' EUR</span></div>' : '')
+    + '</div>'
+    + '<div class="granTotal"><div class="et">Total<br>factura</div>'
+    + '<div class="im">' + n2(sinIva ? D.subtotal : D.total) + ' ' + esc(D.moneda) + '</div></div>'
+    + (pesoKg ? '<div class="peso">Peso neto ' + n2(pesoKg) + ' kg</div>' : '')
+    + '</div></div>'
 
-    + '<div class="pie">' + esc(empresa.razon_social || '') + ' · ' + esc(nif)
-    + (empresa.registro_mercantil ? ' · ' + esc(empresa.registro_mercantil) : '')
-    + (empresa.iban ? '<br>Pago por transferencia a ' + esc(empresa.iban)
-        + (empresa.banco ? ' · ' + esc(empresa.banco) : '') : '')
+    + '<div class="pie">' + esc(empresa.razon_social || '') + ' · CIF ' + esc(empresa.identificacion || '')
+    + (dir ? ' · ' + esc(dir) : '') + (empresa.telefono ? ' · ' + esc(empresa.telefono) : '')
     + '</div></div>';
 
   window.print();
