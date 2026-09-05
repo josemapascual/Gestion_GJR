@@ -26,7 +26,8 @@
         ['Liquidaciones',    'analisis_liquidaciones_v1.html'],
         ['Gestión',          'gestion.html'],
         ['Manual',           'manual.html'],
-        ['Facturar',         'manual_facturacion.html']
+        ['Facturar',         'manual_paola.html'],
+        ['Regímenes',        'manual_facturacion.html']
       ]
     },
     gjr: {
@@ -76,6 +77,10 @@
     '#nvg-barra .nvg-sep{width:1px;height:16px;background:rgba(255,255,255,.16);',
     '  flex:none;margin:0 6px}',
     '#nvg-barra .nvg-otra{margin-left:auto;padding-left:14px}',
+    '#nvg-barra .nvg-sep2{width:1px;height:16px;background:rgba(255,255,255,.16);',
+    '  flex:none;margin:0 8px}',
+    '#nvg-barra .nvg-yo{color:rgba(255,255,255,.62);white-space:nowrap;padding:6px 2px}',
+    '#nvg-barra .nvg-salir{color:rgba(255,255,255,.78)}',
     'body{padding-top:' + ALTO + 'px !important}',
     '.topbar{top:' + ALTO + 'px !important}',
     '.tabs{top:' + (ALTO + 50) + 'px !important}',
@@ -96,14 +101,48 @@
     var otra = empresa === 'tb' ? 'gjr' : 'tb';
     html += '<a class="nvg-i nvg-otra" href="' + MODULOS[otra].inicio + '">'
           + esc(MODULOS[otra].etiqueta) + ' \u25BA</a>';
+    html += '<span class="nvg-sep2"></span>';
   } else {
     html += '<a class="nvg-i" href="tb.html">Tropical B\u00e1ez</a>'
           + '<a class="nvg-i" href="gjr.html">Grupo Juan Ruiz</a>';
   }
 
+  /* Identidad: se lee de la sesión que guarda Supabase en el navegador,
+     así aparece igual en las 20 pantallas sin depender de cada módulo. */
+  function correoSesion(){
+    try{
+      for (var i = 0; i < localStorage.length; i++){
+        var k = localStorage.key(i);
+        if (!/^sb-.*-auth-token$/.test(k)) continue;
+        var v = localStorage.getItem(k) || '';
+        if (v.indexOf('base64-') === 0) v = atob(v.slice(7));
+        var s = JSON.parse(v);
+        var u = (s && (s.user || (s.currentSession && s.currentSession.user))) || null;
+        if (u && u.email) return u.email;
+      }
+    }catch(e){}
+    return null;
+  }
+
+  var correo = correoSesion();
+  html += '<span class="nvg-yo">' + (correo ? esc(correo) : 'Sin sesión') + '</span>';
+  if (correo) html += '<button class="nvg-i nvg-salir" type="button">Salir</button>';
+
   var barra = document.createElement('div');
   barra.id = 'nvg-barra';
   barra.innerHTML = html;
+
+  var bs = barra.querySelector('.nvg-salir');
+  if (bs) bs.addEventListener('click', function(){
+    try{
+      for (var i = localStorage.length - 1; i >= 0; i--){
+        var k = localStorage.key(i);
+        if (/^sb-.*-auth-token$/.test(k)) localStorage.removeItem(k);
+      }
+      sessionStorage.clear();
+    }catch(e){}
+    location.href = 'index.html';
+  });
 
   function montar() {
     if (document.getElementById('nvg-barra')) return;

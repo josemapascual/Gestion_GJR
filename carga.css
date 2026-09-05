@@ -117,3 +117,34 @@ input[type="file"]::file-selector-button{height:29px !important;display:inline-f
   padding:0 10px !important;
   font-size:11.5px !important;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   6. Una sola identidad y una sola vuelta
+   Cada módulo mostraba el usuario a su manera: unos el correo
+   entero, otros solo "jmpascual", otros "José M. Pascual ·
+   GERENCIA". Y el enlace de vuelta decía "Inicio", "Partidas"
+   o "Tropical Báez" según el archivo.
+
+   La barra común (nav.js) ya muestra el correo, el botón Salir,
+   "◄ Inicio" y la lista completa de módulos, siempre en el mismo
+   sitio. Así que aquí se retira lo duplicado de cada cabecera.
+   ══════════════════════════════════════════════════════════════ */
+.user-chip,
+.link-inicio,
+.gjr-back-btn,
+.topbar .right > span:not(.user-chip):not([class]),
+.barra .der > span,
+.barra .der > a[href$="tb.html"],
+.barra .der > a[href$="index.html"],
+.encab .util > a[href$="index.html"]{
+  display:none !important;
+}
+
+/* Lo que queda en la cabecera del módulo se pega a la derecha */
+.topbar .right, .barra .der, .gjr-acciones{
+  margin-left:auto !important;
+  gap:8px !important;
+}
+
+/* La barra común: el correo y Salir, siempre al final */
+#nvg-barra .nvg-yo{margin-left:0}
