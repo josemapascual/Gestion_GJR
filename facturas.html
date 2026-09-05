@@ -136,6 +136,7 @@ tfoot td{font-weight:600;background:#F6F8F5;border-top:1px solid var(--linea);bo
 #acceso .err{background:var(--rojo-pale);color:var(--rojo);border-radius:4px;padding:8px 10px;
   font-size:12px;margin-bottom:10px;display:none}
 </style>
+<link rel="stylesheet" href="carga.css?v=1">
 </head>
 <body>
 
@@ -223,9 +224,9 @@ let sb = null, sesion = null, facturas = [], abierta = null;
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
                   .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const n2 = v => (Number(v)||0).toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2});
-const n0 = v => (Number(v)||0).toLocaleString('es-ES',{maximumFractionDigits:0});
-const n3 = v => (Number(v)||0).toLocaleString('es-ES',{minimumFractionDigits:3,maximumFractionDigits:3});
+const n2 = v => (Number(v)||0).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const n0 = v => (Number(v)||0).toLocaleString('de-DE',{maximumFractionDigits:0});
+const n3 = v => (Number(v)||0).toLocaleString('de-DE',{minimumFractionDigits:3,maximumFractionDigits:3});
 const fec = d => d ? String(d).slice(0,10).split('-').reverse().join('/') : '—';
 const num = v => Number(v) || 0;
 

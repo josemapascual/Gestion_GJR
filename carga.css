@@ -1,0 +1,119 @@
+/* ══════════════════════════════════════════════════════════════
+   carga.css · Controles de carga de archivos, iguales en todas
+   las pantallas de los dos grupos.
+   Se añade con una línea, después del <style> propio y después
+   de estilo.css o estilo-gjr.css:
+       <link rel="stylesheet" href="carga.css?v=1">
+
+   No toca el HTML: reordena y reviste lo que ya existe.
+   Regla única: las acciones van SIEMPRE a la derecha de la
+   cabecera, en una sola fila y en este orden:
+       Plantilla · Cargar archivo · Restaurar · Volver
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 1. El recuadro blanco desaparece ─────────────────────────
+   El input de archivo nativo pinta una caja clara con un botón
+   dentro. Se convierte en un botón más, del mismo tamaño y color
+   que sus vecinos.                                              */
+input[type="file"]{
+  border:1px solid rgba(255,255,255,.22) !important;
+  background:rgba(255,255,255,.10) !important;
+  color:transparent !important;                 /* oculta "Sin archivo seleccionado" */
+  border-radius:4px !important;
+  padding:0 !important;
+  margin:0 !important;
+  width:auto !important;
+  max-width:170px;
+  font-size:0 !important;
+  line-height:0 !important;
+  box-shadow:none !important;
+  cursor:pointer;
+  overflow:hidden;
+}
+input[type="file"]::file-selector-button{
+  border:0 !important;
+  background:transparent !important;
+  color:#fff !important;
+  font-family:'DM Sans',system-ui,sans-serif !important;
+  font-size:12px !important;
+  font-weight:500 !important;
+  letter-spacing:0 !important;
+  text-transform:none !important;
+  padding:6px 12px !important;
+  margin:0 !important;
+  border-radius:4px !important;
+  cursor:pointer;
+}
+input[type="file"]:hover{background:rgba(255,255,255,.18) !important}
+input[type="file"]:focus-visible{outline:2px solid var(--acento,#F9A825);outline-offset:1px}
+
+/* Sobre fondo claro, el mismo control en versión clara */
+main input[type="file"], .wrap input[type="file"],
+.card input[type="file"], .panel input[type="file"], .caja input[type="file"]{
+  border:1px solid var(--linea,#D9E1D6) !important;
+  background:var(--blanco,#fff) !important;
+}
+main input[type="file"]::file-selector-button,
+.wrap input[type="file"]::file-selector-button,
+.card input[type="file"]::file-selector-button,
+.panel input[type="file"]::file-selector-button,
+.caja input[type="file"]::file-selector-button{
+  color:var(--texto,#16211A) !important;
+}
+main input[type="file"]:hover, .wrap input[type="file"]:hover,
+.card input[type="file"]:hover, .panel input[type="file"]:hover,
+.caja input[type="file"]:hover{background:var(--verde-pale,#E8F5E9) !important}
+
+/* ── 2. Siempre a la derecha, en una sola fila ──────────────── */
+.gjr-acciones, .topbar .right, .barra .der, .gjr-header .acciones{
+  margin-left:auto !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  flex-wrap:nowrap !important;
+}
+@media(max-width:900px){
+  .gjr-acciones, .topbar .right, .barra .der{flex-wrap:wrap !important;justify-content:flex-end}
+}
+
+/* ── 3. Todos los botones de la cabecera, del mismo tamaño ──── */
+.gjr-header button, .gjr-header a, .gjr-acciones button, .gjr-acciones a,
+.gjr-btn-carga, .gjr-btn-sec, .gjr-back-btn, .btn-upload, .btn-download, .btn-clear,
+.topbar button, .topbar .link-inicio, .barra .btn-b{
+  height:31px !important;
+  padding:0 12px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  border-radius:4px !important;
+  font-size:12px !important;
+  font-weight:500 !important;
+  letter-spacing:0 !important;
+  text-transform:none !important;
+  box-shadow:none !important;
+  white-space:nowrap;
+}
+input[type="file"]{height:31px !important;display:inline-flex !important;align-items:center}
+input[type="file"]::file-selector-button{height:29px !important;display:inline-flex;align-items:center}
+
+/* ── 4. Orden fijo, sea cual sea el orden del HTML ──────────── */
+.gjr-acciones > *, .topbar .right > *, .barra .der > *{order:5}
+.gjr-acciones > [class*="plantilla"], .gjr-acciones > [id*="plantilla"],
+.gjr-acciones > [onclick*="lantilla"]{order:1}
+.gjr-acciones > input[type="file"], .gjr-acciones > label:has(input[type="file"]),
+.gjr-acciones > .gjr-btn-carga, .gjr-acciones > .btn-upload{order:2}
+.gjr-acciones > [onclick*="estaur"], .gjr-acciones > [onclick*="uardar"],
+.gjr-acciones > .btn-save, .gjr-acciones > .btn-download{order:3}
+.gjr-acciones > .gjr-status, .topbar .right > .user-chip, .barra .der > *:not(a):not(button){order:8}
+.gjr-acciones > .gjr-back-btn, .gjr-acciones > [href$="index.html"],
+.gjr-acciones > [href$="gjr.html"], .gjr-acciones > [href$="tb.html"],
+.topbar .right > .link-inicio, .barra .der > a{order:9;margin-left:6px !important}
+
+/* ── 5. El indicador de nube, discreto y al final ───────────── */
+.gjr-status{
+  background:rgba(255,255,255,.10) !important;
+  border:1px solid rgba(255,255,255,.22) !important;
+  color:rgba(255,255,255,.78) !important;
+  border-radius:4px !important;
+  padding:0 10px !important;
+  font-size:11.5px !important;
+}

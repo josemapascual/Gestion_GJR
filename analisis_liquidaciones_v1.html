@@ -164,8 +164,27 @@
     color: var(--verde); padding: 10px 16px; font-size: 12.5px; font-weight: 600; text-align: center; z-index: 600; cursor: pointer; }
   #nueva-version.on { display: block; }
   .foot { font-size: 11px; color: var(--texto-suave); text-align: center; padding: 18px 0 30px; }
+
+/* ── Filas desplegables, como en Descarte ── */
+.col-expand{width:26px}
+.expand-cell{text-align:center;color:var(--acento,#F9A825);font-weight:700;
+  transition:transform .15s ease;display:inline-block}
+tr.fila-liq.abierta .expand-cell{transform:rotate(90deg)}
+tr.fila-liq.abierta > td{background:var(--verde-pale)}
+tr.detalle-liq{display:none}
+tr.detalle-liq.open{display:table-row}
+tr.detalle-liq > td{background:#F8FAF7;padding:0 0 10px 0;border-bottom:1px solid var(--linea,#D9E1D6)}
+.subtabla{width:100%;border-collapse:collapse;font-size:11.5px;margin:0}
+.subtabla th{background:#EEF3EC;font-size:9.5px;letter-spacing:.06em;padding:5px 8px}
+.subtabla td{padding:4px 8px;border-bottom:1px solid #E7EDE5;white-space:nowrap}
+.subtabla tr:last-child td{border-bottom:0}
+.sub-tit{font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--verde);padding:9px 10px 5px}
+.sub-cols{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;padding:0 10px}
+@media(max-width:900px){.sub-cols{grid-template-columns:1fr}}
 </style>
 <link rel="stylesheet" href="estilo.css?v=3">
+<link rel="stylesheet" href="carga.css?v=1">
 </head>
 <body>
 
@@ -512,7 +531,7 @@ function irA(vista) {
 
 /* ── CARGA ──────────────────────────────────────────────────── */
 async function cargarTodo() {
-  const [cl, co, vc, vl, vk, vcat, ci, an, pa, pm, cg] = await Promise.all([
+  const [cl, co, vc, vl, vk, vcat, ci, an, pa, pm, cg, vco] = await Promise.all([
     sb.from('erp_cliente').select('id,razon_social,moneda').order('razon_social'),
     sb.from('erp_contenedor').select('id,codigo').order('codigo'),
     sb.from('v_liq_contenedor').select('*').order('anio', { ascending: false }).order('semana', { ascending: false }),
@@ -523,15 +542,17 @@ async function cargarTodo() {
     sb.from('v_liq_anomalia').select('*'),
     sb.from('erp_analisis_param').select('*').order('clave'),
     sb.from('erp_pmg').select('*, erp_cliente(razon_social)').order('created_at', { ascending: false, nullsFirst: false }),
-    sb.from('erp_coste_categoria').select('*').order('orden')
+    sb.from('erp_coste_categoria').select('*').order('orden'),
+    sb.from('v_liq_coste_categoria').select('*')
   ]);
-  const err = [cl, co, vc, vl, vk, vcat, ci, an, pa, pm, cg].find(r => r.error);
+  const err = [cl, co, vc, vl, vk, vcat, ci, an, pa, pm, cg, vco].find(r => r.error);
   if (err) { aviso('No se pudieron cargar los datos: ' + err.error.message, true); return; }
 
   clientes        = cl.data || [];
   contenedores    = co.data || [];
   contenedorVista = vc.data || [];
   lineaVista      = vl.data || [];
+  costeVista = vco.data || [];
   clienteVista    = vk.data || [];
   calibreVista    = vcat.data || [];
   ciradFilas      = ci.data || [];
@@ -574,7 +595,7 @@ function kpi(lab, v, sub) {
 
 function pintarClientes() {
   const t = $('t-clientes');
-  if (!clienteVista.length) { t.innerHTML = filaVacia(11, 'Todavía no hay liquidaciones cargadas.'); return; }
+  if (!clienteVista.length) { t.innerHTML = filaVacia(12, 'Todavía no hay liquidaciones cargadas.'); return; }
   let h = '<thead><tr><th>Cliente</th><th class="n">Contened.</th><th class="n">Kilos</th>' +
           '<th class="n">Bruto USD/kg</th><th class="n">Bruto EUR/kg</th><th class="n">CIRAD EUR/kg</th>' +
           '<th class="n">Dif CIRAD</th><th class="n">Comisión</th><th class="n">Costes USD/kg</th>' +
@@ -668,13 +689,16 @@ function chipEstado(e) {
 
 function pintarContenedores() {
   const t = $('t-contenedores');
-  if (!contenedorVista.length) { t.innerHTML = filaVacia(11, 'Todavía no hay liquidaciones cargadas.'); return; }
-  let h = '<thead><tr><th>Documento</th><th>Cliente</th><th>Semana</th><th class="n">Kilos</th>' +
+  if (!contenedorVista.length) { t.innerHTML = filaVacia(12, 'Todavía no hay liquidaciones cargadas.'); return; }
+  let h = '<thead><tr><th class="col-expand"></th><th>Documento</th><th>Cliente</th><th>Semana</th><th class="n">Kilos</th>' +
           '<th class="n">Bruto USD/kg</th><th class="n">Comisión</th><th class="n">Costes USD/kg</th>' +
           '<th class="n">Neto USD/kg</th><th class="n">vs PMG</th><th class="n">Margen</th>' +
           '<th>Estado</th></tr></thead><tbody>';
   contenedorVista.forEach(c => {
-    h += '<tr class="clickable" onclick="verLiquidacion(\'' + c.liquidacion_id + '\')">' +
+    const ab = abiertas.has(c.liquidacion_id);
+    h += '<tr class="clickable fila-liq' + (ab ? ' abierta' : '') + '" data-liq="' + c.liquidacion_id +
+      '" onclick="alternarLiq(\'' + c.liquidacion_id + '\')">' +
+      '<td><span class="expand-cell">▸</span></td>' +
       '<td>' + esc(c.liquidacion || c.contenedor || '—') + '</td>' +
       '<td>' + esc(c.cliente) + '</td>' +
       '<td>' + esc(c.anio) + ' · W' + esc(String(c.semana || '').padStart(2, '0')) + '</td>' +
@@ -685,9 +709,61 @@ function pintarContenedores() {
       '<td class="n"><strong>' + f3(c.neto_usd_kg) + '</strong></td>' +
       '<td class="n">' + signo(c.resultado_vs_pmg) + '</td>' +
       '<td class="n">' + signo(c.margen_usd_kg) + '</td>' +
-      '<td>' + chipEstado(c.estado) + '</td></tr>';
+      '<td>' + chipEstado(c.estado) + '</td></tr>' +
+      '<tr class="detalle-liq' + (ab ? ' open' : '') + '" data-liq="' + c.liquidacion_id + '">' +
+      '<td colspan="12">' + (ab ? detalleLiq(c) : '') + '</td></tr>';
   });
   t.innerHTML = h + '</tbody>';
+}
+
+/* ══ Despliegue en cascada, igual que el de Descarte ══
+   Una fila por liquidación; al pulsarla se abre debajo el desglose
+   por calibre y el de costes, sin salir de la tabla. */
+let abiertas = new Set();
+
+function alternarLiq(id){
+  if (abiertas.has(id)) abiertas.delete(id); else abiertas.add(id);
+  pintarContenedores();
+  verLiquidacion(id);
+}
+
+function detalleLiq(c){
+  const ls = lineaVista.filter(l => l.liquidacion_id === c.liquidacion_id)
+                       .sort((a,b) => num(a.posicion) - num(b.posicion));
+  const cs = costeVista.filter(x => x.liquidacion_id === c.liquidacion_id);
+
+  const calibres = ls.length
+    ? '<table class="subtabla"><thead><tr>' +
+      '<th>Calibre</th><th>Categoría</th><th class="n">Cajas</th><th class="n">Kilos</th>' +
+      '<th class="n">USD/kg</th><th class="n">Importe USD</th><th class="n">% del total</th>' +
+      '</tr></thead><tbody>' +
+      ls.map(l => '<tr><td><strong>' + esc(l.calibre || '—') + '</strong></td>' +
+        '<td>' + esc(l.categoria || '—') + '</td>' +
+        '<td class="n">' + f0(l.cajas) + '</td>' +
+        '<td class="n">' + f0(l.kilos) + '</td>' +
+        '<td class="n">' + f3(l.precio_usd_kg) + '</td>' +
+        '<td class="n">' + f2(l.importe_usd) + '</td>' +
+        '<td class="n">' + (num(c.venta_usd) > 0
+            ? pct(num(l.importe_usd) / num(c.venta_usd)) : '—') + '</td></tr>').join('') +
+      '</tbody></table>'
+    : '<div class="vacio" style="padding:14px">Sin desglose por calibre.</div>';
+
+  const costes = cs.length
+    ? '<table class="subtabla"><thead><tr>' +
+      '<th>Categoría</th><th class="n">USD</th><th class="n">USD/kg</th><th class="n">% de la venta</th>' +
+      '</tr></thead><tbody>' +
+      cs.map(x => '<tr><td>' + esc(x.categoria || x.concepto || '—') + '</td>' +
+        '<td class="n">' + f2(x.importe_usd) + '</td>' +
+        '<td class="n">' + (num(c.kilos) > 0 ? f3(num(x.importe_usd)/num(c.kilos)) : '—') + '</td>' +
+        '<td class="n">' + (num(c.venta_usd) > 0
+            ? pct(num(x.importe_usd) / num(c.venta_usd)) : '—') + '</td></tr>').join('') +
+      '</tbody></table>'
+    : '<div class="vacio" style="padding:14px">Sin costes desglosados.</div>';
+
+  return '<div class="sub-cols">' +
+    '<div><div class="sub-tit">Desglose por calibre · ' + ls.length + ' líneas</div>' + calibres + '</div>' +
+    '<div><div class="sub-tit">Costes descontados · ' + cs.length + ' conceptos</div>' + costes + '</div>' +
+    '</div>';
 }
 
 async function verLiquidacion(id) {

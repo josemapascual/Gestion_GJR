@@ -177,6 +177,7 @@ tfoot td{font-weight:600;background:#F6F8F5;border-top:1px solid var(--linea);
 @media print{.lateral,.pie,.encab .util,.tira{display:none}.app{display:block;height:auto}}
 </style>
 <link rel="stylesheet" href="estilo.css?v=3">
+<link rel="stylesheet" href="carga.css?v=1">
 </head>
 <body>
 
@@ -442,9 +443,9 @@ let excepciones = [];
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
                   .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const n0 = v => (Number(v)||0).toLocaleString('es-ES',{maximumFractionDigits:0});
-const n2 = v => (Number(v)||0).toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2});
-const n3 = v => (Number(v)||0).toLocaleString('es-ES',{minimumFractionDigits:3,maximumFractionDigits:3});
+const n0 = v => (Number(v)||0).toLocaleString('de-DE',{maximumFractionDigits:0});
+const n2 = v => (Number(v)||0).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const n3 = v => (Number(v)||0).toLocaleString('de-DE',{minimumFractionDigits:3,maximumFractionDigits:3});
 const eur = v => n2(v) + ' €';
 const kgs = v => n0(v) + ' kg';
 const fec = d => d ? d.split('-').reverse().join('/') : '—';
