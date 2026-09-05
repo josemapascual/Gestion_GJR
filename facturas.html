@@ -61,6 +61,8 @@ main{padding:15px 20px 40px}
 .caja{background:var(--blanco);border:1px solid var(--linea);border-radius:5px;overflow:hidden}
 .rej{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:12.5px}
+th.orden{cursor:pointer;user-select:none}
+th.orden:hover{background:#EEF3EC}
 th{position:sticky;top:0;background:#F6F8F5;text-align:left;font-size:10px;font-weight:600;
   letter-spacing:.06em;text-transform:uppercase;color:var(--suave);padding:7px 10px;
   border-bottom:1px solid var(--linea);white-space:nowrap;z-index:5}
@@ -126,9 +128,15 @@ tfoot td{font-weight:600;background:#F6F8F5;border-top:1px solid var(--linea);bo
   @page{size:A4;margin:0}
   html,body{margin:0 !important;padding:0 !important;background:#fff !important}
   .fac{padding:13mm 12mm 10mm !important}
+  .fac,.fac *{
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
+    color-adjust:exact !important;
+  }
 }
 #impresion{display:none}
-.fac{font-family:'DM Sans',system-ui,sans-serif;color:#1A1A1A;font-size:9.5px;line-height:1.4}
+.fac{font-family:'DM Sans',system-ui,sans-serif;color:#1A1A1A;font-size:9.5px;line-height:1.4;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact}
 .fac .top,.fac .partes,.fac .rej,.fac table.imp,.fac .abajo,
 .fac .banco,.fac .nota,.fac .logi,.fac .sumas,.fac .granTotal{
   break-inside:avoid;page-break-inside:avoid}
@@ -262,12 +270,7 @@ tfoot td{font-weight:600;background:#F6F8F5;border-top:1px solid var(--linea);bo
 <main>
   <div class="kpis" id="kpis"></div>
   <div class="caja"><div class="rej"><table id="tabla">
-    <thead><tr>
-      <th>Tipo</th><th>Número</th><th>Fecha</th><th>Cliente o proveedor</th><th>Contenedor</th>
-      <th>Régimen</th><th class="num">Base</th><th class="num">Cuota</th>
-      <th class="num">Total</th><th>Mon.</th><th class="num">Total €</th>
-      <th>Estado</th><th class="num">Pendiente</th>
-    </tr></thead>
+    <thead><tr id="cabeceras"></tr></thead>
     <tbody id="cuerpo"></tbody>
     <tfoot><tr>
       <td colspan="6">Total</td>
@@ -407,10 +410,57 @@ function filtrar(){
     (!e || f.estado === e) &&
     (!r || f.regimen === r) &&
     (!q || [f.referencia, f.contenedor, f.concepto, f.nif]
-             .join(' ').toLowerCase().includes(q)));
+             .join(' ').toLowerCase().includes(q)))
+    .sort(comparar);
+}
+
+/* Por defecto, la más reciente arriba. Pulsando una cabecera se ordena por
+   esa columna; volviendo a pulsar, se invierte. */
+let orden = {campo:'fecha', desc:true};
+
+function comparar(a, b){
+  const c = orden.campo;
+  let x = a[c], y = b[c];
+  if (c === 'pendiente'){
+    x = num(a.total) - num(a.cobrado_pagado);
+    y = num(b.total) - num(b.cobrado_pagado);
+  } else if (['base','cuota','total','total_eur','cobrado_pagado'].includes(c)){
+    x = num(x); y = num(y);
+  } else {
+    x = (x == null ? '' : String(x)); y = (y == null ? '' : String(y));
+  }
+  let r = x < y ? -1 : x > y ? 1 : 0;
+  if (r === 0 && c !== 'fecha'){                       // a igualdad, por fecha
+    r = String(a.fecha || '') < String(b.fecha || '') ? -1 : 1;
+  }
+  if (r === 0) r = String(a.referencia || '').localeCompare(String(b.referencia || ''), 'es');
+  return orden.desc ? -r : r;
+}
+
+function ordenarPor(campo){
+  if (orden.campo === campo) orden.desc = !orden.desc;
+  else { orden.campo = campo;
+         orden.desc = ['fecha','base','cuota','total','total_eur','pendiente'].includes(campo); }
+  pintar();
+}
+
+const COLS = [
+  ['clase','Tipo',''], ['referencia','Número',''], ['fecha','Fecha',''],
+  ['contraparte','Cliente o proveedor',''], ['contenedor','Contenedor',''],
+  ['regimen','Régimen',''], ['base','Base','num'], ['cuota','Cuota','num'],
+  ['total','Total','num'], ['moneda','Mon.',''], ['total_eur','Total €','num'],
+  ['estado','Estado',''], ['pendiente','Pendiente','num']
+];
+
+function pintarCabeceras(){
+  $('cabeceras').innerHTML = COLS.map(c =>
+    '<th class="' + c[2] + ' orden" onclick="ordenarPor(\'' + c[0] + '\')">'
+    + esc(c[1]) + (orden.campo === c[0] ? (orden.desc ? ' \u25BE' : ' \u25B4') : '')
+    + '</th>').join('');
 }
 
 function pintar(){
+  pintarCabeceras();
   const fs = filtrar();
   const ven = fs.filter(f => f.clase === 'VENTA');
   const com = fs.filter(f => f.clase === 'COMPRA');
@@ -763,11 +813,7 @@ async function montarFactura(f){
     + '</div>'
     + '<div class="granTotal"><div class="et">Total<br>factura</div>'
     + '<div class="im">' + n2(sinIva ? D.subtotal : D.total) + ' ' + esc(D.moneda) + '</div></div>'
-    + (pesoKg || pesoBrKg ? '<div class="peso">'
-    + (pesoKg ? 'Peso neto ' + n2(pesoKg) + ' kg' : '')
-    + (pesoKg && pesoBrKg ? ' · ' : '')
-    + (pesoBrKg ? 'Peso bruto ' + n2(pesoBrKg) + ' kg' : '') + '</div>' : '')
-    + '</div></div>'
+        + '</div></div>'
 
     + '</div>';
 
