@@ -255,7 +255,7 @@ const SB_KEY = 'sb_publishable_ZbMZbTdBcYnGceF_woayjQ_CCCEHRYS';
 let sb = null, sesion = null;
 let partidas = [], stock = [];
 let ruta = {vista:'partidas', id:null, sub:'resumen'};
-let filtros = {fase:'', frescura:'', busca:'', almacen:''};
+let filtros = {fase:'', frescura:'', busca:'', almacen:'', tipo:''};
 let detalles = {};          // caché de expedientes ya cargados
 let listaActual = [];       // partidas visibles: manda en anterior/siguiente
 
@@ -406,6 +406,7 @@ function reg(n){ $('pie-reg').textContent = (n == null) ? '—' : n0(n) + ' regi
 /* ══════════ VISTA: PARTIDAS ══════════ */
 function filtrar(){
   return enCampana().filter(p =>
+    (!filtros.tipo || p.tipo === filtros.tipo) &&
     (!filtros.fase || (filtros.fase === 'vivas' ? VIVAS.includes(p.fase) : p.fase === filtros.fase)) &&
     (!filtros.frescura || p.frescura === filtros.frescura) &&
     (!filtros.busca || [p.codigo, p.productores, p.naviera, p.exportador, p.origen_pais]
@@ -438,7 +439,10 @@ function vistaPartidas(soloTabla){
     $('titulo').textContent = 'Partidas';
     $('subtitulo').textContent = 'Cada contenedor con su vida entera. Pulsa una fila para abrirla.';
     $('util').innerHTML =
-      '<div><label for="f-fase">Fase</label><select id="f-fase" onchange="setFiltro(\'fase\',this.value)">'
+      '<div><label for="f-tipo">Origen</label><select id="f-tipo" onchange="setFiltro(\'tipo\',this.value)">'
+      + '<option value="">Todas</option><option value="IMPORTACION">Importación</option>'
+      + '<option value="COMPRA_LOCAL">Compra local</option></select></div>'
+      + '<div><label for="f-fase">Fase</label><select id="f-fase" onchange="setFiltro(\'fase\',this.value)">'
       + '<option value="">Todas</option><option value="vivas">Solo vivas</option>'
       + FASES.map(f => '<option value="' + f + '">' + FASE_N[f] + '</option>').join('')
       + '</select></div>'
@@ -448,6 +452,7 @@ function vistaPartidas(soloTabla){
       + '<div><label for="f-busca">Buscar</label><input id="f-busca" placeholder="Código, productor, naviera"'
       + ' oninput="setFiltro(\'busca\',this.value)"></div>'
       + '<button class="btn" onclick="exportar(\'t-part\',\'partidas\')">Exportar</button>';
+    $('f-tipo').value = filtros.tipo;
     $('f-fase').value = filtros.fase;
     $('f-fresc').value = filtros.frescura;
     $('f-busca').value = filtros.busca;
@@ -475,8 +480,10 @@ function vistaPartidas(soloTabla){
     '<tr class="click" onclick="voy(\'partidas\',\'' + p.contenedor_id + '\')">'
     + '<td><b>' + esc(p.codigo) + '</b>'
     + (p.matricula ? '<div class="mini">' + esc(p.matricula) + '</div>' : '') + '</td>'
-    + '<td>' + esc(p.productores || p.exportador || '—') + '</td>'
-    + '<td>' + esc(p.origen_pais || '—') + '</td>'
+    + '<td>' + (p.tipo === 'COMPRA_LOCAL'
+        ? '<span class="eti a">Compra local</span>' : '<span class="eti g">Importación</span>') + '</td>'
+    + '<td>' + esc(p.productores || p.exportador || p.proveedor || '—') + '</td>'
+    + '<td>' + esc(p.origen_pais || p.almacenes || '—') + '</td>'
     + '<td>' + esc(p.semana_descarga || p.semana_eta || '—') + '</td>'
     + '<td>' + etiFase(p.fase) + '</td>'
     + '<td>' + etiFrescura(p.frescura, p.dias_camara_max) + '</td>'
@@ -488,15 +495,15 @@ function vistaPartidas(soloTabla){
         ? '<span class="mal">' + n2(p.resultado) + '</span>' : n2(p.resultado)) + '</td>'
     + '<td class="num">' + (p.resultado_kg == null ? '—' : n3(p.resultado_kg)) + '</td>'
     + '<td>' + avisos(p) + '</td></tr>').join('')
-    : '<tr><td colspan="13" class="nada">No hay partidas con estos filtros.</td></tr>';
+    : '<tr><td colspan="14" class="nada">No hay partidas con estos filtros.</td></tr>';
 
   $('lienzo').innerHTML = '<div class="kpis">' + kpis + '</div>'
     + '<div class="caja"><div class="rej"><table id="t-part"><thead><tr>'
-    + '<th>Partida</th><th>Productor</th><th>Origen</th><th>Semana</th><th>Fase</th><th>Frescura</th>'
+    + '<th>Partida</th><th>Origen</th><th>Productor</th><th>Procedencia</th><th>Semana</th><th>Fase</th><th>Frescura</th>'
     + '<th class="num">Kilos</th><th class="num">En cámara</th><th class="num">€/kg landed</th>'
     + '<th class="num">Ingreso</th><th class="num">Resultado</th><th class="num">€/kg</th><th>Avisos</th>'
     + '</tr></thead><tbody>' + cuerpo + '</tbody><tfoot><tr>'
-    + '<td colspan="6">Total</td><td class="num">' + n0(kilos) + '</td>'
+    + '<td colspan="7">Total</td><td class="num">' + n0(kilos) + '</td>'
     + '<td class="num">' + n0(cam) + '</td><td></td><td class="num">' + n2(ing) + '</td>'
     + '<td class="num">' + n2(res) + '</td><td colspan="2"></td></tr></tfoot></table></div></div>';
 }
@@ -514,8 +521,9 @@ async function vistaExpediente(id, sub){
   $('atras').hidden = false;
   $('atras').textContent = '← Partidas';
   $('titulo').textContent = p.codigo;
-  $('subtitulo').textContent = (p.productores || p.exportador || 'sin productor')
-    + ' · ' + (p.origen_pais || '—') + ' · campaña ' + campanaDe(p)
+  $('subtitulo').textContent = (p.tipo === 'COMPRA_LOCAL' ? 'Compra local · ' : '')
+    + (p.productores || p.exportador || p.proveedor || 'sin productor')
+    + ' · ' + (p.origen_pais || p.almacenes || '—') + ' · campaña ' + campanaDe(p)
     + (i >= 0 ? '  ·  ' + (i+1) + ' de ' + listaActual.length : '');
   $('util').innerHTML = '<div class="pasa">'
     + '<button ' + (ant ? 'onclick="voy(\'partidas\',\'' + ant.contenedor_id + '\',\'' + sub + '\')"' : 'disabled')
@@ -563,9 +571,12 @@ function bloqueResumen(p, d){
   const vida = [
     hito('Compra', num(p.pedidos) > 0 || num(p.coste_compra_eur) > 0, p.fase === 'ABIERTA',
       eur(p.coste_compra_eur), num(p.facturas_compra) + ' facturas de proveedor'),
-    hito('Tránsito', !!p.fecha_carga, p.fase === 'EN_TRANSITO', fec(p.fecha_carga), p.naviera || 'sin naviera'),
-    hito('Recepción', !!p.fecha_descarga, false, fec(p.fecha_descarga),
-      n0(p.pallets) + ' pallets · ' + n0(p.kilos) + ' kg'),
+    (p.tipo === 'COMPRA_LOCAL'
+      ? hito('Sin travesía', true, false, '—', 'comprada ya en Europa')
+      : hito('Tránsito', !!p.fecha_carga, p.fase === 'EN_TRANSITO', fec(p.fecha_carga),
+             p.naviera || 'sin naviera')),
+    hito(p.tipo === 'COMPRA_LOCAL' ? 'Entrada' : 'Recepción', !!p.fecha_descarga, false,
+      fec(p.fecha_descarga), n0(p.pallets) + ' pallets · ' + n0(p.kilos) + ' kg'),
     hito('Cámara', num(p.pallets_en_camara) > 0 || num(p.albaranes) > 0, p.fase === 'EN_CAMARA',
       n0(p.kilos_en_stock) + ' kg',
       p.dias_camara_max == null ? 'sin stock' : 'hasta ' + p.dias_camara_max + ' días'),
@@ -591,13 +602,20 @@ function bloqueResumen(p, d){
   ].map(x => '<div class="kpi"><span>' + esc(x[0]) + '</span><b>' + x[1] + '</b>'
       + '<i class="' + (x[3] ? 'mal' : '') + '">' + esc(x[2]) + '</i></div>').join('');
 
+  const local = p.tipo === 'COMPRA_LOCAL';
   const ident = [
-    ['Matrícula', p.matricula], ['BL', p.bl], ['Precinto', p.precinto || p.precintos],
-    ['Naviera', p.naviera], ['Exportador', p.exportador], ['Proveedor', p.proveedor],
+    ['Tipo de partida', p.tipo_label],
+    ['Almacén', p.almacenes],
+    ...(local ? [['Referencia', p.booking]] : [
+      ['Matrícula', p.matricula], ['BL', p.bl], ['Precinto', p.precinto || p.precintos],
+      ['Naviera', p.naviera], ['Exportador', p.exportador]]),
+    ['Proveedor', p.proveedor],
     ['Origen', p.origen_pais], ['Destino', p.destino], ['Régimen', p.regimen],
     ['Canal', p.canal], ['Modalidad', p.modalidad], ['Campaña', campanaDe(p)],
     ['Productores', p.productores], ['Variedades', p.variedades], ['Lotes', p.lotes],
-    ['Carga', fec(p.fecha_carga)], ['ETA', fec(p.fecha_eta)], ['Descarga', fec(p.fecha_descarga)],
+    ...(local ? [['Fecha de compra', fec(p.fecha_descarga)]]
+              : [['Carga', fec(p.fecha_carga)], ['ETA', fec(p.fecha_eta)],
+                 ['Descarga', fec(p.fecha_descarga)]]),
     ['Tipo de cambio', p.tipo_cambio_compra], ['Expediente', p.expediente_completo ? 'Completo'
       : p.docs_pendientes + ' documentos pendientes']
   ].map(x => '<div class="par"><span>' + esc(x[0]) + '</span><b>'
