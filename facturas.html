@@ -578,17 +578,18 @@ let empresa = null;
 async function imprimirFactura(){
   const f = abierta;
   if (!f) return;
+  try{ await montarFactura(f); }
+  catch(e){ alert('No se pudo montar la factura: ' + e.message); }
+}
+
+async function montarFactura(f){
   if (!empresa){
     const {data} = await sb.from('erp_empresa').select('*').eq('codigo','TB').maybeSingle();
     empresa = data || {};
   }
-  const d = detalles[f.id] || {};
-  let lineas = d.lineas;
-  if (!lineas){
-    const r = await sb.from('erp_documento_linea').select('*')
-      .eq('documento_id', f.id).order('orden');
-    lineas = r.data || [];
-  }
+  const r = await sb.from('erp_documento_linea').select('*')
+    .eq('documento_id', f.id).order('orden');
+  const lineas = r.data || [];
 
   const nl  = f.pais_emisor === 'NL';
   const nif = f.nif_emisor || (nl ? empresa.nif_iva_nl : empresa.nif_iva_es) || empresa.identificacion || '';
