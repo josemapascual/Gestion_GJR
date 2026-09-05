@@ -176,8 +176,8 @@ tfoot td{font-weight:600;background:#F6F8F5;border-top:1px solid var(--linea);
 }
 @media print{.lateral,.pie,.encab .util,.tira{display:none}.app{display:block;height:auto}}
 </style>
-<link rel="stylesheet" href="estilo.css?v=3">
-<link rel="stylesheet" href="carga.css?v=1">
+<link rel="stylesheet" href="estilo.css?v=4">
+<link rel="stylesheet" href="carga.css?v=2">
 </head>
 <body>
 
@@ -494,7 +494,6 @@ async function entrar(){
 $('ac-pass').addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
 
 async function abrir(){
-  $('ctx-user').textContent = sesion.user.email;
   const {data:emp} = await sb.from('erp_empresa').select('razon_social,codigo')
     .eq('activa', true).order('codigo').limit(1).maybeSingle();
   $('ctx-empresa').textContent = (emp && (emp.razon_social || emp.codigo)) || 'Tropical Báez S.L.';
@@ -882,6 +881,6 @@ function exportar(tablaId, nombre){
 
 iniciar();
 </script>
-<script src="nav.js?v=3"></script>
+<script src="nav.js?v=5"></script>
 </body>
 </html>

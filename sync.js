@@ -1,91 +1,114 @@
 /* ══════════════════════════════════════════════════════════════
    sync.js · Refuerzo del guardado en la nube de los módulos GJR
-   Se añade DESPUÉS del bloque "GJR CLOUD SYNC", antes de </body>:
-       <script src="sync.js?v=1"></script>
+   Va DESPUÉS del bloque "GJR CLOUD SYNC":
+       <script src="sync.js?v=2"></script>
 
-   PROBLEMA QUE RESUELVE
-   El guardado se dispara 1,5 s después de cambiar un dato. Si en
-   ese hueco recargas, cambias de pestaña o cierras, el envío no
-   llega a salir. Y al volver, la descarga de la nube machaca lo
-   local: para un objeto (no una lista) el criterio es "gana la
-   nube". Resultado: subes el Excel y al rato tienes los datos
-   viejos otra vez.
+   EL FALLO
+   Al guardar, el módulo apunta la hora del RELOJ DEL NAVEGADOR.
+   Al descargar, compara esa hora con la del SERVIDOR, que siempre
+   es un poco posterior. Resultado: la nube parece más nueva
+   siempre. Mientras eso coincida con lo local no pasa nada, pero
+   en la ventana entre que cargas un Excel y sale el envío (1,5 s),
+   cualquier descarga —y se dispara al cambiar de pestaña— sustituye
+   tus datos nuevos por la copia vieja de la nube. Y luego el envío
+   sube esa copia vieja. Por eso «se actualiza pero no se memoriza».
 
    QUÉ HACE
-   1. Al elegir un archivo, guarda de inmediato: sin espera.
-   2. Antes de salir de la página o de ocultar la pestaña, vacía
-      lo que quede pendiente.
-   3. Avisa en pantalla si algo se queda sin guardar.
+   1. Al cargar un archivo, guarda de inmediato.
+   2. Vigila 45 s: si algo devuelve el valor al anterior, lo repone.
+   3. Vacía lo pendiente antes de salir o de ocultar la pestaña.
+   4. Lo dice en pantalla, en vez de fallar en silencio.
    ══════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
-  if (typeof window.gjrKvPush !== 'function') return;   // módulo sin sincronización
+  if (typeof window.gjrKvPush !== 'function') return;
 
-  var pendientes = {};
-  var origSet = localStorage.setItem.bind(localStorage);
+  var pendientes = {};      // clave -> momento en que se tocó
+  var autoritativo = {};    // clave -> valor que debe prevalecer
+  var vigilarHasta = 0;
+  var origSet = Object.getOwnPropertyDescriptor(Storage.prototype, 'setItem')
+                ? Storage.prototype.setItem.bind(localStorage)
+                : localStorage.setItem.bind(localStorage);
 
-  /* Marcamos como pendiente todo lo que se escriba, para saber qué falta. */
-  var setAnterior = localStorage.setItem;
+  var setPrevio = localStorage.setItem;
   localStorage.setItem = function (k, v) {
-    setAnterior.apply(localStorage, arguments);
+    setPrevio.apply(localStorage, arguments);
     if (k && k.indexOf('__kvat_') !== 0) pendientes[k] = Date.now();
   };
 
-  function flush(motivo) {
-    var claves = Object.keys(pendientes);
-    if (!claves.length) return 0;
-    claves.forEach(function (k) {
-      try { window.gjrKvPush(k); } catch (e) {}
-      delete pendientes[k];
-    });
-    return claves.length;
+  function avisar(txt, mal) {
+    var b = document.getElementById('gjrKvBadge') || document.querySelector('.gjr-status');
+    if (!b) return;
+    b.textContent = txt;
+    if (mal) b.style.color = '#FFB4AB';
   }
 
-  /* ── 1. Al cargar un archivo se guarda ya, sin esperar ── */
+  function flush() {
+    var ks = Object.keys(pendientes);
+    if (!ks.length) return 0;
+    ks.forEach(function (k) {
+      try {
+        autoritativo[k] = localStorage.getItem(k);
+        window.gjrKvPush(k);
+      } catch (e) {}
+      delete pendientes[k];
+    });
+    vigilarHasta = Date.now() + 45000;
+    avisar('Guardando\u2026');
+    setTimeout(function () { avisar('Nube \u2713'); }, 2500);
+    return ks.length;
+  }
+
+  /* ── 1. Guardar en cuanto se carga un archivo ── */
   function engancharArchivos() {
-    var inputs = document.querySelectorAll('input[type="file"]');
-    for (var i = 0; i < inputs.length; i++) {
-      if (inputs[i].dataset.gjrSync) continue;
-      inputs[i].dataset.gjrSync = '1';
-      inputs[i].addEventListener('change', function () {
-        /* El módulo necesita un momento para leer el Excel y escribir
-           en localStorage. Reintentamos hasta que aparezca algo pendiente. */
-        var intentos = 0;
+    var ins = document.querySelectorAll('input[type="file"]');
+    for (var i = 0; i < ins.length; i++) {
+      if (ins[i].dataset.gjrSync) continue;
+      ins[i].dataset.gjrSync = '1';
+      ins[i].addEventListener('change', function () {
+        var n = 0;
         var t = setInterval(function () {
-          intentos++;
-          if (flush('archivo') || intentos > 20) clearInterval(t);
+          n++;
+          if (flush() || n > 30) clearInterval(t);   // hasta 12 s por si el Excel tarda
         }, 400);
       });
     }
   }
-
   if (document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', engancharArchivos);
   else engancharArchivos();
-  setInterval(engancharArchivos, 3000);   // por si el módulo pinta el control después
+  setInterval(engancharArchivos, 3000);
 
-  /* ── 2. Nada se pierde al salir ── */
+  /* ── 2. Vigilancia: si la descarga pisa lo recién cargado, se repone ──
+     No podemos impedir que la descarga se ejecute, pero sí deshacerla. */
+  setInterval(function () {
+    if (Date.now() > vigilarHasta) return;
+    Object.keys(autoritativo).forEach(function (k) {
+      var ahora = localStorage.getItem(k);
+      if (ahora === autoritativo[k]) return;
+      origSet(k, autoritativo[k]);          // reponemos sin marcar pendiente
+      try { window.gjrKvPush(k); } catch (e) {}
+      avisar('Recuperando tus datos\u2026', true);
+      setTimeout(function () { avisar('Nube \u2713'); }, 2500);
+    });
+  }, 1200);
+
+  /* ── 3. Nada se pierde al salir ── */
   window.addEventListener('beforeunload', function (e) {
     if (!Object.keys(pendientes).length) return;
-    flush('salida');
-    e.preventDefault();
-    e.returnValue = '';          // el navegador pregunta antes de cerrar
-    return '';
+    flush();
+    e.preventDefault(); e.returnValue = ''; return '';
   });
-
   document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'hidden') flush('oculta');
+    if (document.visibilityState === 'hidden') flush();
   });
 
-  /* ── 3. Aviso visible si algo lleva demasiado tiempo sin guardar ── */
+  /* ── 4. Reintento si algo se atasca ── */
   setInterval(function () {
-    var claves = Object.keys(pendientes);
-    if (!claves.length) return;
-    var masViejo = Math.min.apply(null, claves.map(function (k) { return pendientes[k]; }));
-    if (Date.now() - masViejo < 8000) return;
-    flush('reintento');
-    var b = document.getElementById('gjrKvBadge') || document.querySelector('.gjr-status');
-    if (b) b.textContent = 'Reintentando guardar…';
+    var ks = Object.keys(pendientes);
+    if (!ks.length) return;
+    var viejo = Math.min.apply(null, ks.map(function (k) { return pendientes[k]; }));
+    if (Date.now() - viejo > 8000) { avisar('Reintentando guardar\u2026', true); flush(); }
   }, 5000);
 
   window.gjrFlush = flush;

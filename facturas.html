@@ -120,7 +120,41 @@ tfoot td{font-weight:600;background:#F6F8F5;border-top:1px solid var(--linea);bo
 .hist b{color:var(--texto)}
 
 @media(max-width:1000px){.kpis{grid-template-columns:repeat(3,1fr)}}
-@media print{.barra,.filtros,.ov{display:none}.ficha{position:static;transform:none;box-shadow:none;width:auto}}
+@media print{
+  body>*{display:none !important}
+  #impresion{display:block !important;position:static !important}
+  @page{size:A4;margin:16mm 15mm}
+}
+#impresion{display:none}
+.fac{font-family:'DM Sans',system-ui,sans-serif;color:#16211A;font-size:11px;line-height:1.45}
+.fac .cab{display:flex;align-items:flex-start;gap:16px;padding-bottom:12px;
+  border-bottom:2px solid var(--verde)}
+.fac .cab img{height:44px}
+.fac .emisor{font-size:10.5px;line-height:1.5}
+.fac .emisor b{display:block;font-size:14px;font-family:'DM Serif Display',Georgia,serif;font-weight:400}
+.fac .num{margin-left:auto;text-align:right}
+.fac .num .t{font-family:'DM Serif Display',Georgia,serif;font-size:19px}
+.fac .num .n{font-size:15px;font-weight:600;margin-top:2px}
+.fac .partes{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:14px 0}
+.fac .parte span{display:block;font-size:8.5px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:#8A948C;margin-bottom:3px}
+.fac .datos{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 14px;margin:12px 0;
+  padding:9px 0;border-top:1px solid #D9E1D6;border-bottom:1px solid #D9E1D6}
+.fac .datos div span{display:block;font-size:8.5px;font-weight:600;letter-spacing:.07em;
+  text-transform:uppercase;color:#8A948C}
+.fac table{width:100%;border-collapse:collapse;font-size:10.5px;margin-top:10px}
+.fac th{background:#F1F4F0;text-align:left;font-size:8.5px;letter-spacing:.06em;
+  text-transform:uppercase;color:#5F6B62;padding:6px 7px;border-bottom:1px solid #D9E1D6}
+.fac td{padding:5px 7px;border-bottom:1px solid #EEF2EC}
+.fac td.n,.fac th.n{text-align:right}
+.fac .totales{margin-left:auto;width:280px;margin-top:12px}
+.fac .totales div{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #EEF2EC}
+.fac .totales div:last-child{border-bottom:0;border-top:2px solid var(--verde);
+  font-weight:600;font-size:14px;padding-top:7px}
+.fac .legal{margin-top:16px;padding:9px 11px;background:#F1F4F0;border:1px solid #D9E1D6;
+  border-radius:3px;font-size:9.5px;line-height:1.5}
+.fac .pie{margin-top:14px;padding-top:9px;border-top:1px solid #D9E1D6;
+  font-size:9px;color:#5F6B62;line-height:1.5}
 
 #acceso{position:fixed;inset:0;background:var(--tinta);z-index:200;display:none;
   align-items:center;justify-content:center;padding:20px}
@@ -136,7 +170,7 @@ tfoot td{font-weight:600;background:#F6F8F5;border-top:1px solid var(--linea);bo
 #acceso .err{background:var(--rojo-pale);color:var(--rojo);border-radius:4px;padding:8px 10px;
   font-size:12px;margin-bottom:10px;display:none}
 </style>
-<link rel="stylesheet" href="carga.css?v=1">
+<link rel="stylesheet" href="carga.css?v=2">
 </head>
 <body>
 
@@ -203,6 +237,7 @@ tfoot td{font-weight:600;background:#F6F8F5;border-top:1px solid var(--linea);bo
   </table></div></div>
 </main>
 
+<div id="impresion"></div>
 <div class="ov" id="ov" onclick="cerrar()"></div>
 <aside class="ficha" id="ficha">
   <header>
@@ -496,7 +531,9 @@ async function abrir(clase, id){
 
   $('x-cuerpo').innerHTML = cab + fis + tabLin + tot
     + '<div style="display:flex;gap:8px;margin:6px 0 4px">' + ir
-    + '<button class="btn" onclick="window.print()">Imprimir</button>'
+    + (f.clase === 'VENTA'
+        ? '<button class="btn" onclick="imprimirFactura()">Imprimir factura</button>'
+        : '<button class="btn" onclick="window.print()">Imprimir</button>')
     + (f.url ? '<a class="btn" href="' + esc(f.url) + '" target="_blank" rel="noopener">Ver archivo</a>' : '')
     + '</div>' + hist + corr;
 }
@@ -532,6 +569,90 @@ async function corregir(){
   abrir(clase, id);
 }
 
+/* ══ Factura imprimible ══
+   Monta el documento con los datos del sistema: emisor según el país
+   de emisión, mención legal del régimen y, en la vía holandesa, el
+   bloque obligatorio del representante fiscal. */
+let empresa = null;
+
+async function imprimirFactura(){
+  const f = abierta;
+  if (!f) return;
+  if (!empresa){
+    const {data} = await sb.from('erp_empresa').select('*').eq('codigo','TB').maybeSingle();
+    empresa = data || {};
+  }
+  const d = detalles[f.id] || {};
+  let lineas = d.lineas;
+  if (!lineas){
+    const r = await sb.from('erp_documento_linea').select('*')
+      .eq('documento_id', f.id).order('orden');
+    lineas = r.data || [];
+  }
+
+  const nl  = f.pais_emisor === 'NL';
+  const nif = f.nif_emisor || (nl ? empresa.nif_iva_nl : empresa.nif_iva_es) || empresa.identificacion || '';
+  const sinIva = f.regimen === 'INVERSION_NL';   // no debe figurar ni tipo ni total con IVA
+
+  const filas = lineas.length ? lineas.map(l =>
+      '<tr><td>' + esc(l.descripcion || '') + '</td>'
+      + '<td>' + esc(l.calibre || '') + '</td>'
+      + '<td>' + esc(l.categoria || '') + '</td>'
+      + '<td>' + esc(l.lote || '') + '</td>'
+      + '<td class="n">' + n0(l.cajas) + '</td>'
+      + '<td class="n">' + n2(l.cantidad) + '</td>'
+      + '<td class="n">' + n3(l.precio_unitario) + '</td>'
+      + '<td class="n">' + n2(l.importe) + '</td></tr>').join('')
+    : '<tr><td colspan="8">' + esc(f.concepto || 'Sin líneas de detalle') + '</td></tr>';
+
+  const tot = '<div><span>Base imponible</span><span>' + n2(f.base) + ' ' + esc(f.moneda) + '</span></div>'
+    + (sinIva ? '' : '<div><span>IVA</span><span>' + n2(f.cuota) + ' ' + esc(f.moneda) + '</span></div>')
+    + (f.moneda !== 'EUR' && f.tipo_cambio
+        ? '<div><span>Tipo de cambio</span><span>' + n3(f.tipo_cambio) + '</span></div>' : '')
+    + '<div><span>Total</span><span>' + n2(sinIva ? f.base : f.total) + ' ' + esc(f.moneda) + '</span></div>';
+
+  $('impresion').innerHTML = '<div class="fac">'
+    + '<div class="cab"><img src="' + LOGO_TB + '" alt="">'
+    + '<div class="emisor"><b>' + esc(empresa.razon_social || 'Tropical Báez S.L.') + '</b>'
+    + esc(empresa.direccion || '') + '<br>' + esc(empresa.ciudad || '') + '<br>'
+    + esc(empresa.pais || 'España') + '<br><b style="font-size:10.5px;font-family:inherit;font-weight:600">'
+    + esc(nif) + '</b></div>'
+    + '<div class="num"><div class="t">' + (f.tipo === 'RECTIFICATIVA' ? 'Factura rectificativa' : 'Factura') + '</div>'
+    + '<div class="n">' + esc(f.referencia || '') + '</div>'
+    + '<div style="font-size:10px;color:#5F6B62;margin-top:3px">' + fec(f.fecha) + '</div></div></div>'
+
+    + '<div class="partes">'
+    + '<div class="parte"><span>Cliente</span><b>' + esc(f.contraparte || '') + '</b><br>'
+    + esc(f.nif || '') + '<br>' + esc(f.pais || '') + '</div>'
+    + '<div class="parte"><span>Vencimiento</span>' + fec(f.fecha_vencimiento) + '</div>'
+    + '</div>'
+
+    + '<div class="datos">'
+    + '<div><span>Contenedor</span>' + esc(f.contenedor || '—') + '</div>'
+    + '<div><span>Incoterm</span>' + esc(f.incoterm || '—') + '</div>'
+    + '<div><span>Moneda</span>' + esc(f.moneda || '') + '</div>'
+    + '<div><span>Régimen</span>' + esc(REG[f.regimen] || f.regimen || '') + '</div>'
+    + '</div>'
+
+    + '<table><thead><tr><th>Descripción</th><th>Calibre</th><th>Cat.</th><th>Lote</th>'
+    + '<th class="n">Cajas</th><th class="n">Kilos</th><th class="n">' + esc(f.moneda) + '/kg</th>'
+    + '<th class="n">Importe</th></tr></thead><tbody>' + filas + '</tbody></table>'
+
+    + '<div class="totales">' + tot + '</div>'
+
+    + (f.nota_fiscal ? '<div class="legal">' + esc(f.nota_fiscal) + '</div>' : '')
+    + (nl && empresa.repfiscal_mencion
+        ? '<div class="legal">' + esc(empresa.repfiscal_mencion).replace(/\n/g,'<br>') + '</div>' : '')
+
+    + '<div class="pie">' + esc(empresa.razon_social || '') + ' · ' + esc(nif)
+    + (empresa.registro_mercantil ? ' · ' + esc(empresa.registro_mercantil) : '')
+    + (empresa.iban ? '<br>Pago por transferencia a ' + esc(empresa.iban)
+        + (empresa.banco ? ' · ' + esc(empresa.banco) : '') : '')
+    + '</div></div>';
+
+  window.print();
+}
+
 function cerrar(){
   abierta = null;
   $('ov').classList.remove('on');
@@ -552,6 +673,6 @@ function exportar(){
 
 iniciar();
 </script>
-<script src="nav.js?v=3"></script>
+<script src="nav.js?v=5"></script>
 </body>
 </html>
