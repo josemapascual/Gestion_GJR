@@ -123,10 +123,18 @@ tfoot td{font-weight:600;background:#F6F8F5;border-top:1px solid var(--linea);bo
 @media print{
   body>*{display:none !important}
   #impresion{display:block !important;position:static !important}
-  @page{size:A4;margin:16mm 15mm}
+  @page{size:A4;margin:0}
+  html,body{margin:0 !important;padding:0 !important;background:#fff !important}
+  .fac{padding:13mm 12mm 10mm !important}
 }
 #impresion{display:none}
 .fac{font-family:'DM Sans',system-ui,sans-serif;color:#1A1A1A;font-size:9.5px;line-height:1.4}
+.fac .top,.fac .partes,.fac .rej,.fac table.imp,.fac .abajo,
+.fac .banco,.fac .nota,.fac .logi,.fac .sumas,.fac .granTotal{
+  break-inside:avoid;page-break-inside:avoid}
+.fac table.lin tr{break-inside:avoid;page-break-inside:avoid}
+.fac table.lin thead{display:table-header-group}
+.fac .abajo{break-before:auto}
 .fac .top{display:flex;align-items:flex-start;padding-bottom:14px;border-bottom:2.5px solid var(--verde)}
 .fac .top img{height:46px}
 .fac .top .der{margin-left:auto;text-align:right}
@@ -646,7 +654,12 @@ async function montarFactura(f){
   const sinIva = D.regimen_fiscal === 'INVERSION_NL';
   const dir    = [empresa.direccion, empresa.ciudad, empresa.pais].filter(Boolean).join(', ');
   const cat    = R.categoria_iva || (num(D.iva_pct) > 0 ? 'S' : 'K');
-  const pesoKg = num(D.peso_neto_kg) || lineas.reduce((s,l) => s + num(l.peso_neto_kg || l.cantidad), 0);
+  const pesoKg   = num(D.peso_neto_kg)  || num(K.peso_neto_kg)
+                || lineas.reduce((s,l) => s + num(l.peso_neto_kg || l.cantidad), 0);
+  const pesoBrKg = num(D.peso_bruto_kg) || num(K.peso_bruto_kg);
+  const bultos   = lineas.reduce((s,l) => s + num(l.cajas), 0);
+  const incoterm = D.incoterm || K.incoterm || C.incoterm_habitual || '';
+  const lugarInc = D.lugar_incoterm || K.lugar_incoterm || '';
 
   const dato = (t, v) => '<div><span>' + esc(t) + '</span>' + (v == null || v === '' ? '—' : v) + '</div>';
 
@@ -699,10 +712,14 @@ async function montarFactura(f){
     + dato('Su referencia', esc(D.sif_referencia))
     + dato('Nº de pedido', esc(D.ref_pedido))
     + dato('Contrato', esc(D.ref_contrato))
-    + dato('Incoterm', esc(D.incoterm))
+    + dato('Incoterm', esc([incoterm, lugarInc].filter(Boolean).join(' ')))
     + dato('Contenedor', esc(K.matricula || f.contenedor))
-    + dato('Bill of lading', esc(K.bl))
-    + dato('Peso neto', pesoKg ? n2(pesoKg) + ' kg' : null)
+    + dato('Bill of lading', esc(K.bl || K.booking))
+    + dato('Naviera', esc(K.naviera))
+    + dato('Peso neto', pesoKg   ? n2(pesoKg)   + ' kg' : null)
+    + dato('Peso bruto', pesoBrKg ? n2(pesoBrKg) + ' kg' : null)
+    + dato('Bultos', bultos ? n0(bultos) + ' cajas' : null)
+    + dato('Precinto', esc(K.precinto || K.precintos))
     + '</div>'
 
     + '<table class="lin"><thead><tr><th>Pos.</th><th>Denominación</th>'
@@ -732,11 +749,8 @@ async function montarFactura(f){
     + (nl && empresa.repfiscal_mencion
         ? '<div class="nota"><div class="rot">REPRESENTACIÓN FISCAL</div>'
           + esc(empresa.repfiscal_mencion).replace(/\n/g, '<br>') + '</div>' : '')
-    + ([K.booking ? 'Booking ' + esc(K.booking) : '',
-        (K.precinto || K.precintos) ? 'Precinto ' + esc(K.precinto || K.precintos) : '',
-        K.destino ? 'Destino ' + esc(K.destino) : ''].filter(Boolean).length
+    + ((K.booking || K.destino)
         ? '<div class="logi">' + [K.booking ? 'Booking ' + esc(K.booking) : '',
-            (K.precinto || K.precintos) ? 'Precinto ' + esc(K.precinto || K.precintos) : '',
             K.destino ? 'Destino ' + esc(K.destino) : ''].filter(Boolean).join(' · ') + '</div>' : '')
     + (D.observaciones ? '<div class="logi">' + esc(D.observaciones) + '</div>' : '')
     + '</div><div>'
@@ -749,12 +763,13 @@ async function montarFactura(f){
     + '</div>'
     + '<div class="granTotal"><div class="et">Total<br>factura</div>'
     + '<div class="im">' + n2(sinIva ? D.subtotal : D.total) + ' ' + esc(D.moneda) + '</div></div>'
-    + (pesoKg ? '<div class="peso">Peso neto ' + n2(pesoKg) + ' kg</div>' : '')
+    + (pesoKg || pesoBrKg ? '<div class="peso">'
+    + (pesoKg ? 'Peso neto ' + n2(pesoKg) + ' kg' : '')
+    + (pesoKg && pesoBrKg ? ' · ' : '')
+    + (pesoBrKg ? 'Peso bruto ' + n2(pesoBrKg) + ' kg' : '') + '</div>' : '')
     + '</div></div>'
 
-    + '<div class="pie">' + esc(empresa.razon_social || '') + ' · CIF ' + esc(empresa.identificacion || '')
-    + (dir ? ' · ' + esc(dir) : '') + (empresa.telefono ? ' · ' + esc(empresa.telefono) : '')
-    + '</div></div>';
+    + '</div>';
 
   window.print();
 }
