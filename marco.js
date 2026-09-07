@@ -61,13 +61,17 @@
     '.gjr-header > div:first-of-type,.gjr-header .gjr-titulo{min-width:0;flex:0 1 auto}',
     '.gjr-header h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;',
     '  font-size:15px !important;line-height:1.2 !important;margin:0 !important}',
-    '.gjr-header-sub,.gjr-header .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;',
-    '  max-width:260px;font-size:11px !important;line-height:1.3 !important;margin:0 !important;',
+    '.gjr-header-sub,.gjr-header .sub,.gjr-header .gjr-sub,.gjr-header span{',
+    '  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;',
+    '  max-width:300px;font-size:11px !important;line-height:1.3 !important;margin:0 !important;',
     '  color:rgba(255,255,255,.6) !important}',
     /* Los botones nunca se encogen ni se parten */
     '.gjr-acciones{flex:none !important;margin-left:auto !important;flex-wrap:nowrap !important}',
     '.gjr-header img{flex:none}',
-    '@media(max-width:1200px){.gjr-header-sub,.gjr-header .sub{display:none !important}}',
+    '@media(max-width:1200px){.gjr-header-sub,.gjr-header .sub,',
+    '  .gjr-header .gjr-sub,.gjr-header span{display:none !important}}',
+    /* El campo de archivo que ya tiene su propio botón, oculto */
+    '.mrc-oculto{display:none !important}',
 
     /* Las pestañas del módulo quedan pegadas justo debajo */
     '.tabs,.tab-bar,.nav-tabs{position:sticky !important;top:0 !important;z-index:40}',
@@ -136,8 +140,21 @@
   bot.id = 'mrc-menu'; bot.type = 'button'; bot.textContent = '☰';
   bot.addEventListener('click', function () { lat.classList.toggle('abierto'); });
 
+  /* Cuando el módulo ya tiene una etiqueta que abre el selector
+     ("Cargar Excel"), el campo de archivo sobra: son dos botones para
+     lo mismo. Se oculta el campo y manda la etiqueta, que es la que
+     el módulo diseñó. */
+  function unificarCarga() {
+    var labels = document.querySelectorAll('label[for]');
+    for (var i = 0; i < labels.length; i++) {
+      var destino = document.getElementById(labels[i].getAttribute('for'));
+      if (destino && destino.type === 'file') destino.classList.add('mrc-oculto');
+    }
+  }
+
   function montar() {
     if (document.getElementById('mrc-lat')) return;
+    unificarCarga();
     document.body.appendChild(lat);
     document.body.appendChild(pie);
     document.body.appendChild(bot);
