@@ -53,7 +53,21 @@
     /* La cabecera que ya tiene el módulo pasa a ser la barra superior */
     '.gjr-header{position:fixed !important;top:' + ALTO_NAV + 'px !important;',
     '  left:' + ANCHO + 'px !important;right:0 !important;height:' + ALTO_CAB + 'px !important;',
-    '  min-height:' + ALTO_CAB + 'px !important;z-index:60;margin:0 !important}',
+    '  min-height:' + ALTO_CAB + 'px !important;max-height:' + ALTO_CAB + 'px !important;',
+    '  z-index:60;margin:0 !important;overflow:hidden !important;',
+    '  display:flex !important;align-items:center !important;flex-wrap:nowrap !important;',
+    '  gap:12px !important;padding:0 16px !important}',
+    /* El título en una sola línea; si no cabe, se recorta */
+    '.gjr-header > div:first-of-type,.gjr-header .gjr-titulo{min-width:0;flex:0 1 auto}',
+    '.gjr-header h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;',
+    '  font-size:15px !important;line-height:1.2 !important;margin:0 !important}',
+    '.gjr-header-sub,.gjr-header .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;',
+    '  max-width:260px;font-size:11px !important;line-height:1.3 !important;margin:0 !important;',
+    '  color:rgba(255,255,255,.6) !important}',
+    /* Los botones nunca se encogen ni se parten */
+    '.gjr-acciones{flex:none !important;margin-left:auto !important;flex-wrap:nowrap !important}',
+    '.gjr-header img{flex:none}',
+    '@media(max-width:1200px){.gjr-header-sub,.gjr-header .sub{display:none !important}}',
 
     /* Las pestañas del módulo quedan pegadas justo debajo */
     '.tabs,.tab-bar,.nav-tabs{position:sticky !important;top:0 !important;z-index:40}',
@@ -68,10 +82,9 @@
     '  font-size:13px;padding:8px 16px;text-decoration:none;border-left:3px solid transparent}',
     '#mrc-lat a:hover{background:rgba(255,255,255,.07);color:#fff}',
     '#mrc-lat a.on{background:rgba(255,255,255,.12);color:#fff;border-left-color:#F9A825;font-weight:500}',
-    '#mrc-lat .marca{display:flex;align-items:center;gap:9px;padding:11px 16px 13px;',
+    '#mrc-lat .marca{display:flex;align-items:center;padding:12px 16px 14px;',
     '  border-bottom:1px solid rgba(255,255,255,.10);margin-bottom:4px}',
-    '#mrc-lat .marca img{height:22px;filter:brightness(0) invert(1)}',
-    "#mrc-lat .marca b{color:#fff;font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:14px}",
+    '#mrc-lat .marca img{height:26px;filter:brightness(0) invert(1)}',
 
     /* ── Barra de estado ── */
     '#mrc-pie{position:fixed;left:0;right:0;bottom:0;height:' + ALTO_PIE + 'px;background:#122E16;',
@@ -100,8 +113,8 @@
   var lat = document.createElement('nav');
   lat.id = 'mrc-lat';
   lat.innerHTML =
-    '<div class="marca">' + (logo ? '<img src="' + esc(logo) + '" alt="">' : '')
-    + '<b>Grupo Juan Ruiz</b></div>'
+    '<div class="marca">' + (logo ? '<img src="' + esc(logo) + '" alt="Grupo Juan Ruiz">' : '')
+    + '</div>'
     + MENU.map(function (g) {
         return '<div class="g">' + esc(g[0]) + '</div>'
           + g[1].map(function (i) {
