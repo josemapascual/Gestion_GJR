@@ -703,8 +703,8 @@
 .gjr-header-back:hover { background: rgba(255,255,255,0.22); }
 
 </style>
-<link rel="stylesheet" href="estilo-gjr.css?v=1">
-<link rel="stylesheet" href="carga.css?v=1">
+<link rel="stylesheet" href="estilo-gjr.css?v=2">
+<link rel="stylesheet" href="carga.css?v=2">
 </head>
 <body>
 
@@ -2520,10 +2520,22 @@ function parsearPreciosExcep(rows) {
 // el resto del módulo funcione sin distinguir de qué planta viene el archivo.
 function parsearReportePlantaNueva(wb) {
   const _n = s => String(s||'').toLowerCase().normalize('NFD')
-                  .replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'');
+                  .replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
 
-  const hojaProd  = wb.SheetNames.find(n => _n(n).includes('reportedeproduccion'));
-  const hojaCajas = wb.SheetNames.find(n => _n(n).includes('cajasempacadas'));
+  /* Primero por nombre. Si no aparece, se busca la hoja que tenga las
+     columnas propias de cada reporte: así funciona aunque renombren la hoja. */
+  const tieneCols = (hoja, obligatorias) => {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[hoja], {header:1, defval:''});
+    for (let i = 0; i < Math.min(25, rows.length); i++){
+      const cab = rows[i].map(c => _n(c));
+      if (obligatorias.every(k => cab.some(c => c === _n(k) || c.includes(_n(k))))) return true;
+    }
+    return false;
+  };
+  const hojaProd  = wb.SheetNames.find(n => _n(n).includes('reportedeproduccion'))
+                 || wb.SheetNames.find(n => tieneCols(n, ['OPR', 'Productor']));
+  const hojaCajas = wb.SheetNames.find(n => _n(n).includes('cajasempacadas'))
+                 || wb.SheetNames.find(n => n !== hojaProd && tieneCols(n, ['Calibre', 'Peso']));
   if (!hojaProd || !hojaCajas) return [];
 
   // Localiza la fila de cabecera buscando columnas obligatorias
@@ -2669,8 +2681,10 @@ function cargarBDReporte(event) {
 
       // ── ¿Es el reporte de la planta nueva? (OPR + CAJAS EMPACADAS) ──
       const _fmt = n => String(n||'').toLowerCase().normalize('NFD')
-                        .replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'');
-      if (wb.SheetNames.some(n => _fmt(n).includes('cajasempacadas'))) {
+                        .replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+      const pareceplanta = wb.SheetNames.some(n =>
+        _fmt(n).includes('cajasempacadas') || _fmt(n).includes('reportedeproduccion'));
+      if (pareceplanta) {
         const lotesNuevos = parsearReportePlantaNueva(wb);
         if (lotesNuevos.length) {
           state.bdReporte = lotesNuevos;
@@ -2683,14 +2697,17 @@ function cargarBDReporte(event) {
           renderFUCList();
           return;
         }
-        showStatus('! Es el formato de la planta nueva, pero no se leyó ningún lote. ' +
-                   'Revisa que estén las hojas REPORTE DE PRODUCCION y CAJAS EMPACADAS.', true);
+        showStatus('! Es el reporte de planta, pero no se leyó ningún lote. '
+          + 'Hojas del archivo: ' + wb.SheetNames.join(', ') + '. '
+          + 'La hoja REPORTE DE PRODUCCION tiene que tener las columnas OPR y Productor, '
+          + 'y CAJAS EMPACADAS las de Calibre y Peso.', true);
         return;
       }
 
 
       // Buscar hoja con FUCs — intentar por nombre, si no usar la hoja con más filas
-      const normalize = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'');
+      const normalize = s => String(s||'').toLowerCase().normalize('NFD')
+                             .replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
       const sheetName = wb.SheetNames.find(n =>
         normalize(n).includes('bdreporte') ||
         normalize(n).includes('reporte') ||
@@ -11029,7 +11046,7 @@ function gjrAutoCloudSave() {
 })();
 </script>
 
-<script src="nav.js?v=3"></script>
+<script src="nav.js?v=5"></script>
 </body>
 </html>
 </div><!-- end costeoPaltaPanel -->
