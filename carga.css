@@ -15,10 +15,13 @@
    El input de archivo nativo pinta una caja clara con un botón
    dentro. Se convierte en un botón más, del mismo tamaño y color
    que sus vecinos.                                              */
-input[type="file"]{
+/* Los que se ven: se convierten en un botón normal.
+   Se excluyen los que la página coloca invisibles y estirados sobre una
+   tarjeta para que toda ella sea pulsable: a esos no hay que tocarles nada. */
+input[type="file"]:not([style*="opacity"]):not([style*="absolute"]){
   border:1px solid rgba(255,255,255,.22) !important;
   background:rgba(255,255,255,.10) !important;
-  color:transparent !important;                 /* oculta "Sin archivo seleccionado" */
+  color:transparent !important;
   border-radius:4px !important;
   padding:0 !important;
   margin:0 !important;
@@ -30,7 +33,7 @@ input[type="file"]{
   cursor:pointer;
   overflow:hidden;
 }
-input[type="file"]::file-selector-button{
+input[type="file"]:not([style*="opacity"]):not([style*="absolute"])::file-selector-button{
   border:0 !important;
   background:transparent !important;
   color:#fff !important;
@@ -44,25 +47,48 @@ input[type="file"]::file-selector-button{
   border-radius:4px !important;
   cursor:pointer;
 }
-input[type="file"]:hover{background:rgba(255,255,255,.18) !important}
-input[type="file"]:focus-visible{outline:2px solid var(--acento,#F9A825);outline-offset:1px}
+input[type="file"]:not([style*="opacity"]):not([style*="absolute"]):hover{
+  background:rgba(255,255,255,.18) !important}
+
+/* Los invisibles que cubren la tarjeta entera: se dejan como están.
+   Si se les cambia el tamaño, la tarjeta deja de ser pulsable. */
+input[type="file"][style*="opacity"],
+input[type="file"][style*="absolute"]{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  max-width:none !important;
+  min-height:0 !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  background:none !important;
+  opacity:0 !important;
+  font-size:16px !important;
+  line-height:normal !important;
+  display:block !important;
+  cursor:pointer !important;
+  pointer-events:auto !important;
+}
+input[type="file"]:not([style*="opacity"]):not([style*="absolute"]):focus-visible{outline:2px solid var(--acento,#F9A825);outline-offset:1px}
 
 /* Sobre fondo claro, el mismo control en versión clara */
-main input[type="file"], .wrap input[type="file"],
-.card input[type="file"], .panel input[type="file"], .caja input[type="file"]{
+main input[type="file"]:not([style*="opacity"]):not([style*="absolute"]),
+.wrap input[type="file"]:not([style*="opacity"]):not([style*="absolute"]),
+.card input[type="file"]:not([style*="opacity"]):not([style*="absolute"]),
+.caja input[type="file"]:not([style*="opacity"]):not([style*="absolute"]){
   border:1px solid var(--linea,#D9E1D6) !important;
   background:var(--blanco,#fff) !important;
 }
-main input[type="file"]::file-selector-button,
-.wrap input[type="file"]::file-selector-button,
-.card input[type="file"]::file-selector-button,
-.panel input[type="file"]::file-selector-button,
-.caja input[type="file"]::file-selector-button{
+main input[type="file"]:not([style*="opacity"]):not([style*="absolute"])::file-selector-button,
+.wrap input[type="file"]:not([style*="opacity"]):not([style*="absolute"])::file-selector-button,
+card input[type="file"]:not([style*="opacity"]):not([style*="absolute"])::file-selector-button,
+.caja input[type="file"]:not([style*="opacity"]):not([style*="absolute"])::file-selector-button{
   color:var(--texto,#16211A) !important;
 }
-main input[type="file"]:hover, .wrap input[type="file"]:hover,
-.card input[type="file"]:hover, .panel input[type="file"]:hover,
-.caja input[type="file"]:hover{background:var(--verde-pale,#E8F5E9) !important}
+main input[type="file"]:not([style*="opacity"]):not([style*="absolute"]):hover, .wrap input[type="file"]:not([style*="opacity"]):not([style*="absolute"]):hover,
+.card input[type="file"]:not([style*="opacity"]):not([style*="absolute"]):hover, .caja input[type="file"]:not([style*="opacity"]):not([style*="absolute"]):hover{background:var(--verde-pale,#E8F5E9) !important}
 
 /* ── 2. Siempre a la derecha, en una sola fila ──────────────── */
 .gjr-acciones, .topbar .right, .barra .der, .gjr-header .acciones{
@@ -92,14 +118,16 @@ main input[type="file"]:hover, .wrap input[type="file"]:hover,
   box-shadow:none !important;
   white-space:nowrap;
 }
-input[type="file"]{height:31px !important;display:inline-flex !important;align-items:center}
-input[type="file"]::file-selector-button{height:29px !important;display:inline-flex;align-items:center}
+input[type="file"]:not([style*="opacity"]):not([style*="absolute"]){
+  height:31px !important;display:inline-flex !important;align-items:center}
+input[type="file"]:not([style*="opacity"]):not([style*="absolute"])::file-selector-button{
+  height:29px !important;display:inline-flex;align-items:center}
 
 /* ── 4. Orden fijo, sea cual sea el orden del HTML ──────────── */
 .gjr-acciones > *, .topbar .right > *, .barra .der > *{order:5}
 .gjr-acciones > [class*="plantilla"], .gjr-acciones > [id*="plantilla"],
 .gjr-acciones > [onclick*="lantilla"]{order:1}
-.gjr-acciones > input[type="file"], .gjr-acciones > label:has(input[type="file"]),
+.gjr-acciones > input[type="file"]:not([style*="opacity"]):not([style*="absolute"]), .gjr-acciones > label:has(input[type="file"]),
 .gjr-acciones > .gjr-btn-carga, .gjr-acciones > .btn-upload{order:2}
 .gjr-acciones > [onclick*="estaur"], .gjr-acciones > [onclick*="uardar"],
 .gjr-acciones > .btn-save, .gjr-acciones > .btn-download{order:3}

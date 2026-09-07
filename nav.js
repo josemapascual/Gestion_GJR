@@ -110,15 +110,50 @@
   /* Identidad: se lee de la sesión que guarda Supabase en el navegador,
      así aparece igual en las 20 pantallas sin depender de cada módulo. */
   function correoSesion(){
+    /* supabase-js guarda la sesión con la clave sb-<proyecto>-auth-token.
+       Las versiones recientes la parten en varios trozos con sufijo .0, .1…
+       y a veces la codifican en base64. Hay que contemplarlo todo. */
+    var almacenes = [];
+    try{ almacenes.push(localStorage); }catch(e){}
+    try{ almacenes.push(sessionStorage); }catch(e){}
+
+    for (var a = 0; a < almacenes.length; a++){
+      var st = almacenes[a], trozos = {}, sueltas = [];
+      try{
+        for (var i = 0; i < st.length; i++){
+          var k = st.key(i);
+          if (!k) continue;
+          var m = k.match(/^(sb-.*-auth-token)(?:\.(\d+))?$/);
+          if (!m) continue;
+          if (m[2] === undefined) sueltas.push(k);
+          else { (trozos[m[1]] = trozos[m[1]] || [])[Number(m[2])] = st.getItem(k); }
+        }
+      }catch(e){ continue; }
+
+      var candidatos = sueltas.map(function(k){ return st.getItem(k); });
+      for (var base in trozos) candidatos.push(trozos[base].join(''));
+
+      for (var c = 0; c < candidatos.length; c++){
+        var correo = extraerCorreo(candidatos[c]);
+        if (correo) return correo;
+      }
+    }
+    return null;
+  }
+
+  function extraerCorreo(v){
+    if (!v) return null;
     try{
-      for (var i = 0; i < localStorage.length; i++){
-        var k = localStorage.key(i);
-        if (!/^sb-.*-auth-token$/.test(k)) continue;
-        var v = localStorage.getItem(k) || '';
-        if (v.indexOf('base64-') === 0) v = atob(v.slice(7));
-        var s = JSON.parse(v);
-        var u = (s && (s.user || (s.currentSession && s.currentSession.user))) || null;
-        if (u && u.email) return u.email;
+      if (v.indexOf('base64-') === 0) v = decodeURIComponent(escape(atob(v.slice(7))));
+      var s = JSON.parse(v);
+      var u = s && (s.user || (s.currentSession && s.currentSession.user));
+      if (u && u.email) return u.email;
+      /* Si no viene el usuario, se lee del propio token de acceso. */
+      var t = s && (s.access_token || (s.currentSession && s.currentSession.access_token));
+      if (t){
+        var p = t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+        var d = JSON.parse(decodeURIComponent(escape(atob(p + '==='.slice((p.length + 3) % 4)))));
+        if (d && d.email) return d.email;
       }
     }catch(e){}
     return null;
@@ -132,17 +167,18 @@
   barra.id = 'nvg-barra';
   barra.innerHTML = html;
 
-  var bs = barra.querySelector('.nvg-salir');
-  if (bs) bs.addEventListener('click', function(){
+  function salir(){
     try{
       for (var i = localStorage.length - 1; i >= 0; i--){
         var k = localStorage.key(i);
-        if (/^sb-.*-auth-token$/.test(k)) localStorage.removeItem(k);
+        if (/^sb-.*-auth-token(\.\d+)?$/.test(k)) localStorage.removeItem(k);
       }
       sessionStorage.clear();
     }catch(e){}
     location.href = 'index.html';
-  });
+  }
+  var bs = barra.querySelector('.nvg-salir');
+  if (bs) bs.addEventListener('click', salir);
 
   function montar() {
     if (document.getElementById('nvg-barra')) return;
@@ -152,4 +188,24 @@
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', montar);
   else montar();
+
+  /* El cliente puede tardar un instante en dejar la sesión guardada. */
+  if (!correo){
+    var reintentos = 0;
+    var t = setInterval(function(){
+      var c = correoSesion();
+      reintentos++;
+      if (c){
+        clearInterval(t);
+        var yo = barra.querySelector('.nvg-yo');
+        if (yo) yo.textContent = c;
+        if (!barra.querySelector('.nvg-salir')){
+          var b = document.createElement('button');
+          b.className = 'nvg-i nvg-salir'; b.type = 'button'; b.textContent = 'Salir';
+          b.addEventListener('click', salir);
+          barra.appendChild(b);
+        }
+      } else if (reintentos > 20) clearInterval(t);
+    }, 500);
+  }
 })();

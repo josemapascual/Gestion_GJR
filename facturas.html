@@ -136,7 +136,9 @@ tfoot td{font-weight:600;background:#F6F8F5;border-top:1px solid var(--linea);bo
 }
 #impresion{display:none}
 .fac{font-family:'DM Sans',system-ui,sans-serif;color:#1A1A1A;font-size:9.5px;line-height:1.4;
-  -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  width:794px;padding:48px 44px 38px;box-sizing:border-box;background:#fff}
+@media print{.fac{width:auto}}
 .fac .top,.fac .partes,.fac .rej,.fac table.imp,.fac .abajo,
 .fac .banco,.fac .nota,.fac .logi,.fac .sumas,.fac .granTotal{
   break-inside:avoid;page-break-inside:avoid}
@@ -219,7 +221,7 @@ tfoot td{font-weight:600;background:#F6F8F5;border-top:1px solid var(--linea);bo
 #acceso .err{background:var(--rojo-pale);color:var(--rojo);border-radius:4px;padding:8px 10px;
   font-size:12px;margin-bottom:10px;display:none}
 </style>
-<link rel="stylesheet" href="carga.css?v=2">
+<link rel="stylesheet" href="carga.css?v=3">
 </head>
 <body>
 
@@ -623,7 +625,8 @@ async function abrir(clase, id){
   $('x-cuerpo').innerHTML = cab + fis + tabLin + tot
     + '<div style="display:flex;gap:8px;margin:6px 0 4px">' + ir
     + (f.clase === 'VENTA'
-        ? '<button class="btn" onclick="imprimirFactura()">Imprimir factura</button>'
+        ? '<button class="btn" onclick="imprimirFactura()">Imprimir</button>'
+          + '<button class="btn pri" id="btn-pdf" onclick="descargarFactura()">Descargar PDF</button>'
         : '<button class="btn" onclick="window.print()">Imprimir</button>')
     + (f.url ? '<a class="btn" href="' + esc(f.url) + '" target="_blank" rel="noopener">Ver archivo</a>' : '')
     + '</div>' + hist + corr;
@@ -665,6 +668,41 @@ async function corregir(){
    de emisión, mención legal del régimen y, en la vía holandesa, el
    bloque obligatorio del representante fiscal. */
 let empresa = null;
+
+/* En el móvil, Safari imprime su propia cabecera con la dirección web y la
+   hora, y eso no se puede quitar desde el documento. Generando el PDF aquí
+   no interviene el navegador: sale limpio en cualquier aparato. */
+async function descargarFactura(){
+  const b = $('btn-pdf');
+  if (b){ b.disabled = true; b.textContent = 'Generando…'; }
+  try{
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
+    if (!window.html2pdf) throw new Error('No se pudo cargar el generador de PDF');
+    await montarFacturaSinImprimir(abierta);
+    const zona = $('impresion');
+    const previo = zona.style.cssText;
+    zona.style.cssText = 'display:block;position:absolute;left:-10000px;top:0;width:210mm;background:#fff';
+    await window.html2pdf().set({
+      margin: 0,
+      filename: (abierta.referencia || 'factura') + '.pdf',
+      image: {type:'jpeg', quality:0.98},
+      html2canvas: {scale:3, useCORS:true, backgroundColor:'#ffffff', windowWidth:794},
+      jsPDF: {unit:'mm', format:'a4', orientation:'portrait', compress:true},
+      pagebreak: {mode:['css','avoid-legacy']}
+    }).from(zona).save();
+    zona.style.cssText = previo;
+  }catch(e){
+    alert('No se pudo generar el PDF: ' + e.message);
+  }finally{
+    if (b){ b.disabled = false; b.textContent = 'Descargar PDF'; }
+  }
+}
+
+async function montarFacturaSinImprimir(f){
+  const antes = window.print;
+  window.print = function(){};      // montamos el documento sin abrir el diálogo
+  try{ await montarFactura(f); } finally { window.print = antes; }
+}
 
 async function imprimirFactura(){
   const f = abierta;
@@ -840,6 +878,6 @@ function exportar(){
 
 iniciar();
 </script>
-<script src="nav.js?v=5"></script>
+<script src="nav.js?v=6"></script>
 </body>
 </html>

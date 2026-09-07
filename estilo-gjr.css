@@ -246,3 +246,101 @@ input:focus,select:focus,textarea:focus{
   .gjr-header{flex-wrap:wrap !important;padding:8px 16px !important}
   .gjr-acciones{width:100%;justify-content:flex-end;flex-wrap:wrap !important}
 }
+
+/* ══════════════════════════════════════════════════════════════
+   8. Tarjetas, zonas de carga y avisos
+   Lo que quedaba con las formas antiguas: la barrita naranja
+   delante de cada título, las cajas de carga muy redondeadas y
+   los avisos con borde grueso.
+   ══════════════════════════════════════════════════════════════ */
+
+/* El acento naranja delante de los títulos, fuera */
+.card-title::before, .card-title:before,
+.panel-head::before, .seccion h2::before{display:none !important}
+
+.card-title{
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  font-size:11px !important;
+  font-weight:600 !important;
+  letter-spacing:.08em !important;
+  text-transform:uppercase !important;
+  color:var(--verde) !important;
+  padding:0 0 8px !important;
+  margin:0 0 12px !important;
+  border-bottom:1px solid var(--linea) !important;
+}
+
+.card{
+  background:var(--blanco) !important;
+  border:1px solid var(--linea) !important;
+  border-radius:var(--radio) !important;
+  box-shadow:none !important;
+  padding:14px 16px !important;
+}
+
+/* Zonas para soltar archivos: rectángulo sobrio, no una caja gigante */
+.upload-zone{
+  border:1px dashed var(--linea) !important;
+  border-radius:var(--radio) !important;
+  padding:16px 14px !important;
+  background:var(--blanco) !important;
+  transition:none !important;
+}
+.upload-zone:hover{
+  border-color:var(--verde-claro) !important;
+  background:var(--verde-pale) !important;
+}
+.upload-icon{font-size:20px !important;margin-bottom:4px !important;opacity:.75}
+.upload-label{
+  font-size:12.5px !important;font-weight:600 !important;color:var(--texto) !important;
+}
+.upload-sub{font-size:11px !important;color:var(--texto-suave) !important;margin-top:2px !important}
+.upload-ok{
+  font-size:10px !important;font-weight:600 !important;letter-spacing:.04em !important;
+  color:var(--verde) !important;background:var(--verde-pale) !important;
+  border-radius:3px !important;padding:2px 7px !important;
+  display:inline-block !important;margin-top:6px !important;
+}
+
+/* Avisos: sin borde grueso, con barra lateral como en Tropical Báez */
+.status-bar{
+  border:0 !important;
+  border-left:3px solid var(--verde-medio) !important;
+  border-radius:0 4px 4px 0 !important;
+  padding:9px 12px !important;
+  font-size:12px !important;
+  background:var(--verde-pale) !important;
+  color:var(--verde) !important;
+}
+.status-bar.error,.status-bar.err{
+  border-left-color:var(--error) !important;
+  background:var(--error-bg) !important;
+  color:var(--error) !important;
+}
+.status-bar.warn{
+  border-left-color:var(--acento) !important;
+  background:var(--ambar-bg) !important;
+  color:var(--ambar) !important;
+}
+
+/* La franja de pestañas interna, blanca como en el resto del sistema */
+.tabs{
+  background:var(--blanco) !important;
+  border-bottom:1px solid var(--linea) !important;
+  padding:0 16px !important;
+}
+.tab{
+  color:var(--texto-suave) !important;
+  border-bottom:2px solid transparent !important;
+  white-space:nowrap;
+}
+.tab.active,.tab.on{
+  color:var(--verde) !important;
+  border-bottom-color:var(--acento) !important;
+  background:none !important;
+}
+
+/* Indicador de nube: discreto, no un botón */
+.gjr-status{font-weight:500 !important}
