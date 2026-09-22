@@ -174,6 +174,9 @@ table.hist tr.anterior td{color:var(--texto-suave)}
   .wrap-wide{padding:0 !important}
   .sheet{border:0 !important;background:none !important}
 }
+/* Los colores del reporte se imprimen siempre, aunque quien imprima
+   olvide marcar «Gráficos de fondo» en el cuadro de impresión. */
+.page, .page *{-webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;}
 /* ════════ EL REPORTE ════════ */
 .page{
   width:297mm; height:210mm; position:relative; overflow:hidden;
@@ -327,7 +330,7 @@ table.data-table td.section-band{
           <li>Destino: <b>Guardar como PDF</b></li>
           <li>Dise&ntilde;o: <b>Horizontal</b> &middot; Tama&ntilde;o: <b>A4</b></li>
           <li>M&aacute;rgenes: <b>Ninguno</b></li>
-          <li>Marca <b>Gr&aacute;ficos de fondo</b>: sin esto la portada sale en blanco</li>
+          <li>En Safari o Firefox, marca adem&aacute;s <b>Gr&aacute;ficos de fondo</b>. En Chrome y Edge ya no hace falta.</li>
         </ol>
       </div>
     </div>
