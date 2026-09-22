@@ -154,6 +154,11 @@ main{max-width:1180px;margin:0 auto;padding:24px 20px 50px}
     </section>
   </div>
 
+  <section class="emp" style="margin-top:18px">
+    <header><b>Reporte gerencial</b><span>Grupo Juan Ruiz + Tropical Báez</span><em id="c-grupo"></em></header>
+    <div id="lista-grupo"></div>
+  </section>
+
   <a class="mod" style="background:var(--blanco);border:1px solid var(--linea);
      border-radius:6px;margin-top:18px" href="manual.html">
     <span class="n">?</span>
@@ -188,8 +193,11 @@ const GJR = [
   ['liqui_gjr', 'Liquidaciones', 'Liquidaciones de campaña',                        'liquidaciones_app_v6.html'],
   ['crm',       'CRM',           'Clientes, contactos y seguimiento comercial',     'crm.html'],
   ['divisas',   'Divisas',       'Control de tipo de cambio y operaciones',         'control_divisas.html'],
-  ['viaticos',  'Viáticos',      'Gastos y anticipos del personal',                 'viaticos.html'],
-  ['reporte',   'Reporte gerencial', 'Reporte semanal de GJR y Tropical Báez, en PDF', 'reporte_gerencial.html']
+  ['viaticos',  'Viáticos',      'Gastos y anticipos del personal',                 'viaticos.html']
+];
+/* Reporte del grupo: es de las dos empresas, por eso va en su propio apartado */
+const GRUPO = [
+  ['reporte',   'Reporte gerencial semanal', 'Caja, cobros, pagos y decisiones de GJR y Tropical Báez, en PDF', 'reporte_gerencial.html']
 ];
 
 /* ══ USUARIOS ══ */
@@ -204,7 +212,7 @@ const USUARIOS = {
 
 
 
-const TODOS = [...TB, ...GJR].map(m => m[0]);
+const TODOS = [...TB, ...GJR, ...GRUPO].map(m => m[0]);
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
                   .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -257,14 +265,17 @@ function abrir(k){
 
   $('lista-tb').innerHTML  = TB.map(m => fila(m, puede(m[0]))).join('');
   $('lista-gjr').innerHTML = GJR.map(m => fila(m, puede(m[0]))).join('');
+  $('lista-grupo').innerHTML = GRUPO.map(m => fila(m, puede(m[0]))).join('');
 
   const nTb  = TB.filter(m => puede(m[0])).length;
   const nGjr = GJR.filter(m => puede(m[0])).length;
+  const nGrupo = GRUPO.filter(m => puede(m[0])).length;
   $('c-tb').textContent  = nTb  + ' de ' + TB.length;
   $('c-gjr').textContent = nGjr + ' de ' + GJR.length;
+  $('c-grupo').textContent = nGrupo + ' de ' + GRUPO.length;
   $('acc').textContent = (usuario.acceso === '*')
     ? 'Acceso completo · ' + TODOS.length + ' módulos'
-    : (nTb + nGjr) + ' de ' + TODOS.length + ' módulos habilitados';
+    : (nTb + nGjr + nGrupo) + ' de ' + TODOS.length + ' módulos habilitados';
 }
 
 (function inicio(){

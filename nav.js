@@ -40,9 +40,13 @@
         ['Liquidaciones', 'liquidaciones_app_v6.html'],
         ['CRM',           'crm.html'],
         ['Divisas',       'control_divisas.html'],
-        ['Viáticos',      'viaticos.html'],
-        ['Reporte gerencial', 'reporte_gerencial.html']
+        ['Viáticos',      'viaticos.html']
       ]
+    },
+    grupo: {
+      etiqueta: 'Reporte gerencial',
+      inicio: 'reporte_gerencial.html',
+      items: []
     }
   };
 
@@ -99,13 +103,16 @@
       var on = i[1].toLowerCase() === actual ? ' nvg-on' : '';
       return '<a class="nvg-i' + on + '" href="' + i[1] + '">' + esc(i[0]) + '</a>';
     }).join('');
-    var otra = empresa === 'tb' ? 'gjr' : 'tb';
-    html += '<a class="nvg-i nvg-otra" href="' + MODULOS[otra].inicio + '">'
-          + esc(MODULOS[otra].etiqueta) + ' \u25BA</a>';
+    var otras = empresa === 'tb' ? ['gjr'] : empresa === 'gjr' ? ['tb'] : ['tb', 'gjr'];
+    html += otras.map(function (o, n) {
+      return '<a class="nvg-i' + (n === 0 ? ' nvg-otra' : '') + '" href="' + MODULOS[o].inicio + '">'
+           + esc(MODULOS[o].etiqueta) + ' \u25BA</a>';
+    }).join('');
     html += '<span class="nvg-sep2"></span>';
   } else {
     html += '<a class="nvg-i" href="tb.html">Tropical B\u00e1ez</a>'
-          + '<a class="nvg-i" href="gjr.html">Grupo Juan Ruiz</a>';
+          + '<a class="nvg-i" href="gjr.html">Grupo Juan Ruiz</a>'
+          + '<a class="nvg-i" href="reporte_gerencial.html">Reporte gerencial</a>';
   }
 
   /* Identidad: se lee de la sesión que guarda Supabase en el navegador,
