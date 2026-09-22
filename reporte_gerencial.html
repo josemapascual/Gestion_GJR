@@ -1234,7 +1234,7 @@ document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded'
 
 const SB_URL = 'https://riidmxztyxldnojjkncx.supabase.co';
 const SB_KEY = 'sb_publishable_ZbMZbTdBcYnGceF_woayjQ_CCCEHRYS';
-const ROLES_REPORTE = ['GERENCIA', 'CONTROLLER', 'OPERACIONES'];
+const ROLES_REPORTE = ['GERENCIA', 'CONTROLLER', 'OPERACIONES', 'ADMIN'];
 const NOMBRE_ROL = { GERENCIA: 'Gerencia', CONTROLLER: 'Controller', OPERACIONES: 'Operaciones', ADMIN: 'Administración', COMERCIAL: 'Comercial' };
 
 let sb = null, perfil = null, tras_login = null;
@@ -1386,7 +1386,7 @@ async function guardarEnPlataforma() {
   btn.disabled = false;
   if (error) { avisoNube('bad', 'No se guardó: ' + error.message); return; }
   R.origen = 'historial';
-  avisoNube('ok', `Reporte del ${R.d.corte} guardado. Ya lo ven Gerencia y Operaciones en el historial.`);
+  avisoNube('ok', `Reporte del ${R.d.corte} guardado. Ya está en el historial del grupo.`);
 }
 
 /* ── historial ── */

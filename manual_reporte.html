@@ -149,6 +149,8 @@ tbody tr:hover{background:#F8FBF7}
       <p>El reporte gerencial es la foto semanal de las dos empresas: cu&aacute;nto hay en caja, qui&eacute;n nos debe,
          a qui&eacute;n debemos y qu&eacute; tiene que decidir Gerencia. Son seis hojas A4 en PDF y salen siempre
          del mismo archivo Excel: <code>Plantilla_Reporte_Gerencial_GJR_TB.xlsx</code>.</p>
+      <p><b>Lo emiten Renato, Toshiro o Diana</b>, indistintamente: los tres pueden cargar el Excel, generar el PDF y guardarlo
+         en la plataforma. Eliminar un reporte del historial sigue siendo solo de Gerencia.</p>
       <p><b>El m&oacute;dulo no inventa nada.</b> Lee el Excel en tu propio navegador y lo dibuja. Si un dato no est&aacute;
          en el Excel, en el reporte sale <b>s/d</b>. Por eso el trabajo de verdad es llenar bien la plantilla.</p>
       <table>
@@ -159,8 +161,11 @@ tbody tr:hover{background:#F8FBF7}
         <tr><td><b>Toshiro</b> &middot; Controller TB</td>
             <td>Llena las pesta&ntilde;as <code>TB_*</code> con caja, cartera, proveedores y pendientes de Tropical B&aacute;ez, y confirma el intercompany contra los libros de TB.</td>
             <td>Excel</td></tr>
+        <tr><td><b>Diana</b> &middot; Administraci&oacute;n</td>
+            <td>Cuentas por pagar, detracciones y saldos a favor; tambi&eacute;n emite el reporte cuando le toca.</td>
+            <td>Excel</td></tr>
         <tr><td><b>Gerencia</b></td>
-            <td>Revisa conclusiones y decisiones, las reescribe si hace falta, genera el PDF y lo guarda en la plataforma.</td>
+            <td>Revisa conclusiones y decisiones y las reescribe si hace falta.</td>
             <td>M&oacute;dulo</td></tr>
       </table>
       <div class="aviso ok"><b>Regla de oro:</b> el que tiene el dato es el que lo escribe. Nadie rellena por otro &laquo;a ojo&raquo;.</div>
@@ -274,7 +279,8 @@ tbody tr:hover{background:#F8FBF7}
         <tr><td><b>Gerencia</b></td><td><span class="chip si">S&iacute;</span></td><td><span class="chip si">S&iacute;</span></td><td><span class="chip si">S&iacute;</span></td><td><span class="chip si">S&iacute;</span></td></tr>
         <tr><td><b>Controller</b> (Toshiro)</td><td><span class="chip si">S&iacute;</span></td><td><span class="chip si">S&iacute;</span></td><td><span class="chip si">S&iacute;</span></td><td><span class="chip no">No</span></td></tr>
         <tr><td><b>Operaciones</b> (Renato)</td><td><span class="chip si">S&iacute;</span></td><td><span class="chip si">S&iacute;</span></td><td><span class="chip si">S&iacute;</span></td><td><span class="chip no">No</span></td></tr>
-        <tr><td><b>Administraci&oacute;n</b> y <b>Comercial</b></td><td><span class="chip si">S&iacute;</span></td><td><span class="chip no">No</span></td><td><span class="chip no">No</span></td><td><span class="chip no">No</span></td></tr>
+        <tr><td><b>Administraci&oacute;n</b> (Diana)</td><td><span class="chip si">S&iacute;</span></td><td><span class="chip si">S&iacute;</span></td><td><span class="chip si">S&iacute;</span></td><td><span class="chip no">No</span></td></tr>
+        <tr><td><b>Comercial</b></td><td><span class="chip si">S&iacute;</span></td><td><span class="chip no">No</span></td><td><span class="chip no">No</span></td><td><span class="chip no">No</span></td></tr>
       </table>
       <p class="nota">Generar el PDF no necesita contrase&ntilde;a: quien tenga el Excel puede hacerlo. Lo que est&aacute; protegido es el historial del grupo, y lo controla la base de datos, no la pantalla.</p>
     </div>
