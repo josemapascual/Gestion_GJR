@@ -46,7 +46,10 @@
     grupo: {
       etiqueta: 'Reporte gerencial',
       inicio: 'reporte_gerencial.html',
-      items: []
+      items: [
+        ['Reporte', 'reporte_gerencial.html'],
+        ['Manual',  'manual_reporte.html']
+      ]
     }
   };
 

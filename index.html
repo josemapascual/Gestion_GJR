@@ -118,6 +118,7 @@ main{max-width:1180px;margin:0 auto;padding:24px 20px 50px}
       <option value="diana">Diana</option>
       <option value="reynaldo">Reynaldo</option>
       <option value="paola">Paola</option>
+      <option value="toshiro">Toshiro</option>
     </select>
     <label for="p">Contraseña</label>
     <input id="p" type="password" autocomplete="current-password">
@@ -197,7 +198,8 @@ const GJR = [
 ];
 /* Reporte del grupo: es de las dos empresas, por eso va en su propio apartado */
 const GRUPO = [
-  ['reporte',   'Reporte gerencial semanal', 'Caja, cobros, pagos y decisiones de GJR y Tropical Báez, en PDF', 'reporte_gerencial.html']
+  ['reporte',   'Reporte gerencial semanal', 'Caja, cobros, pagos y decisiones de GJR y Tropical Báez, en PDF', 'reporte_gerencial.html'],
+  ['manual_rep','Manual del reporte',        'Cómo llenar la plantilla, generar el PDF y guardarlo',           'manual_reporte.html']
 ];
 
 /* ══ USUARIOS ══ */
@@ -206,6 +208,7 @@ const USUARIOS = {
   renato:   {pass:'renato123',   nombre:'Renato',     rol:'Operaciones',   acceso:'*'},
   diana:    {pass:'diana123',    nombre:'Diana',      rol:'Administración',acceso:'*'},
   paola:    {pass:'paola123',    nombre:'Paola',      rol:'Comercial',     acceso:'*'},
+  toshiro:  {pass:'toshiro123',  nombre:'Toshiro',    rol:'Controller',    acceso:'*'},
   reynaldo: {pass:'reynaldo123', nombre:'Reynaldo',   rol:'Calidad',
              acceso:['partidas','almacen','calidad','facturas','traza','defectos','descarte']}
 };
