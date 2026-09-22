@@ -40,7 +40,8 @@
         ['Liquidaciones', 'liquidaciones_app_v6.html'],
         ['CRM',           'crm.html'],
         ['Divisas',       'control_divisas.html'],
-        ['Viáticos',      'viaticos.html']
+        ['Viáticos',      'viaticos.html'],
+        ['Reporte gerencial', 'reporte_gerencial.html']
       ]
     }
   };
