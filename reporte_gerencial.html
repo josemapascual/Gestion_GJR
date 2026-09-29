@@ -286,7 +286,7 @@ table.data-table td.section-band{
 </style>
 </head>
 <body>
-<!-- build 2026-09-22-B -->
+<!-- build 2026-09-29-B -->
 
 <!-- ═══ CABECERA: mismo armazón que el resto de módulos ═══ -->
 <div class="topbar">
@@ -533,7 +533,7 @@ const fdate = v => {
 
 // Criterio de Gerencia: los derechos sin presentar (drawback, IGV) no salen en el reporte.
 // Solo cuenta si el texto habla de un derecho: así "reclamo no presentado" al seguro sí sale.
-const RE_SIN_PRESENTAR = /sin presentar|pendientes? de presentaci[oó]n|\b(?:no|ni siquiera)\s+(?:est[aá]n?\s+)?presentad/i;
+const RE_SIN_PRESENTAR = /sin presentar|pendientes? de presenta(?:r|ci[oó]n)|por presentar|falta\w*\s+(?:por\s+)?presentar|\b(?:no|ni siquiera|todav[ií]a no|a[uú]n no)\s+(?:se\s+)?(?:han?\s+|est[aá]n?\s+)?presentad/i;
 const RE_DERECHO = /drawback|\bIGV\b|rebate|derecho/i;
 const hablaSinPresentar = txt => RE_SIN_PRESENTAR.test(txt) && RE_DERECHO.test(txt);
 
@@ -802,7 +802,7 @@ function pgConsolidado(d, m) {
     <div class="content">
       <div class="panel" style="margin-top:2px;padding:8px 13px;">
         <div class="kpi-sub" style="font-size:9px;">Cifras de GJR verificadas contra el detalle de la fuente de la semana.
-        ${m.grp.completo ? 'Tropical Báez ya carga sus propios datos.' : 'Tropical Báez todavía no tiene export propio: sus columnas muestran <b>s/d</b> hasta que llegue (detalle en la Hoja 5).'}
+        ${m.grp.completo ? '' : 'Tropical Báez todavía no tiene export propio: sus columnas muestran <b>s/d</b> hasta que llegue (detalle en la Hoja 5).'}
         El intercompany TB→GJR (<b>${money(m.g.inter)}</b>) se elimina del total consolidado — es deuda dentro del grupo, no frente a terceros.</div>
       </div>
       <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-top:8px;">
@@ -1053,19 +1053,14 @@ function pgPendientes(d, m) {
 function pgTB(d, m) {
   const t = d.tb;
   const hay = m.t.tieneDatos;
-  const banner = hay
-    ? `Tropical Báez ya carga sus propios datos. Cuando el volumen lo justifique, esta hoja se abre en tres —Resumen, Cobros y pagos, Pendientes— espejo de las Hojas 2, 3 y 4 de GJR.`
-    : `TB va en una sola hoja porque hoy tiene un único dato confirmado. En cuanto llegue su export, esta hoja se abre en tres —Resumen, Cobros y pagos, Pendientes y decisiones— espejo exacto de las Hojas 2, 3 y 4 de GJR.`;
-
   const filasPend = t.pendientes.length
     ? t.pendientes.map(p => `<tr><td>${esc(p.tit)}</td><td><b>${money(p.imp)}</b></td><td>${esc(p.resp || '—')}</td>
         <td>${esc(fdate(p.fecha))}</td><td>${tag(p.estado)}</td><td>${esc(p.accion || '—')}</td></tr>`).join('')
     : `<tr><td colspan="6" style="color:var(--ink-soft);">Sin pendientes cargados todavía.</td></tr>`;
 
   return `<section class="page">
-    ${header(badgeTB, 'TROPICAL BÁEZ', 'Resumen, cobros y pagos y pendientes · una sola hoja mientras no haya export de TB', 'Tropical Báez S.L.', 5, 5, 'TB reporta nativamente en EUR')}
+    ${header(badgeTB, 'TROPICAL BÁEZ', 'Caja, cartera, cuentas por pagar y pendientes de Tropical Báez', 'Tropical Báez S.L.', 5, 5, 'TB reporta nativamente en EUR')}
     <div class="content">
-      <div class="constr"><span class="dot-i" style="background:${COL.lila};width:9px;height:9px;"></span><span class="txt">${esc(banner)}</span></div>
       <div class="kpi-grid" style="margin-top:6px;">
         <div class="kpi-card" style="--dot:${COL.lila}"><div class="kpi-label">CAJA TB HOY</div><div class="kpi-value">${sd(m.t.caja, money)}</div>
           <div class="kpi-sub">${t.bancos.length ? t.bancos.length + ' cuentas' : 'EUR y USD · bancos por confirmar'}</div><div class="kpi-delta">Δ sem. ant.: s/d</div></div>
@@ -1233,6 +1228,34 @@ function fondosImprimibles(raiz) {
   });
 }
 
+/* ── que nada pise el pie de página ──────────────────────
+   Si una semana trae más clientes, más pendientes o textos más largos,
+   el contenido crece y se monta sobre el pie. Aquí se mide cada hoja y,
+   solo si hace falta, se reduce un punto hasta que cabe. */
+function ajustarHojas(raiz) {
+  raiz.querySelectorAll('.page').forEach(pg => {
+    const cont = pg.querySelector('.content');
+    const pie = pg.querySelector('.page-footer');
+    if (!cont || !pie) return;
+    cont.style.transform = '';
+    cont.style.width = '';
+    const tope = pie.getBoundingClientRect().top - 4;
+    const arriba = cont.getBoundingClientRect().top;
+    const disponible = tope - arriba;
+    let alto = cont.getBoundingClientRect().height;
+    if (disponible <= 0 || alto <= disponible) return;
+    let f = Math.max(0.68, disponible / alto);
+    cont.style.transformOrigin = 'top left';
+    for (let i = 0; i < 4; i++) {
+      cont.style.width = (100 / f) + '%';
+      cont.style.transform = `scale(${f})`;
+      alto = cont.getBoundingClientRect().height;
+      if (alto <= disponible + 1 || f <= 0.68) break;
+      f = Math.max(0.68, f * (disponible / alto));
+    }
+  });
+}
+
 /* ── UI ─────────────────────────────────────────────────── */
 const $ = s => document.querySelector(s);
 
@@ -1241,6 +1264,7 @@ function pintar(d, m) {
   TCLINE = `TC aplicado: EUR/USD ${d.tcE.toFixed(4)} · USD/PEN ${d.tcP.toFixed(4)}`;
   const pages = [pgCover(d), pgConsolidado(d, m), pgResumen(d, m), pgCobrosPagos(d, m), pgPendientes(d, m), pgTB(d, m)];
   $('#preview').innerHTML = pages.map(p => `<div class="sheet">${p}</div>`).join('');
+  ajustarHojas($('#preview'));
   fondosImprimibles($('#preview'));
 
   const checks = validar(d, m);
