@@ -133,6 +133,21 @@ table.hist tr.anterior td{color:var(--texto-suave)}
 .hist-vacio{color:var(--texto-suave);font-size:12.5px;text-align:center;padding:18px 8px;margin:0}
 .hist-pie{font-size:11.5px;color:var(--texto-suave);margin:10px 0 0}
 
+/* ── evolución ── */
+.evo-lectura{background:var(--verde-pale);color:var(--verde);border-radius:4px;padding:9px 12px;
+  font-size:12.5px;line-height:1.5;margin:0 0 14px}
+.evo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:1100px){.evo-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.evo-grid{grid-template-columns:1fr}}
+.evo-card{border:1px solid var(--linea);border-radius:var(--radio);padding:11px 13px 8px;background:var(--blanco)}
+.evo-tit{font-size:9.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--tenue)}
+.evo-valor{font-size:19px;font-weight:600;margin-top:3px;font-variant-numeric:tabular-nums}
+.evo-delta{font-size:11.5px;color:var(--texto-suave);margin-top:1px}
+.evo-delta.evo-bien{color:var(--verde)}
+.evo-delta.evo-mal{color:var(--error)}
+.evo-svg{display:block;width:100%;height:72px;margin-top:6px;overflow:visible}
+.evo-sin{font-size:11.5px;color:var(--tenue);padding:22px 0 14px;text-align:center}
+
 /* ── acceso (igual que la entrada de Inicio) ── */
 .acceso{position:fixed;inset:0;background:var(--tinta);z-index:100;display:flex;align-items:center;
   justify-content:center;padding:20px}
@@ -307,6 +322,7 @@ table.data-table td.section-band{
 <div class="tabs">
   <button class="on" id="tab-nuevo" type="button">Nuevo reporte</button>
   <button id="tab-historial" type="button">Historial</button>
+  <button id="tab-evolucion" type="button">Evoluci&oacute;n</button>
 </div>
 
 <div class="wrap">
@@ -339,6 +355,14 @@ table.data-table td.section-band{
           <li>En Safari o Firefox, marca adem&aacute;s <b>Gr&aacute;ficos de fondo</b>. En Chrome y Edge ya no hace falta.</li>
         </ol>
       </div>
+    </div>
+  </div>
+
+  <!-- ═══ EVOLUCIÓN ═══ -->
+  <div id="vista-evolucion" hidden>
+    <div class="card">
+      <div class="card-title">C&oacute;mo vamos<span class="aside">un punto por corte guardado</span></div>
+      <div class="card-body" id="evo-cuerpo"></div>
     </div>
   </div>
 
@@ -1306,7 +1330,13 @@ function init() {
   ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
   ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
   drop.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) cargar(f); });
-  $('#print').addEventListener('click', () => window.print());
+  $('#print').addEventListener('click', async () => {
+    // cloud.js engancha aquí el guardado automático; si no está, imprime igual
+    if (typeof window.__antesDeImprimir === 'function') {
+      try { await window.__antesDeImprimir(); } catch (e) { /* imprimir nunca se bloquea */ }
+    }
+    window.print();
+  });
 }
 document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 
@@ -1385,9 +1415,12 @@ async function cargarPerfil() {
 function pintarUsuario() {
   /* El correo y "Salir" los muestra la barra común (nav.js), como en el resto
      de módulos: aquí solo se refleja si la plataforma está disponible. */
-  const t = $('#tab-historial');
-  t.classList.toggle('off', !sb);
-  t.title = sb ? '' : 'Sin conexión con la plataforma';
+  ['#tab-historial', '#tab-evolucion'].forEach(sel => {
+    const t = $(sel);
+    if (!t) return;
+    t.classList.toggle('off', !sb);
+    t.title = sb ? '' : 'Sin conexión con la plataforma';
+  });
 }
 
 function pedirLogin(despues) {
@@ -1423,12 +1456,131 @@ async function salir() {
 
 /* ── pestañas ── */
 function irA(cual) {
-  $('#tab-nuevo').classList.toggle('on', cual === 'nuevo');
-  $('#tab-historial').classList.toggle('on', cual === 'historial');
-  $('#vista-nuevo').hidden = cual !== 'nuevo';
-  $('#vista-historial').hidden = cual !== 'historial';
+  ['nuevo', 'historial', 'evolucion'].forEach(v => {
+    const t = $('#tab-' + v), vista = $('#vista-' + v);
+    if (t) t.classList.toggle('on', cual === v);
+    if (vista) vista.hidden = cual !== v;
+  });
   $('#preview').hidden = cual !== 'nuevo';
   if (cual === 'historial') cargarHistorial();
+  if (cual === 'evolucion') cargarEvolucion();
+}
+
+/* ── evolución: cómo vamos corte a corte ───────────────────
+   Una gráfica por indicador (nunca dos escalas en el mismo eje), con la
+   última cifra y su variación, y debajo la tabla completa. */
+const EVO = [
+  { k: 'caja',     tit: 'Caja del grupo',        col: '#1B5E20', get: r => n(r.grupo && r.grupo.caja, r.gjr && r.gjr.caja), bueno: 1 },
+  { k: 'cxc',      tit: 'Nos deben · terceros',  col: '#8A6200', get: r => n(r.grupo && r.grupo.cxc), bueno: 0 },
+  { k: 'vencido',  tit: 'Vencido con proveedores', col: '#B3261E', get: r => n(r.gjr && r.gjr.vencido), bueno: -1 },
+  { k: 'neta',     tit: 'Posición neta del grupo', col: '#122E16', get: r => n(r.grupo && r.grupo.neta), bueno: 1 }
+];
+const n = (...vs) => { for (const v of vs) if (v !== null && v !== undefined && isFinite(v)) return v; return null; };
+const dinero = v => v === null ? 's/d' : (v < 0 ? '-$' : '$') + Math.abs(Math.round(v)).toLocaleString('en-US');
+const dmy = iso => { const m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${m[3]}/${m[2]}` : (iso || '—'); };
+
+function miniGrafico(serie, color) {
+  const vals = serie.map(p => p.v);
+  const hay = vals.filter(v => v !== null);
+  if (hay.length < 2) return '<div class="evo-sin">Hace falta más de un corte guardado</div>';
+  const W = 250, H = 72, P = 8;
+  const min = Math.min(...hay), max = Math.max(...hay);
+  const rango = (max - min) || Math.abs(max) || 1;
+  const x = i => P + i * (W - 2 * P) / (serie.length - 1);
+  const y = v => H - P - ((v - min) / rango) * (H - 2 * P);
+  let d = '', puntos = '';
+  serie.forEach((p, i) => {
+    if (p.v === null) return;
+    d += (d ? ' L' : 'M') + x(i).toFixed(1) + ' ' + y(p.v).toFixed(1);
+    puntos += `<circle cx="${x(i).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="2.6" fill="${color}"/>` +
+              `<circle cx="${x(i).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="9" fill="transparent">` +
+              `<title>${esc(dmy(p.corte))}: ${dinero(p.v)}</title></circle>`;
+  });
+  return `<svg class="evo-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="evolución">
+    <line x1="${P}" y1="${H - P}" x2="${W - P}" y2="${H - P}" stroke="#E3DED3" stroke-width="1"/>
+    <path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    ${puntos}</svg>`;
+}
+
+function lecturaEvolucion(cortes) {
+  if (cortes.length < 2) return 'Con un solo corte guardado todavía no hay evolución. En cuanto guardes el siguiente, aquí verás cómo se mueve cada cifra.';
+  const a = cortes[0].resumen || {}, z = cortes[cortes.length - 1].resumen || {};
+  const frase = m => {
+    const v0 = m.get(a), v1 = m.get(z);
+    if (v0 === null || v1 === null) return null;
+    const dif = v1 - v0;
+    const signo = dif >= 0 ? 'sube' : 'baja';
+    return `${m.tit.toLowerCase()} ${signo} ${dinero(Math.abs(dif))} (de ${dinero(v0)} a ${dinero(v1)})`;
+  };
+  const partes = EVO.map(frase).filter(Boolean);
+  return `Entre el corte del ${dmy(cortes[0].fecha_corte)} y el del ${dmy(cortes[cortes.length - 1].fecha_corte)}, ` +
+         `en ${cortes.length} cortes guardados: ` + partes.join('; ') + '.';
+}
+
+async function cargarEvolucion() {
+  const box = $('#evo-cuerpo');
+  if (!box) return;
+  if (!sb) { box.innerHTML = '<p class="hist-vacio">Sin conexión con la plataforma.</p>'; return; }
+  if (!perfil) {
+    box.innerHTML = '<p class="hist-vacio">Entra con tu usuario de la plataforma para ver la evolución.</p>' +
+                    '<p style="text-align:center"><button class="btn btn-primary" id="evo-entrar" type="button">Entrar</button></p>';
+    $('#evo-entrar').addEventListener('click', () => pedirLogin(() => irA('evolucion')));
+    return;
+  }
+  if (!tieneAcceso()) {
+    box.innerHTML = `<p class="hist-vacio">Tu usuario (${esc(NOMBRE_ROL[perfil.rol] || 'sin rol')}) no tiene acceso a los reportes gerenciales.</p>`;
+    return;
+  }
+  box.innerHTML = '<p class="hist-vacio">Cargando…</p>';
+  const { data, error } = await sb.from('erp_reporte_gerencial')
+    .select('fecha_corte,subido_en,resumen')
+    .order('fecha_corte', { ascending: true }).order('subido_en', { ascending: true });
+  if (error) { box.innerHTML = '<p class="hist-vacio">No se pudo consultar la plataforma.</p>'; return; }
+  if (!data || !data.length) {
+    box.innerHTML = '<p class="hist-vacio">Todavía no hay reportes guardados. En cuanto se guarde el primero, aquí aparece la evolución.</p>';
+    return;
+  }
+  const porCorte = new Map();
+  data.forEach(r => porCorte.set(r.fecha_corte, r));   // se queda la última versión de cada corte
+  const cortes = [...porCorte.values()].sort((x, y) => x.fecha_corte < y.fecha_corte ? -1 : 1);
+
+  const tarjetas = EVO.map(m => {
+    const serie = cortes.map(c => ({ corte: c.fecha_corte, v: m.get(c.resumen || {}) }));
+    const vivos = serie.filter(p => p.v !== null);
+    const ult = vivos.length ? vivos[vivos.length - 1].v : null;
+    const ant = vivos.length > 1 ? vivos[vivos.length - 2].v : null;
+    const dif = (ult !== null && ant !== null) ? ult - ant : null;
+    const mejor = dif === null ? '' : (m.bueno === 0 ? 'evo-neutro' : ((dif > 0) === (m.bueno > 0) ? 'evo-bien' : 'evo-mal'));
+    return `<div class="evo-card">
+      <div class="evo-tit">${esc(m.tit)}</div>
+      <div class="evo-valor">${dinero(ult)}</div>
+      <div class="evo-delta ${mejor}">${dif === null ? 'primer corte' : (dif >= 0 ? '+' : '−') + dinero(Math.abs(dif)).replace('$', '$') + ' vs. corte anterior'}</div>
+      ${miniGrafico(serie, m.col)}
+    </div>`;
+  }).join('');
+
+  const filas = [...cortes].reverse().map(c => {
+    const r = c.resumen || {};
+    return `<tr><td><b>${esc(dmy(c.fecha_corte))}</b></td>
+      <td class="num">${dinero(n(r.grupo && r.grupo.caja, r.gjr && r.gjr.caja))}</td>
+      <td class="num">${dinero(n(r.grupo && r.grupo.cxc))}</td>
+      <td class="num">${dinero(n(r.gjr && r.gjr.disputa))}</td>
+      <td class="num">${dinero(n(r.gjr && r.gjr.vencido))}</td>
+      <td class="num">${dinero(n(r.gjr && r.gjr.derechos))}</td>
+      <td class="num"><b>${dinero(n(r.grupo && r.grupo.neta))}</b></td>
+      <td>${esc(r.autor || '—')}</td></tr>`;
+  }).join('');
+
+  box.innerHTML = `<div class="evo-lectura">${esc(lecturaEvolucion(cortes))}</div>
+    <div class="evo-grid">${tarjetas}</div>
+    <div class="hist-scroll" style="margin-top:14px;">
+      <table class="hist">
+        <tr><th>Corte</th><th class="num">Caja grupo</th><th class="num">Nos deben</th><th class="num">En disputa</th>
+            <th class="num">Vencido</th><th class="num">Derechos</th><th class="num">Posición neta</th><th>Guardado por</th></tr>
+        ${filas}
+      </table>
+    </div>
+    <p class="hist-pie">Una línea por corte: si se guarda más de una versión del mismo corte, manda la última.</p>`;
 }
 
 /* ── guardar ── */
@@ -1436,10 +1588,44 @@ function resumenDe(m) {
   const r = n => (n === null || n === undefined || !isFinite(n)) ? null : Math.round(n);
   return {
     autor: perfil.nombre, rol: perfil.rol,
-    gjr:   { caja: r(m.g.caja), cxc: r(m.g.cxc), cxp: r(m.g.cxp), neta: r(m.g.neta), disputa: r(m.g.disputa) },
+    gjr:   { caja: r(m.g.caja), cxc: r(m.g.cxc), cxp: r(m.g.cxp), neta: r(m.g.neta), disputa: r(m.g.disputa),
+             vencido: r(m.g.cxpVencido), viejo: r(m.g.viejo), derechos: r(m.g.derechos), neta_sin_disputa: r(m.g.netaSinDisputa) },
     tb:    { caja: r(m.t.caja), cxc: r(m.t.cxc), cxp: r(m.t.cxp), con_datos: !!m.t.tieneDatos },
-    grupo: { caja: r(m.grp.caja), cxc: r(m.grp.cxc), cxp: r(m.grp.cxp), neta: r(m.grp.neta) }
+    grupo: { caja: r(m.grp.caja), cxc: r(m.grp.cxc), cxp: r(m.grp.cxp), neta: r(m.grp.neta), acreedora: r(m.grp.acreedora) }
   };
+}
+
+async function mismoResumen(a, b) {
+  return JSON.stringify(a || {}) === JSON.stringify(b || {});
+}
+
+/* Al generar el PDF el reporte se guarda solo, para que el historial no dependa
+   de que alguien se acuerde de pulsar el botón. Si ya está guardado con las
+   mismas cifras no duplica nada; si no hay sesión, solo avisa. */
+async function guardarAlImprimir() {
+  const R = window.__rg;
+  if (!R || R.origen === 'historial' || !sb) return;
+  if (R.checks.some(c => c.t === 'bad')) return;
+  if (!perfil || !tieneAcceso()) {
+    avisoNube('warn', 'El PDF se genera igual, pero este reporte no queda en el historial: entra con tu usuario y pulsa Guardar en la plataforma.');
+    return;
+  }
+  const iso = corteISO(R.d.corte);
+  if (!iso) return;
+  const { data: previos } = await sb.from('erp_reporte_gerencial')
+    .select('id,resumen,subido_en').eq('fecha_corte', iso).order('subido_en', { ascending: false }).limit(1);
+  const resumen = resumenDe(R.m);
+  if (previos && previos.length) {
+    const a = Object.assign({}, previos[0].resumen); delete a.autor; delete a.rol;
+    const b = Object.assign({}, resumen); delete b.autor; delete b.rol;
+    if (await mismoResumen(a, b)) { R.origen = 'historial'; return; }
+  }
+  const { error } = await sb.from('erp_reporte_gerencial').insert({
+    fecha_corte: iso, datos: R.d, resumen, archivo_nombre: R.archivo || null
+  });
+  if (error) { avisoNube('warn', 'El PDF se genera, pero no se pudo guardar en la plataforma: ' + error.message); return; }
+  R.origen = 'historial';
+  avisoNube('ok', `Reporte del ${R.d.corte} guardado en el historial del grupo.`);
 }
 
 async function guardarEnPlataforma() {
@@ -1551,6 +1737,9 @@ async function borrarGuardado(id, corte) {
 function iniciarNube() {
   $('#tab-nuevo').addEventListener('click', () => irA('nuevo'));
   $('#tab-historial').addEventListener('click', () => { if (sb) irA('historial'); });
+  const te = $('#tab-evolucion');
+  if (te) te.addEventListener('click', () => { if (sb) irA('evolucion'); });
+  window.__antesDeImprimir = guardarAlImprimir;
   $('#guardar-nube').addEventListener('click', guardarEnPlataforma);
   $('#ac-entrar').addEventListener('click', entrar);
   $('#ac-cancelar').addEventListener('click', () => { $('#acceso').hidden = true; tras_login = null; });
