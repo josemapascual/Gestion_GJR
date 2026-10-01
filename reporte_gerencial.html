@@ -301,7 +301,7 @@ table.data-table td.section-band{
 </style>
 </head>
 <body>
-<!-- build 2026-09-29-B -->
+<!-- build 2026-10-01-B -->
 
 <!-- ═══ CABECERA: mismo armazón que el resto de módulos ═══ -->
 <div class="topbar">
@@ -617,10 +617,19 @@ function parse(wb) {
     .map(r => ({ nombre: r[0], moneda: r[1], usd: toUSD(r[1], r[2]) }))
     .filter(x => x.nombre && x.usd !== null);
 
+  // OPERATIVO pasa a llamarse AL DÍA, y nada con 4 meses o más sale como al día:
+  // se muestra VENCIDO y se avisa. Columna I opcional: cobro esperado % (en blanco = 100%).
+  const reclasificados = [];
   const cxc = n => readTable(wb, n, 'Cliente')
-    .map(r => ({ cliente: r[0], moneda: r[1], monto: num(r[2]), usd: toUSD(r[1], r[2]),
-                 meses: num(r[4]), estado: String(r[5] ?? '').trim().toUpperCase(),
-                 accion: r[6], resp: r[7] }))
+    .map(r => {
+      const x = { cliente: r[0], moneda: r[1], monto: num(r[2]), usd: toUSD(r[1], r[2]),
+                  meses: num(r[4]), estado: String(r[5] ?? '').trim().toUpperCase(),
+                  accion: r[6], resp: r[7], esperado: num(r[8]) };
+      if (x.estado === 'OPERATIVO') x.estado = 'AL DÍA';
+      if (/^AL D[ÍI]A$/.test(x.estado) && (x.meses ?? 0) >= 4) { x.estado = 'VENCIDO'; reclasificados.push(String(x.cliente ?? '')); }
+      if (x.esperado !== null) x.esperado = x.esperado > 1 ? x.esperado / 100 : x.esperado;
+      return x;
+    })
     .filter(x => x.cliente && x.usd !== null);
 
   // Derechos: solo cuenta lo ya presentado (en trámite). Lo "sin presentar" se queda
@@ -652,6 +661,8 @@ function parse(wb) {
 
   return {
     corte: fechaCorte(P['Fecha de corte']), tcE, tcP,
+    version: String(P['Versión'] ?? P['Version'] ?? '').trim(),
+    reclasificados,
     gjr: {
       bancos: bancos('GJR_Bancos'),
       cxc: cxc('GJR_CxCobrar'),
@@ -704,15 +715,27 @@ function compute(d) {
 
   m.g.caja = some(g.bancos) ? sum(g.bancos, x => x.usd) : null;
   m.g.cxc = some(g.cxc) ? sum(g.cxc, x => x.usd) : null;
-  m.g.disputa = some(g.cxc) ? sum(g.cxc.filter(x => x.estado === 'EN DISPUTA'), x => x.usd) : null;
-  m.g.inter = some(g.cxc) ? sum(g.cxc.filter(x => x.estado === 'INTERCOMPANY'), x => x.usd) : null;
-  m.g.viejo = some(g.cxc) ? sum(g.cxc.filter(x => (x.meses ?? 0) >= 4), x => x.usd) : null;
+  const esInter = x => x.estado === 'INTERCOMPANY';
+  const enDisputa = x => /DISPUTA|RECOBRO/.test(x.estado);
+  const enRiesgo = x => !esInter(x) && (enDisputa(x) || /DUDOS/.test(x.estado) || (x.meses ?? 0) >= 4);
+  m.g.disputa = some(g.cxc) ? sum(g.cxc.filter(enDisputa), x => x.usd) : null;
+  m.g.inter = some(g.cxc) ? sum(g.cxc.filter(esInter), x => x.usd) : null;
+  m.g.terceros = some(g.cxc) ? sum(g.cxc.filter(x => !esInter(x)), x => x.usd) : null;
+  // antigüedad y riesgo solo sobre terceros: el intercompany no es riesgo de cobro
+  m.g.viejo = some(g.cxc) ? sum(g.cxc.filter(x => !esInter(x) && (x.meses ?? 0) >= 4), x => x.usd) : null;
+  m.g.riesgo = some(g.cxc) ? sum(g.cxc.filter(enRiesgo), x => x.usd) : null;
+  m.g.alDia = some(g.cxc) ? sum(g.cxc.filter(x => !esInter(x) && !enRiesgo(x)), x => x.usd) : null;
   m.g.cxp = some(g.cxp) ? sum(g.cxp, x => x.usd) : null;
   m.g.cxpComercial = some(g.cxp) ? sum(g.cxp.filter(x => x.tipo !== 'DETRACCION'), x => x.usd) : null;
   m.g.cxpVencido = g.cxpVencido ?? null;
+  m.g.cxpProv = some(g.cxp) ? sum(g.cxp.filter(x => x.tipo !== 'DETRACCION' && x.tipo !== 'FINANCIAMIENTO'), x => x.usd) : null;
   m.g.derechos = some(g.derechos) ? sum(g.derechos, x => x.tramite) : null;
   m.g.neta = (m.g.caja ?? 0) + (m.g.cxc ?? 0) + (m.g.derechos ?? 0) - (m.g.cxp ?? 0);
   m.g.netaSinDisputa = m.g.neta - (m.g.disputa ?? 0);
+  m.g.netaSinRiesgo = m.g.neta - (m.g.riesgo ?? 0);
+  const esp = x => x.usd * (x.esperado === null || x.esperado === undefined ? 1 : x.esperado);
+  m.g.hayEsperado = g.cxc.some(x => x.esperado !== null && x.esperado !== undefined);
+  m.g.esperadoTerceros = some(g.cxc) ? sum(g.cxc.filter(x => !esInter(x)), esp) : null;
   m.g.cxcOperativa = (m.g.cxc ?? 0) - (m.g.disputa ?? 0);
 
   m.t.caja = some(t.bancos) ? sum(t.bancos, x => x.usd) : null;
@@ -720,7 +743,17 @@ function compute(d) {
   m.t.cxp = some(t.cxp) ? sum(t.cxp, x => x.usd) : null;
   m.t.inter = some(t.cxp) ? sum(t.cxp.filter(x => x.tipo === 'INTERCOMPANY'), x => x.usd) : null;
   m.t.cxpExterna = m.t.cxp === null ? null : m.t.cxp - (m.t.inter ?? 0);
-  m.t.tieneDatos = some(t.bancos) || some(t.cxc);
+  m.t.hayCaja = some(t.bancos);
+  m.t.hayCxc = some(t.cxc);
+  m.t.hayCxpExt = t.cxp.some(x => x.tipo !== 'INTERCOMPANY');
+  m.t.faltan = [!m.t.hayCaja && 'caja', !m.t.hayCxc && 'cartera de clientes',
+                !m.t.hayCxpExt && 'cuentas por pagar a terceros'].filter(Boolean);
+  m.t.tieneDatos = m.t.hayCaja || m.t.hayCxc;
+  // el saldo con GJR no es deuda si TB ya tiene el dinero en el banco
+  m.t.neta = m.t.tieneDatos ? (m.t.caja ?? 0) + (m.t.cxc ?? 0) - (m.t.cxp ?? 0) : null;
+  m.t.interEfec = m.t.inter ?? m.g.inter ?? null;
+  m.t.interCubierto = (m.t.interEfec === null || m.t.caja === null) ? null : m.t.caja >= m.t.interEfec;
+  m.t.cajaTrasInter = (m.t.interEfec === null || m.t.caja === null) ? null : m.t.caja - m.t.interEfec;
 
   // consolidado: se elimina el intercompany de los dos lados
   m.grp.caja = (m.g.caja ?? 0) + (m.t.caja ?? 0);
@@ -730,6 +763,15 @@ function compute(d) {
   m.grp.neta = m.grp.caja + m.grp.cxc + m.grp.derechos - m.grp.cxp;
   m.grp.acreedora = m.grp.cxc - m.grp.cxp;
   m.grp.completo = m.t.tieneDatos;
+  m.t.esperadoCxc = some(t.cxc) ? sum(t.cxc, esp) : null;
+  m.grp.cxcEsperado = m.g.hayEsperado ? (m.g.esperadoTerceros ?? 0) + (m.t.esperadoCxc ?? 0) : null;
+  m.g.esperadoNeto = m.g.hayEsperado
+    ? (m.g.caja ?? 0) + (m.g.esperadoTerceros ?? 0) + (m.g.inter ?? 0) + (m.g.derechos ?? 0) - (m.g.cxp ?? 0) : null;
+  m.t.esperadoNeto = (m.t.tieneDatos && m.g.hayEsperado)
+    ? (m.t.caja ?? 0) + (m.t.esperadoCxc ?? 0) - (m.t.cxp ?? 0) : null;
+  m.grp.esperado = m.g.hayEsperado
+    ? m.grp.caja + (m.grp.cxcEsperado ?? 0) + m.grp.derechos - m.grp.cxp
+    : null;
 
   // antigüedad de la cartera de GJR
   const bucket = lo => sum(g.cxc.filter(x => {
@@ -813,66 +855,59 @@ function pgCover(d) {
       <div style="width:70px;height:1.4px;background:#B9C7BE;margin:0 auto 22px;"></div>
       <div class="serif-title" style="font-size:34px;letter-spacing:.03em;">REPORTE GERENCIAL SEMANAL</div>
       <div style="font-weight:400;font-size:15px;color:#CBD6CE;margin-top:10px;">Administración y Finanzas · Dirección General</div>
-      <div style="font-weight:600;font-size:12px;letter-spacing:.18em;color:#8FA79A;margin-top:14px;">CORTE ${esc(CORTE.replace(/\//g, ' / '))}</div>
+      <div style="font-weight:600;font-size:12px;letter-spacing:.18em;color:#8FA79A;margin-top:14px;">CORTE ${esc(CORTE.replace(/\//g, ' / '))}${d.version ? ' &nbsp;·&nbsp; VERSIÓN ' + esc(d.version) : ''}</div>
     </div></section>`;
 }
 
 function pgConsolidado(d, m) {
   const ge = v => v === null ? 's/d' : '≥ ' + money(v);
-  const tbCell = v => v === null || v === 0 ? 's/d' : money(v);
+  const tbCell = v => (v === null || v === undefined) ? (m.t.tieneDatos ? money(0) : 's/d') : money(v);
   return `<section class="page">
     ${header(badgeDuo, 'CONSOLIDADO GJR + TB', 'Deuda, cobranza y caja combinadas · Grupo Juan Ruiz + Tropical Báez',
              'Grupo Juan Ruiz S.A.C. + Tropical Báez S.L.', 1, 5, TCLINE)}
     <div class="content">
-      <div class="panel" style="margin-top:2px;padding:8px 13px;">
-        <div class="kpi-sub" style="font-size:9px;">Cifras de GJR verificadas contra el detalle de la fuente de la semana.
-        ${m.grp.completo ? '' : 'Tropical Báez todavía no tiene export propio: sus columnas muestran <b>s/d</b> hasta que llegue (detalle en la Hoja 5).'}
-        El intercompany TB→GJR (<b>${money(m.g.inter)}</b>) se elimina del total consolidado — es deuda dentro del grupo, no frente a terceros.</div>
-      </div>
-      <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-top:8px;">
+      <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-top:10px;">
         <div class="kpi-card" style="--dot:${COL.verde}"><div class="kpi-label">CAJA · GRUPO</div>
           <div class="kpi-value">${m.grp.completo ? money(m.grp.caja) : ge(m.grp.caja)}</div>
           <div class="kpi-sub">GJR ${money(m.g.caja)} · TB ${tbCell(m.t.caja)}</div><div class="kpi-delta">Δ sem. ant.: s/d</div></div>
         <div class="kpi-card" style="--dot:${COL.naranja}"><div class="kpi-label">NOS DEBEN · GRUPO (terceros)</div>
           <div class="kpi-value">${m.grp.completo ? money(m.grp.cxc) : ge(m.grp.cxc)}</div>
-          <div class="kpi-sub">Excluye intercompany ${money(m.g.inter)} · cartera externa TB ${tbCell(m.t.cxc)}</div><div class="kpi-delta">Δ sem. ant.: s/d</div></div>
+          <div class="kpi-sub">Excluye el saldo interno con TB ${money(m.g.inter)} · cartera externa TB ${tbCell(m.t.cxc)}</div><div class="kpi-delta">Δ sem. ant.: s/d</div></div>
         <div class="kpi-card" style="--dot:${COL.vino}"><div class="kpi-label">DEBEMOS · GRUPO (terceros)</div>
           <div class="kpi-value">${m.grp.completo ? money(m.grp.cxp) : ge(m.grp.cxp)}</div>
           <div class="kpi-sub">GJR ${money(m.g.cxp)} · proveedores externos TB ${tbCell(m.t.cxpExterna)}</div><div class="kpi-delta">Δ sem. ant.: s/d</div></div>
+        <div class="kpi-card" style="--dot:${COL.dorado}"><div class="kpi-label">POSICIÓN DEL GRUPO</div>
+          <div class="kpi-value">${m.grp.completo ? money(m.grp.neta) : ge(m.grp.neta)}</div>
+          <div class="kpi-sub">GJR ${money(m.g.neta)} · TB ${sd(m.t.neta, money)}</div><div class="kpi-delta">Δ sem. ant.: s/d</div></div>
       </div>
-      <div class="panel-title" style="margin-top:9px;">Posición consolidada · USD</div>
-      <table class="data-table" style="margin-top:6px;">
+      <div class="panel-title" style="margin-top:14px;">Posición consolidada · USD</div>
+      <table class="data-table" style="margin-top:7px;">
         <tr><th>Concepto</th><th>Grupo Juan Ruiz</th><th>Tropical Báez</th><th>Grupo consolidado</th></tr>
         <tr><td><b>Caja</b></td><td>${money(m.g.caja)}</td><td>${tbCell(m.t.caja)}</td><td><b>${m.grp.completo ? money(m.grp.caja) : ge(m.grp.caja)}</b></td></tr>
         <tr><td><b>Cuentas por cobrar (nos deben)</b></td><td>${money(m.g.cxc)}</td><td>${tbCell(m.t.cxc)}</td><td><b>${m.grp.completo ? money(m.grp.cxc) : ge(m.grp.cxc)}</b></td></tr>
-        <tr><td style="color:var(--ink-soft);font-style:italic;">— de la cual, intercompany TB→GJR</td>
+        ${m.grp.cxcEsperado === null ? '' : `<tr style="color:var(--ink-soft);font-style:italic;"><td>— cobro esperado sobre esa cartera</td>
+            <td>${money(m.g.esperadoTerceros)}</td><td>${tbCell(m.t.esperadoCxc)}</td><td>${money(m.grp.cxcEsperado)}</td></tr>`}
+        <tr><td style="color:var(--ink-soft);font-style:italic;">— de la cual, saldo interno TB→GJR (no es deuda)</td>
             <td style="color:var(--ink-soft);">${money(m.g.inter)} (incluido arriba)</td>
-            <td style="color:var(--ink-soft);">${tbCell(m.t.inter)} (en cuentas por pagar)</td>
-            <td style="color:var(--ink-soft);">Eliminado del consolidado</td></tr>
-        <tr><td><b>Cuentas por pagar (debemos)</b></td><td>${money(m.g.cxp)}</td>
-            <td>${m.t.cxp === null ? 's/d' : money(m.t.inter) + ' intercompany' + (m.t.cxpExterna ? ' + ' + money(m.t.cxpExterna) : ' + resto s/d')}</td>
+            <td style="color:var(--ink-soft);">${m.t.interCubierto === true
+                ? 'En el banco de TB · quedan ' + money(m.t.cajaTrasInter)
+                : m.t.interCubierto === false
+                  ? 'Caja de TB insuficiente: faltan ' + money(Math.abs(m.t.cajaTrasInter))
+                  : tbCell(m.t.inter)}</td>
+            <td style="color:var(--ink-soft);">Dinero del grupo · no se cuenta</td></tr>
+        <tr><td><b>Derechos en trámite</b></td><td>${sd(m.g.derechos, money)}</td><td>${m.t.tieneDatos ? money(0) : 's/d'}</td><td><b>${sd(m.grp.derechos, money)}</b></td></tr>
+        <tr><td><b>Cuentas por pagar (debemos a terceros)</b></td><td>${money(m.g.cxp)}</td>
+            <td>${tbCell(m.t.cxpExterna)}</td>
             <td><b>${m.grp.completo ? money(m.grp.cxp) : ge(m.grp.cxp)}</b></td></tr>
+        <tr class="fila-total"><td><b>POSICIÓN NETA (frente a terceros)</b></td>
+            <td><b>${money(m.g.neta)}</b></td>
+            <td><b>${sd(m.t.neta, money)}</b></td>
+            <td><b>${m.grp.completo ? money(m.grp.neta) : ge(m.grp.neta)}</b></td></tr>
+        ${m.grp.esperado === null ? '' : `<tr class="fila-total"><td><b>POSICIÓN NETA · escenario de cobro esperado</b></td>
+            <td><b>${money(m.g.esperadoNeto)}</b></td>
+            <td><b>${m.t.esperadoNeto === null ? tbCell(null) : money(m.t.esperadoNeto)}</b></td>
+            <td><b>${money(m.grp.esperado)}</b></td></tr>`}
       </table>
-      <div class="kpi-sub" style="margin-top:5px;">${m.grp.completo
-        ? 'Ambas empresas han cargado sus datos: las cifras del grupo son definitivas para este corte.'
-        : 'El símbolo ≥ indica piso conocido: la columna del grupo sube en cuanto se incorpore la caja, cartera y cuentas por pagar externas de Tropical Báez.'}</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px;">
-        <div class="insight-card" style="--accent:${COL.lila};border-left-width:3px;">
-          <div class="insight-title">Intercompany TB ↔ GJR: se cuenta una sola vez</div>
-          <div class="insight-body">Tropical Báez le debe a GJR ${money(m.g.inter)} por embarques ya liquidados. La misma cifra aparece como pasivo de TB (Hoja 5). En el consolidado no se suma dos veces ni se trata como riesgo externo: es liquidez del grupo moviéndose entre España y Perú.</div>
-        </div>
-        <div class="panel">
-          <div class="panel-title">${m.grp.completo ? 'Posición del grupo' : 'Qué falta para consolidar el 100%'}</div>
-          ${m.grp.completo
-            ? `<div class="kpi-sub" style="margin-top:6px;">Posición neta frente a terceros: <b style="color:var(--ink);">${money(m.grp.neta)}</b>.</div>
-               <div class="kpi-sub" style="margin-top:3px;">Diferencia entre lo que nos deben y lo que debemos: ${money(m.grp.acreedora)}.</div>`
-            : `<div class="kpi-sub" style="margin-top:6px;">Caja de TB por cuenta bancaria (EUR y USD) a la fecha de corte.</div>
-               <div class="kpi-sub" style="margin-top:3px;">Cartera de clientes europeos de TB — moneda, antigüedad y estado.</div>
-               <div class="kpi-sub" style="margin-top:3px;">Cuentas por pagar externas de TB (fuera del intercompany con GJR).</div>
-               <div class="kpi-sub" style="margin-top:3px;">Detalle completo y checklist: Hoja 5 — Tropical Báez.</div>`}
-        </div>
-      </div>
-      ${panelNotas(notasDe(d, 'CONSOLIDADO'))}
     </div>
     <div class="page-footer"><span>Fuente: Análisis Administración ${esc(CORTE)} (GJR) · consolidado excluye saldo intercompany.</span><span>Responsable: Administración GJR + Controller TB.</span></div>
   </section>`;
@@ -982,14 +1017,16 @@ function pgCobrosPagos(d, m) {
           </div>
           <div class="kpi-sub" style="margin-top:6px;">${cxcOrd.length >= 2
             ? `${esc(cxcOrd[0].cliente)} y ${esc(cxcOrd[1].cliente)} concentran ${pct(cxcOrd[0].usd + cxcOrd[1].usd, m.g.cxc)} de la cartera.` : ''}
-            ${m.g.inter ? `El intercompany con Tropical Báez (${money(m.g.inter)}) es cobro dentro del grupo, no riesgo externo.` : ''}</div>
+            ${m.g.inter ? `De esa cartera, ${money(m.g.inter)} es saldo con Tropical Báez: dinero del propio grupo${m.t.interCubierto ? ', ya depositado en el banco de TB' : ''}, no riesgo externo.` : ''}</div>
         </div>
         <table class="data-table">
-          <tr><th>Cliente</th><th>Moneda origen</th><th>USD</th><th>Antigüedad</th><th>Estado</th><th>Próxima acción</th><th>Responsable</th></tr>
+          <tr><th>Cliente</th><th>Moneda origen</th><th>USD</th><th>Antigüedad</th><th>Estado</th>${m.g.hayEsperado ? '<th>Cobro esperado</th>' : ''}<th>Próxima acción</th><th>Responsable</th></tr>
           ${cxcOrd.map(c => `<tr><td><b>${esc(c.cliente)}</b></td>
             <td>${esc(String(c.moneda).toUpperCase())} ${c.monto === null ? '' : c.monto.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
             <td><b>${money(c.usd)}</b></td><td>${c.meses === null ? '—' : c.meses + (c.meses === 1 ? ' mes' : ' meses')}</td>
-            <td>${tag(c.estado)}</td><td>${esc(c.accion || '—')}</td><td>${esc(c.resp || '—')}</td></tr>`).join('')}
+            <td>${tag(c.estado)}</td>${m.g.hayEsperado ? `<td>${c.esperado === null || c.esperado === undefined
+              ? money(c.usd) + ' · 100%'
+              : money(c.usd * c.esperado) + ' · ' + Math.round(c.esperado * 100) + '%'}</td>` : ''}<td>${esc(c.accion || '—')}</td><td>${esc(c.resp || '—')}</td></tr>`).join('')}
         </table>
       </div>
       <div class="panel-title" style="margin-top:9px;">Cuentas por pagar · USD ${money(m.g.cxp).replace('$', '')}${m.g.cxpVencido ? ` · vencido USD ${money(m.g.cxpVencido).replace('$', '')} (${pct(m.g.cxpVencido, m.g.cxpComercial)})` : ''}</div>
@@ -1010,7 +1047,6 @@ function pgCobrosPagos(d, m) {
           ${det.map(filaP).join('')}
         </table>
       </div>
-      ${panelNotas(notasDe(d, 'COBROS_PAGOS'))}
     </div>
     ${footGJR()}
   </section>`;
@@ -1088,18 +1124,27 @@ function pgTB(d, m) {
       <div class="kpi-grid" style="margin-top:6px;">
         <div class="kpi-card" style="--dot:${COL.lila}"><div class="kpi-label">CAJA TB HOY</div><div class="kpi-value">${sd(m.t.caja, money)}</div>
           <div class="kpi-sub">${t.bancos.length ? t.bancos.length + ' cuentas' : 'EUR y USD · bancos por confirmar'}</div><div class="kpi-delta">Δ sem. ant.: s/d</div></div>
-        <div class="kpi-card" style="--dot:${COL.lila}"><div class="kpi-label">COBRANZA TB</div><div class="kpi-value">${sd(m.t.cxc, money)}</div>
-          <div class="kpi-sub">${t.cxc.length ? t.cxc.length + ' clientes europeos' : 'Clientes europeos · sin detalle todavía'}</div><div class="kpi-delta">Δ sem. ant.: s/d</div></div>
-        <div class="kpi-card" style="--dot:${COL.lila}"><div class="kpi-label">CUENTAS POR PAGAR TB</div><div class="kpi-value">${sd(m.t.cxp, money)}</div>
-          <div class="kpi-sub">${m.t.cxpExterna ? 'Externas ' + money(m.t.cxpExterna) + ' + intercompany' : 'Proveedores europeos · sin detalle todavía'}</div><div class="kpi-delta">Δ sem. ant.: s/d</div></div>
-        <div class="kpi-card" style="--dot:${COL.verde}"><div class="kpi-label">INTERCOMPANY A GJR</div><div class="kpi-value">${money(m.t.inter ?? m.g.inter)}</div>
-          <div class="kpi-sub">Contrapartida del cobro de GJR<br/>Ver Hoja 3</div><div class="kpi-delta">Δ sem. ant.: s/d</div></div>
+        <div class="kpi-card" style="--dot:${COL.lila}"><div class="kpi-label">COBRANZA TB</div><div class="kpi-value">${money(m.t.cxc ?? 0)}</div>
+          <div class="kpi-sub">${t.cxc.length ? t.cxc.length + ' clientes europeos' : 'Sin cartera abierta en este corte'}</div><div class="kpi-delta">Δ sem. ant.: s/d</div></div>
+        <div class="kpi-card" style="--dot:${COL.lila}"><div class="kpi-label">DEBEMOS A TERCEROS · TB</div><div class="kpi-value">${money(m.t.cxpExterna ?? 0)}</div>
+          <div class="kpi-sub">${m.t.cxpExterna ? 'Proveedores europeos · sin contar el saldo con GJR' : 'Sin proveedores externos en este corte'}</div><div class="kpi-delta">Δ sem. ant.: s/d</div></div>
+        <div class="kpi-card" style="--dot:${COL.verde}"><div class="kpi-label">PENDIENTE DE TRANSFERIR A GJR</div><div class="kpi-value">${money(m.t.interEfec)}</div>
+          <div class="kpi-sub">${m.t.interCubierto === true
+              ? 'Ya está en el banco de TB · quedan ' + money(m.t.cajaTrasInter)
+              : m.t.interCubierto === false
+                ? 'Caja de TB insuficiente: faltan ' + money(Math.abs(m.t.cajaTrasInter))
+                : 'Contrapartida del cobro de GJR'}<br/>No es deuda del grupo · Ver Hoja 3</div><div class="kpi-delta">Δ sem. ant.: s/d</div></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
         <div class="insight-card" style="--accent:${COL.lila};border-left-width:3px;">
-          <div class="insight-title">Intercompany TB → GJR: ${money(m.t.inter ?? m.g.inter)}</div>
-          <div class="insight-body">Es la contrapartida del cobro que GJR registra en su Hoja 3 (cliente "Tropical Báez").<br/><br/>
-          <b>QUÉ HACER</b> Confirmar la cifra desde la contabilidad de TB y fijar por escrito el plazo de pago de cada contenedor. TB paga el 100% aunque el cliente europeo pague por tramos: no se ata a las liquidaciones europeas. No es riesgo de cobro, pero sí liquidez del grupo retenida en España.</div>
+          <div class="insight-title">Saldo con GJR: ${money(m.t.interEfec)}</div>
+          <div class="insight-body">Es la contrapartida del cobro que GJR registra en su Hoja 3 (cliente "Tropical Báez"). No es deuda frente a terceros: es dinero del grupo pendiente de mover de España a Perú.
+          ${m.t.interCubierto === true
+            ? `<br/><br/><b>ESTÁ CUBIERTO</b> La caja de TB (${money(m.t.caja)}) alcanza para transferirlo hoy y dejar ${money(m.t.cajaTrasInter)} en España.`
+            : m.t.interCubierto === false
+              ? `<br/><br/><b>NO ESTÁ CUBIERTO</b> La caja de TB (${money(m.t.caja)}) no alcanza: faltan ${money(Math.abs(m.t.cajaTrasInter))}, que dependen de los cobros europeos.`
+              : ''}<br/><br/>
+          <b>QUÉ HACER</b> Confirmar la cifra desde la contabilidad de TB y fijar por escrito el plazo de transferencia de cada contenedor. TB transfiere el 100% aunque el cliente europeo pague por tramos: no se ata a las liquidaciones europeas.</div>
         </div>
         <div class="panel">
           <div class="panel-title">${hay ? 'Cartera y bancos de TB' : 'Qué falta para abrir las tres hojas de TB'}</div>
@@ -1117,7 +1162,6 @@ function pgTB(d, m) {
         <tr><th>Pendiente</th><th>Importe</th><th>Responsable</th><th>Fecha límite</th><th>Estado</th><th>Próxima acción</th></tr>
         ${filasPend}
       </table>
-      ${panelNotas(notasDe(d, 'TB'))}
     </div>
     <div class="page-footer"><span>Fuente: ${hay ? 'export de Tropical Báez' : 'pendiente (export de Tropical Báez)'} · el intercompany proviene de Análisis Administración ${esc(CORTE)}.</span><span>Responsable: Controller TB.</span></div>
   </section>`;
@@ -1175,6 +1219,12 @@ function validar(d, m) {
   const push = (t, txt) => c.push({ t, txt });
   if (!d.gjr.bancos.length) push('bad', 'GJR_Bancos está vacía: el reporte saldrá sin caja.');
   if (!d.gjr.cxc.length) push('bad', 'GJR_CxCobrar está vacía: el reporte saldrá sin cartera.');
+  if (d.reclasificados && d.reclasificados.length)
+    push('warn', `Marcados como al día pero con 4 meses o más: ${d.reclasificados.join(', ')}. El reporte los muestra como vencidos.`);
+  if (m.g.hayEsperado) {
+    const bajos = d.gjr.cxc.filter(x => x.esperado !== null && x.esperado !== undefined && x.esperado < 1);
+    if (bajos.length) push('warn', `Cobro esperado por debajo del 100% en ${bajos.length} cliente(s): ${bajos.map(x => String(x.cliente).split(' ')[0] + ' ' + Math.round(x.esperado * 100) + '%').join(', ')}. Son supuestos, no datos: revísalos en la columna I de GJR_CxCobrar.`);
+  }
   if (d.corte === '—') push('warn', 'PARAMETROS no tiene fecha de corte. Aparecerá vacía en la cabecera.');
   if (!d.tcE || d.tcE === 1) push('warn', 'TC EUR/USD no está cargado: los importes en euros no se convertirán.');
   if (!d.tcP || d.tcP === 1) push('warn', 'TC USD/PEN no está cargado: los importes en soles no se convertirán.');
@@ -1267,9 +1317,24 @@ function ajustarHojas(raiz) {
     const arriba = cont.getBoundingClientRect().top;
     const disponible = tope - arriba;
     let alto = cont.getBoundingClientRect().height;
-    if (disponible <= 0 || alto <= disponible) return;
-    let f = Math.max(0.68, disponible / alto);
+    if (disponible <= 0 || alto <= 0) return;
     cont.style.transformOrigin = 'top left';
+    if (alto <= disponible) {
+      // sobra bastante hoja: se agranda un poco para que no quede medio vacía
+      if (alto > disponible * 0.86) { cont.style.transformOrigin = ''; return; }
+      const meta = disponible * 0.96;          // un respiro antes del pie
+      let a = Math.min(1.45, meta / alto);
+      for (let i = 0; i < 4; i++) {
+        cont.style.width = (100 / a) + '%';
+        cont.style.transform = `scale(${a})`;
+        const h = cont.getBoundingClientRect().height;
+        if (h <= meta || a <= 1.01) break;
+        a = Math.max(1, a * (meta / h));
+      }
+      if (a <= 1.02) { cont.style.width = ''; cont.style.transform = ''; }
+      return;
+    }
+    let f = Math.max(0.68, disponible / alto);
     for (let i = 0; i < 4; i++) {
       cont.style.width = (100 / f) + '%';
       cont.style.transform = `scale(${f})`;
