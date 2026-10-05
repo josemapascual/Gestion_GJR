@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════════════════
    marco.js · Armazón de Tropical Báez para los módulos de GJR
    Se añade con una línea, antes de </body> y DESPUÉS de nav.js:
-       <script src="marco.js?v=1"></script>
+       <script src="marco.js?v=4"></script>
 
    No mueve ni un solo elemento del módulo: solo añade el menú
    lateral y la barra de estado, y coloca la cabecera que ya
@@ -72,9 +72,11 @@
     '  .gjr-header .gjr-sub,.gjr-header span{display:none !important}}',
     /* El campo de archivo que ya tiene su propio botón, oculto */
     '.mrc-oculto{display:none !important}',
+    '.gjr-header .gjr-status:empty{display:none !important}',
+    '.gjr-header label.gjr-btn-carga{color:#fff !important}',
 
     /* Las pestañas del módulo quedan pegadas justo debajo */
-    '.tabs,.tab-bar,.nav-tabs{position:sticky !important;top:0 !important;z-index:40}',
+    '.tabs,.tab-bar,.nav-tabs{position:-webkit-sticky !important;position:sticky !important;top:0 !important;z-index:40}',
 
     /* ── Menú lateral ── */
     '#mrc-lat{position:fixed;left:0;top:' + ALTO_NAV + 'px;bottom:' + ALTO_PIE + 'px;',
@@ -99,7 +101,8 @@
 
     '@media(max-width:900px){',
     '  body{padding-left:0 !important;padding-top:' + (ALTO_NAV + ALTO_CAB) + 'px !important}',
-    '  .gjr-header{left:0 !important}',
+    '  .gjr-header{left:0 !important;padding-left:52px !important}',
+    '  .gjr-acciones{width:auto !important}',
     '  #mrc-lat{left:-' + ANCHO + 'px;transition:left .2s ease}',
     '  #mrc-lat.abierto{left:0;box-shadow:4px 0 22px rgba(0,0,0,.3)}',
     '  #mrc-menu{display:inline-flex !important}}',
@@ -148,7 +151,10 @@
     var labels = document.querySelectorAll('label[for]');
     for (var i = 0; i < labels.length; i++) {
       var destino = document.getElementById(labels[i].getAttribute('for'));
-      if (destino && destino.type === 'file') destino.classList.add('mrc-oculto');
+      if (destino && destino.type === 'file') {
+        destino.classList.add('mrc-oculto');
+        destino.style.setProperty('display', 'none', 'important');
+      }
     }
   }
 

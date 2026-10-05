@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard - Defectos Críticos | Grupo Juan Ruiz</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="compat.js?v=1"></script>
+<script src="lib_chart.js?v=1"></script>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family:'Segoe UI',Arial,sans-serif; background:#f0f2f5; color:#1a1a1a; }
@@ -659,6 +660,8 @@ function renderDashboard(data) {
 
   // Bar chart
   const top = stats.slice(0,12);
+  // Si el gráfico falla (navegador antiguo), la tabla de detalle se pinta igual
+  try {
   if (chartInstance) chartInstance.destroy();
   chartInstance = new Chart(document.getElementById('barChart'), {
     type:'bar',
@@ -674,6 +677,7 @@ function renderDashboard(data) {
       scales:{ x:{ ticks:{font:{size:9}, maxRotation:45 }, grid:{display:false} }, y:{ beginAtZero:true, ticks:{stepSize:1} } }
     }
   });
+  } catch (e) { console.error('Defectos: gráfico no disponible', e); }
 
   // Detail table
   renderDetailTable(data);
@@ -861,6 +865,6 @@ clearFilter();
 
 <script src="sync.js?v=2"></script>
 <script src="nav.js?v=6"></script>
-<script src="marco.js?v=3"></script>
+<script src="marco.js?v=4"></script>
 </body>
 </html>
