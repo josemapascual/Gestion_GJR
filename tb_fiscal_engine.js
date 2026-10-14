@@ -14,13 +14,15 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  const MOTOR_VERSION = '2.0.0';
+  const MOTOR_VERSION = '2.2.0';
   const REVISION = 'REVISIÓN FISCAL NECESARIA';
   const NO_HABILITADA = 'OPERACIÓN NO HABILITADA CON LAS IDENTIFICACIONES ACTUALES';
   const ESTADOS_ADUANEROS = ['LIBRE_PRACTICA', 'DEPOSITO_ADUANERO', 'NO_DESPACHADA', 'EN_ORIGEN'];
   const TIPOS_CLIENTE = ['B2B_VAT', 'B2B_SIN_VAT', 'B2C'];
   const EVENTOS = ['VENTA', 'TRANSFERENCIA', 'COMPRA', 'IMPORTACION'];
   const ENTRADAS_NL = ['IMPORTACION', 'COMPRA_LOCAL', 'ADQUISICION_UE'];
+  const SINONIMOS_ENTRADA = { TRANSFERENCIA: 'ADQUISICION_UE', COMPRA_UE: 'ADQUISICION_UE' };
+  const ESTADOS_NO_RECTIFICABLES = ['BORRADOR', 'ANULADA', 'RECHAZADA', 'CONVERTIDA'];
   const JURIS = ['ES', 'NL'];
 
   // ---------------------------------------------------------------- utilidades
@@ -29,6 +31,8 @@
     (!row.vigente_desde || row.vigente_desde <= fecha) && (!row.vigente_hasta || fecha <= row.vigente_hasta);
   const dias = (a, b) => Math.floor((Date.parse(b) - Date.parse(a)) / 86400000);
   const prefijoVat = (vat) => (vat || '').replace(/[\s.\-]/g, '').toUpperCase().slice(0, 2);
+  const masAnios = (f, n) => { const d = new Date(f + 'T00:00:00Z'); d.setUTCFullYear(d.getUTCFullYear() + n); return d.toISOString().slice(0, 10); };
+  const fechaEs = (f) => { const p = String(f || '').slice(0, 10).split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : (f || ''); };
 
   // ---------------------------------------------------------------- carga desde Supabase
   async function cargarContexto(sb) {
@@ -96,7 +100,28 @@
     const ovr = h.override || {};
     const simular = h.simular_identificacion || null;
 
+    const rect = h.rectificacion || null;
+
+    // 0. Fuera de alcance: documento sin líneas de mercancía (comisiones, servicios) --------
+    const lineasIn = h.lineas || [];
+    if (lineasIn.length && lineasIn.every((l) => l.tipo === 'SERVICIO') && !rect)
+      return { estado: 'NO_APLICA', mensaje: 'Solo servicios: la matriz de mercancías no aplica; el documento conserva su régimen.',
+        motor_version: MOTOR_VERSION, faltantes: [], avisos: [], hechos: h };
+
     // 1. Datos mínimos ---------------------------------------------------------------
+    if (m.mezcla && m.mezcla.length)
+      falta('mercancia.mezcla', `El documento mezcla mercancía en situaciones fiscales distintas (${m.mezcla.join(' / ')}). Emitir una factura por almacén y estatuto aduanero.`);
+    if (rect) {
+      // Rectificativa por diferencias: misma operación y mismo devengo que la factura original
+      if (!rect.documento_id && !rect.documento) falta('rectificacion.documento', 'Falta la factura que se rectifica.');
+      if (!rect.motivo) falta('rectificacion.motivo', 'Falta el motivo de la rectificación (p. ej., precio definitivo según la liquidación del cliente).');
+      if (rect.estado_original && ESTADOS_NO_RECTIFICABLES.includes(rect.estado_original))
+        falta('rectificacion.documento', `La factura ${rect.documento || ''} está ${rect.estado_original}: solo se rectifica una factura emitida.`);
+      if (rect.fecha_expedicion && fecha && rect.fecha_expedicion > masAnios(fecha, 4))
+        falta('rectificacion.plazo', `Han pasado más de cuatro años desde el devengo de ${rect.documento || 'la factura original'} (${fechaEs(fecha)}): art. 15.3 RD 1619/2012.`);
+      if (lineasIn.length && lineasIn.every((l) => l.tipo === 'SERVICIO'))
+        falta('rectificacion.lineas', 'La rectificativa de una venta de mercancía debe llevar la diferencia en una línea de mercancía.');
+    }
     if (!EVENTOS.includes(evento)) falta('evento', `Evento desconocido: ${evento}.`);
     if (!fecha) falta('fecha_devengo', 'Falta la fecha de devengo (entrega, puesta a disposición o despacho).');
     if (!m.ubicacion) falta('mercancia.ubicacion', 'Falta el país donde está físicamente la mercancía en el momento de la operación.');
@@ -121,12 +146,17 @@
       falta('proveedor.pais_establecimiento', 'Falta el país donde está establecido el proveedor.');
     if (evento === 'IMPORTACION' && !ad.regimen_importacion)
       falta('aduana.regimen_importacion', 'Falta el régimen de importación (40, 42 o DEPOSITO).');
+    if (evento === 'IMPORTACION' && m.estado_aduanero === 'LIBRE_PRACTICA')
+      falta('mercancia.estado_aduanero', 'Una importación parte de mercancía no despachada o en depósito, no en libre práctica.');
 
     // 2. Flujo ----------------------------------------------------------------------
     let flujo = null;
     if (tU && m.estado_aduanero) {
       if (evento === 'IMPORTACION') flujo = 'IMPORTACION';
-      else if (m.estado_aduanero === 'NO_DESPACHADA' || m.estado_aduanero === 'EN_ORIGEN') flujo = 'FUERA_UE';
+      else if (m.estado_aduanero === 'EN_ORIGEN') flujo = 'FUERA_UE';
+      // No despachada: si ya está físicamente en un EM (puerto, depósito temporal) la entrega
+      // se localiza allí bajo régimen aduanero; si está en origen o en el mar, fuera del IVA UE.
+      else if (m.estado_aduanero === 'NO_DESPACHADA') flujo = tU.estado_miembro ? 'DEPOSITO' : 'FUERA_UE';
       else if (m.estado_aduanero === 'DEPOSITO_ADUANERO') flujo = 'DEPOSITO';
       else if (!tU.estado_miembro) falta('mercancia.ubicacion', `Mercancía en libre práctica en ${tU.nombre}, fuera del IVA UE: TB no tiene identificación fiscal allí.`);
       else if (tD) flujo = tD.estado_miembro ? (tD.estado_miembro === tU.estado_miembro ? 'INTERIOR' : 'INTRA_UE') : 'EXTRA_UE';
@@ -154,7 +184,9 @@
     }
     if (flujo === 'EXTRA_UE') {
       importador = tr.incoterm === 'DDP' ? 'TB' : 'CLIENTE';
-      exportador = ad.exportador || (transportePor === 'VENDEDOR' ? 'TB' : null);
+      // Exportador aduanero: el que dice el documento; si no, TB cuando transporta o cuando el
+      // Incoterm deja el despacho de exportación al vendedor (todos salvo EXW).
+      exportador = ad.exportador || ((transportePor === 'VENDEDOR' || (inc && inc.despacho_exportacion === 'VENDEDOR')) ? 'TB' : null);
       if (!exportador) falta('aduana.exportador', 'Exportación: falta el exportador aduanero (debe estar establecido en la UE).');
     }
     if (flujo === 'IMPORTACION') importador = 'TB';
@@ -165,7 +197,10 @@
     const emD = tD && tD.estado_miembro;
     if (flujo === 'FUERA_UE') perfil = 'ES';
     else if (evento === 'COMPRA' && flujo === 'INTRA_UE') {
-      if (esp.triangular) perfil = 'ES';
+      if (esp.triangular) {
+        perfil = 'ES';
+        if (emU === 'ES' || emD === 'ES') falta('especiales.triangular', 'Triangular: ni la salida ni la llegada pueden ser España (TB está identificada allí).');
+      }
       else if (JURIS.includes(emD)) perfil = emD;
       else falta('destino', `Compra con llegada a ${tD ? tD.nombre : h.destino}: TB no tiene identificación de IVA allí.`);
     } else if (emU) {
@@ -181,7 +216,9 @@
 
     // Origen del stock en NL (decide la cobertura de una licencia limitada)
     let entradaNL = m.entrada_nl || (['40', '42'].includes(ad.regimen_importacion) ? 'IMPORTACION' : null);
-    if (perfil === 'NL' && ['VENTA', 'TRANSFERENCIA'].includes(evento) && flujo !== 'DEPOSITO') {
+    if (entradaNL && SINONIMOS_ENTRADA[entradaNL]) entradaNL = SINONIMOS_ENTRADA[entradaNL];
+    const movimientoInterno = evento === 'TRANSFERENCIA' && flujo === 'INTERIOR';
+    if (perfil === 'NL' && ['VENTA', 'TRANSFERENCIA'].includes(evento) && flujo !== 'DEPOSITO' && !movimientoInterno) {
       if (!entradaNL) falta('mercancia.entrada_nl', 'Falta cómo entró la mercancía en NL: importada por TB, comprada en NL o llegada desde otro país UE.');
       else if (!ENTRADAS_NL.includes(entradaNL)) falta('mercancia.entrada_nl', `Valor no válido: ${entradaNL}.`);
     }
@@ -291,6 +328,7 @@
     });
     const candidatos = idsDe(perfil).filter(operativa).concat([null]);
     let primera = null;
+    let reserva = null;
     for (const cand of candidatos) {
       const hechos = Object.assign({}, base, { art23: cand ? !!cand.licencia_art23 : null });
       const sel = seleccionar(hechos);
@@ -302,6 +340,11 @@
           estado: 'NO_HABILITADA', mensaje: NO_HABILITADA,
           motivos_habilitacion: [{ identificacion: null, motivo: res.no_habilitada }], habilitarian: [] });
       const hb = habilita(res, cand, false);
+      // Cobertura no bloqueante (compras): se prefiere una identificación que sí la cubra
+      if (hb.ok && hb.via === 'SIN_IDENTIFICACION') {
+        if (!reserva) reserva = { regla: sel.regla, hechos, hb };
+        continue;
+      }
       if (hb.ok) {
         const estado = simular && hb.ident && hb.ident.codigo === simular ? 'SIMULACION' : 'OK';
         return construir(sel.regla, hechos, hb.ident, estado, { via: viaDeduccion(res, hb.ident, hb.via), motivosHab: [], habilitarian: [] });
@@ -309,6 +352,10 @@
       if (cand || !motivosHab.length) motivosHab.push({ identificacion: cand ? cand.codigo : null, motivo: hb.motivo });
       if (!primera) primera = { regla: sel.regla, hechos, hb };
     }
+
+    if (reserva)
+      return construir(reserva.regla, reserva.hechos, reserva.hb.ident, 'OK',
+        { via: viaDeduccion(reserva.regla.resultado, reserva.hb.ident, reserva.hb.via), motivosHab: [], habilitarian: [] });
 
     // 10. No habilitada: tratamiento completo + qué identificación la permitiría ------------------
     const habilitarian = [];
@@ -335,35 +382,51 @@
       const res = regla.resultado;
       const av = avisos.slice();
       const fl = [];
-      const cat = (c) => c.replace('MERCANCIA', m.categoria_iva);
-      const buscaTipo = (spec) => {
+      const autoliq = !!res.autoliquidacion;
+      const buscaTipo = (spec, categoria) => {
         const pais = spec.pais === 'DESTINO' ? emD : spec.pais;
-        const row = ctx.tipos.find((t) => t.pais === pais && t.categoria === cat(spec.categoria) && vigente(t, fecha));
-        if (!row) fl.push({ campo: 'tipo_iva', motivo: `No hay tipo de IVA vigente para ${pais} / ${cat(spec.categoria)} el ${fecha}. Parametrizarlo en erp_fiscal_tipo_iva.` });
+        const c = spec.categoria.replace('MERCANCIA', categoria);
+        const row = ctx.tipos.find((t) => t.pais === pais && t.categoria === c && vigente(t, fecha));
+        if (!row) fl.push({ campo: 'tipo_iva', motivo: `No hay tipo de IVA vigente para ${pais} / ${c} el ${fecha}. Parametrizarlo en erp_fiscal_tipo_iva.` });
         return row ? Number(row.porcentaje) : null;
       };
-      const pct = res.tasa ? buscaTipo(res.tasa) : 0;
-      const rePct = res.recargo ? buscaTipo(res.recargo) : 0;
+
+      // Importes por categoría de IVA (cada línea de mercancía puede traer la suya)
+      const lineas = h.lineas || [];
+      if (lineas.some((l) => l.tipo === 'SERVICIO'))
+        av.push('Hay líneas de servicio: la matriz solo cubre entregas de bienes; esas líneas conservan su régimen actual.');
+      const grupos = {};
+      lineas.filter((l) => (l.tipo || 'MERCANCIA') === 'MERCANCIA').forEach((l) => {
+        const c = l.categoria_iva || m.categoria_iva;
+        const b = l.base != null ? Number(l.base) : Number(l.cantidad || 0) * Number(l.precio || 0) * (1 - Number(l.descuento_pct || 0) / 100);
+        grupos[c] = (grupos[c] || 0) + b;
+      });
+      if (!Object.keys(grupos).length) grupos[m.categoria_iva] = 0;
+      const desglose = Object.keys(grupos).map((c) => {
+        const base = r2(grupos[c]);
+        const pct = res.tasa ? buscaTipo(res.tasa, c) : 0;
+        const rp = res.recargo ? buscaTipo(res.recargo, c) : 0;
+        return { categoria: c, base, pct, cuota: r2(base * (pct || 0) / 100), recargo_pct: rp, cuota_recargo: r2(base * (rp || 0) / 100) };
+      });
+      const baseImp = r2(desglose.reduce((s, d) => s + d.base, 0));
+      const cuota = r2(desglose.reduce((s, d) => s + d.cuota, 0));
+      const cuotaRe = r2(desglose.reduce((s, d) => s + d.cuota_recargo, 0));
+      const pct = desglose.length === 1 ? desglose[0].pct : null;
+      const rePct = desglose.length === 1 ? desglose[0].recargo_pct : null;
+      if (desglose.length > 1) av.push('Varias categorías de IVA en el documento: ver desglose por categoría.');
 
       let calificacion = res.calificacion;
-      if (calificacion === 'SUJETA' && pct === 0) {
+      if (calificacion === 'SUJETA' && desglose.every((d) => d.pct === 0)) {
         calificacion = 'SUJETA_TIPO_CERO';
         av.push('Tipo 0% vigente: la operación es SUJETA y no exenta.');
       }
 
-      const lineas = h.lineas || [];
-      if (lineas.some((l) => l.tipo === 'SERVICIO'))
-        av.push('Hay líneas de servicio: la matriz solo cubre entregas de bienes; esas líneas conservan su régimen actual.');
-      const baseImp = r2(lineas.filter((l) => (l.tipo || 'MERCANCIA') === 'MERCANCIA')
-        .reduce((s, l) => s + (l.base != null ? Number(l.base) : Number(l.cantidad || 0) * Number(l.precio || 0)), 0));
-      const cuota = r2(baseImp * (pct || 0) / 100);
-      const cuotaRe = r2(baseImp * (rePct || 0) / 100);
-      const autoliq = !!res.autoliquidacion;
-
       const rep = ident && ident.representante_codigo ? (ctx.representantes || []).find((r) => r.codigo === ident.representante_codigo) : null;
       const idioma = h.idioma || 'es';
-      const subs = { rep_nombre: rep ? rep.nombre : '', rep_direccion: rep ? rep.direccion || '' : '', rep_vat: rep ? rep.vat_number || '' : '', pais_destino: tD ? tD.nombre : '' };
+      const subs = { rep_nombre: rep ? rep.nombre : '', rep_direccion: rep ? rep.direccion || '' : '', rep_vat: rep ? rep.vat_number || '' : '', pais_destino: tD ? tD.nombre : '',
+        factura_rectificada: rect ? rect.documento || '' : '', fecha_rectificada: rect ? fechaEs(rect.fecha) : '', motivo_rect: rect ? rect.motivo || '' : '' };
       const codigos = (res.textos || []).slice();
+      if (rect) codigos.unshift('TX_RECT');
       if (rep && ['VENTA', 'TRANSFERENCIA'].includes(evento) && !codigos.includes('TX_NL_REP')) codigos.push('TX_NL_REP');
       const textos = codigos.map((cod) => {
         const vs = ctx.textos.filter((t) => t.codigo === cod && vigente(t, fecha) && t.estado_validacion !== 'RETIRADO');
@@ -376,10 +439,27 @@
         return t.texto.replace(/\{(\w+)\}/g, (_, k) => subs[k] ?? '');
       }).filter(Boolean);
 
+      if (rect && estado === 'OK' && ident) {
+        if (rect.identificacion_original && ident.codigo !== rect.identificacion_original)
+          fl.push({ campo: 'rectificacion.identificacion', motivo: `La factura original se emitió con ${rect.identificacion_original}; la rectificativa debe emitirse con la misma identificación fiscal (hoy correspondería ${ident.codigo}).` });
+        else if (!rect.identificacion_original && rect.pais_emisor_original && rect.pais_emisor_original !== ident.jurisdiccion)
+          fl.push({ campo: 'rectificacion.identificacion', motivo: `La factura original se emitió con la identificación ${rect.pais_emisor_original}; la matriz asigna ${ident.jurisdiccion}. Revisar la factura original antes de rectificarla.` });
+      }
       if (fl.length && estado === 'OK') return bloqueo(faltan.concat(fl), av, h, hechos, regla);
       (res.avisos || []).forEach((a) => av.push(a));
       if (regla.estado_validacion !== 'VALIDADO') av.push(`Regla ${regla.codigo} pendiente de validación por el asesor.`);
       if (extra.via && /^Sin identificación/.test(extra.via)) av.push(extra.via);
+      const documentos = (res.documentos || []).slice();
+      if (rect) {
+        if (!documentos.includes('LIQ_VENTA')) documentos.push('LIQ_VENTA');
+        av.push(`Rectificativa por diferencias de ${rect.documento || 'la factura original'}: serie específica y tipo de IVA del devengo original (${fechaEs(fecha)}; art. 90.Dos LIVA).`);
+        if (perfil === 'ES' && pct > 0) av.push('La diferencia de IVA se declara en el modelo 303 del periodo de esta rectificativa (art. 89.Cinco LIVA).');
+        if (perfil === 'ES' && res.flags.m349_icp) av.push('Modelo 349: consignar la diferencia en el apartado de rectificaciones, con el periodo de la operación original.');
+        if (perfil === 'NL' && res.flags.m349_icp) av.push('Opgaaf ICP: la diferencia va en el apartado de correcciones, con el periodo de la entrega original.');
+        if (res.tipo_operacion === 'EXPORTACION') av.push('Exportación: si cambia el valor declarado en el DUA, valorar su rectificación con el agente de aduanas.');
+        if (res.tipo_operacion === 'VENTA_NO_SUJETA_LOCALIZACION') av.push('Venta antes del despacho: el cliente importador debe ajustar el valor en aduana de su importación.');
+        if (cuotaRe) av.push('Cliente en recargo de equivalencia: la diferencia también lleva recargo.');
+      }
 
       const vatTB = ident && estado !== 'NO_HABILITADA' ? ident.vat : null;
       const esVenta = ['VENTA', 'TRANSFERENCIA'].includes(evento);
@@ -418,6 +498,7 @@
         untdid_5305: res.untdid_5305,
         tipo_iva_pct: pct,
         recargo_pct: rePct,
+        desglose_iva: desglose,
         base_imponible: baseImp,
         cuota_iva: autoliq ? 0 : cuota,
         cuota_recargo: cuotaRe,
@@ -426,7 +507,7 @@
         via_deduccion: extra.via,
         textos_legales: textos.join('\n'),
         declaraciones: res.declaraciones || [],
-        documentos_archivo: res.documentos || [],
+        documentos_archivo: documentos,
         requiere_vies: !!res.flags.vies,
         requiere_349_icp: !!res.flags.m349_icp,
         requiere_aduana: !!res.flags.aduana,
@@ -437,7 +518,10 @@
         avisos: av,
         hechos: h,
         override_por: ovr.forzar_iva_origen ? ovr.usuario : null,
-        override_motivo: ovr.forzar_iva_origen ? ovr.motivo : null
+        override_motivo: ovr.forzar_iva_origen ? ovr.motivo : null,
+        rectificacion: rect ? { documento: rect.documento || null, documento_id: rect.documento_id || null, fecha: rect.fecha || null,
+          metodo: rect.metodo || 'DIFERENCIAS', motivo: rect.motivo || null } : null,
+        untdid_1001: rect ? '384' : (esVenta ? '380' : null)
       };
     }
   }
@@ -478,7 +562,7 @@
       'identificacion_codigo', 'cobertura_requerida', 'habilitarian', 'motivos_habilitacion', 'via_deduccion',
       'vat_vendedor', 'vat_comprador', 'proveedor_vat', 'vies_estado', 'vies_consulta_id', 'cliente_tipo', 'incoterm',
       'transporte_por', 'importador', 'exportador', 'tipo_operacion', 'calificacion', 'untdid_5305', 'tipo_iva_pct',
-      'recargo_pct', 'base_imponible', 'cuota_iva', 'cuota_recargo', 'cuota_autoliquidada', 'total', 'textos_legales',
+      'recargo_pct', 'base_imponible', 'cuota_iva', 'cuota_recargo', 'cuota_autoliquidada', 'desglose_iva', 'total', 'textos_legales',
       'declaraciones', 'documentos_archivo', 'requiere_vies', 'requiere_349_icp', 'requiere_aduana', 'requiere_mrn_salida',
       'interviene_rep_nl', 'representante_codigo', 'faltantes', 'avisos', 'hechos', 'override_por', 'override_motivo'];
     const row = { documento_id: documentoId || null, creado_por: usuario || null };

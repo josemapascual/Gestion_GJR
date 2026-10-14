@@ -1,0 +1,11 @@
+Matriz fiscal de IVA + ajuste de valor · Tropical Báez · octubre 2026
+
+1. Supabase (SQL Editor): ejecutar supabase/16_matriz_fiscal.sql una vez.
+   Sustituye al 09_matriz_fiscal_tb.sql anterior: no ejecutar el 09.
+2. Web (repositorio Gestion_GJR, carpeta raíz): subir y reemplazar
+   fiscal.html (nuevo), facturacion_v22.html (nuevo), facturacion_v21.html,
+   tb_fiscal_engine.js, nav.js, index.html, tb.html, cuadro_mando.html,
+   facturas.html y MATRIZ_FISCAL_TB.md.
+3. Opcional: desplegar supabase/functions/vies-check como Edge Function.
+4. En Fiscal IVA → Representante NL, cuando Exonero envíe los datos:
+   rellenar el representante y pasar NL_EXONERO_LFV a ACTIVA.

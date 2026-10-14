@@ -1,15 +1,18 @@
 # Matriz fiscal de IVA — Tropical Báez
 
-Versión de matriz `2026.09-2` · motor `tb_fiscal_engine.js 2.0.0` · migración `09_matriz_fiscal_tb.sql`
+Versión de matriz `2026.09-2` · motor `tb_fiscal_engine.js 2.2.0` · migración `16_matriz_fiscal.sql` · pantallas `fiscal.html` y `facturacion_v22.html`
 
 ## Resumen
 
 - El sistema separa tres cosas que antes estaban mezcladas: **si faltan datos**, **qué dice la ley** y **si TB está registrada para hacerlo**. Así la matriz cubre todas las operaciones aunque Exonero todavía no esté operativo.
-- **La ley** la decide una matriz de 60 reglas en base de datos a partir de los hechos de la operación: dónde está la mercancía, adónde va, tipo de operación, cliente o proveedor, transporte, Incoterm y aduana. No depende de la licencia de Exonero.
+- **La ley** la decide una matriz de 63 reglas en base de datos a partir de los hechos de la operación: dónde está la mercancía, adónde va, tipo de operación, cliente o proveedor, transporte, Incoterm y aduana. No depende de la licencia de Exonero.
 - **El registro** lo deciden las identificaciones fiscales de TB: España propia (activa, ROI confirmado), Holanda vía Exonero (en trámite) y dos escenarios (representación general y registro directo en NL) para comparar.
 - Cuatro estados por factura: **OK** (se numera) · **REVISIÓN FISCAL NECESARIA** (falta un dato) · **NO HABILITADA** (el tratamiento está claro, pero TB no tiene hoy el registro que lo permite; dice cuál lo permitiría) · **SIMULACIÓN** (prueba con un escenario, nunca numera).
 - Cubre ventas ES→ES/UE/terceros (incluidos Reino Unido, Marruecos, Canarias, Ceuta y Melilla), ventas NL→NL/ES/UE/terceros, compras (en origen, en España, en Holanda, a proveedores UE, en depósito), importaciones (ES y NL, regímenes 40, 42 y depósito) y transferencias de stock.
-- Probado con 58 escenarios: 40 OK, 12 NO HABILITADA (todas por registro en NL u OSS), 5 REVISIÓN (datos que faltan a propósito) y 1 SIMULACIÓN.
+- **Enlazado con almacén y stock:** cada pallet lleva país, estatuto aduanero (libre práctica o T1) y vía de entrada (importado por TB, comprado en el país o llegado de otro país UE). La factura toma esos datos de sus albaranes o de su contenedor a flote; nadie los teclea.
+- **Ajuste de valor:** cuando el precio definitivo (liquidación del cliente o precio de mercado) difiere del facturado, Ventas emite una factura rectificativa por la diferencia, en serie RTB, con el mismo tratamiento de IVA que la factura original.
+- **Ventas no emite una factura si el IVA no está resuelto:** comprueba la matriz antes de numerar.
+- Probado sobre una réplica del esquema real de Supabase: 71 escenarios del motor, 12 facturas con stock real, 14 operaciones de stock, 16 comprobaciones de ajuste de valor y las dos pantallas completas.
 
 ---
 
@@ -263,20 +266,73 @@ Estado · regla y versión · país de origen · ubicación y estado aduanero ·
 
 Enlace: `erp_documento.fiscal_determinacion_id` y `erp_fiscal_determinacion.documento_id` (con el tipo real de `erp_documento.id`).
 
-## 12. Integración en la facturación actual
+## 12. Enlace con almacén, stock y facturación
 
-1. Ejecutar la migración en una rama de Supabase y después en producción.
-2. Completar `ES_PROPIA`: `roi_desde`, `sii`, `oss_alta`, `redeme`, `diferimiento_iva_importacion`.
-3. Desplegar `vies-check`; la pantalla lo llama al elegir cliente y al emitir.
-4. Al emitir una factura o registrar una compra, importación o traslado: construir `hechos` (ubicación = país del almacén; estado aduanero y `entrada_nl` = del lote) → `TBFiscal.determinar`.
-   - OK: guardar `aSnapshot`, numerar, imprimir textos, crear checklist.
-   - REVISIÓN: banner con la lista de datos.
-   - NO HABILITADA: banner con el tratamiento calculado y la identificación que falta.
-5. El cliente aporta tipo, país, NIF-IVA, recargo y establecimiento permanente en NL; el régimen deja de ser un atributo suyo.
-6. El lote guarda `estado_aduanero` y `entrada_nl`: Cool Control tiene a la vez mercancía en depósito y en libre práctica, importada y comprada.
-7. Pantalla de simulación: el mismo formulario con `simular_identificacion` para ver qué pasaría con cada escenario.
+**Datos fiscales del stock** (columnas nuevas en `erp_pallet`, `erp_almacen`, `erp_cliente`):
+
+| Dato | Dónde | Cómo se rellena |
+|---|---|---|
+| País del IVA | `erp_pallet.pais_iva` (ya existía) | Del país del almacén, al recepcionar |
+| Estatuto aduanero | `erp_pallet.estatuto_aduanero` (ya existía) | Libre práctica si el contenedor llega nacionalizado; T1 si entra en depósito |
+| Vía de entrada | `erp_pallet.via_entrada` | IMPORTACION / COMPRA_LOCAL según el contenedor; ADQUISICION_UE al trasladarlo desde otro país |
+| Régimen, MRN y fecha de despacho | `erp_pallet.regimen_importacion`, `mrn_importacion`, `fecha_despacho` | Al registrar la importación del contenedor |
+| Depósito aduanero | `erp_almacen.deposito_aduanero` | Ficha del almacén (Cool Control: sí) |
+| Tipo fiscal, recargo, establecimiento en NL | `erp_cliente.tipo_fiscal`, `recargo_equivalencia`, `establecimiento_nl` | Ficha del cliente |
+
+Un pallet reclasificado hereda los datos de su padre. Mover un pallet a un almacén de otro país sin traslado fiscal queda bloqueado.
+
+**Funciones de base de datos:**
+
+| Función | Qué hace |
+|---|---|
+| `erp_fiscal_hechos(documento)` | Datos de la operación sacados de los albaranes y pallets de la factura, o de su contenedor a flote |
+| `erp_fiscal_registrar(documento, determinación)` | Guarda la determinación y, si el documento está en borrador, le aplica emisor, IVA por línea, totales y texto legal |
+| `erp_fiscal_hechos_importacion` / `erp_fiscal_aplicar_importacion` | IVA a la importación de un contenedor y paso de sus pallets a libre práctica (o a depósito) |
+| `erp_fiscal_hechos_traslado` / `erp_fiscal_trasladar` | Traslado entre almacenes con asientos en el Kardex; entre países exige determinación OK |
+| `erp_fiscal_completar_pallets` | Rellena estatuto y vía de entrada; corregir un dato ya informado exige GERENCIA |
+| `erp_fiscal_hechos_compra` / `erp_fiscal_registrar_compra` | Tratamiento de las facturas de proveedor |
+| Vistas `erp_fiscal_v_stock`, `erp_fiscal_v_documentos`, `erp_fiscal_v_ajustables` | Existencias con su situación fiscal, facturas con su estado fiscal y facturas que se pueden ajustar |
+
+**Pantallas:**
+
+- `fiscal.html` (Fiscal IVA): facturas y su comprobación, stock fiscal, traslados, importaciones, compras, simulador, representante NL con identificaciones y mapa de habilitación, y la matriz (parámetros, textos, tipos y reglas).
+- `facturacion_v22.html` (Ventas): al pulsar Emitir comprueba el IVA; si no es OK, la factura sigue en borrador, sin número, y se explica por qué. Botón «Comprobar IVA» en el editor. La factura impresa lleva la categoría y los textos legales de la matriz.
+- `facturacion_v21.html` pasa a ser una página que redirige a la 22. Menú, inicio, cuadro de mando y archivo de facturas apuntan a la 22.
+
+**Seguridad:** la matriz, los textos, los tipos, el representante y las identificaciones solo los editan GERENCIA y CONTROLLER. Las determinaciones no se pueden modificar. Las funciones que tocan stock o documentos exigen usuario del ERP.
+
+**Límite conocido:** la factura no tiene columna de recargo de equivalencia. Una venta a un cliente en recargo queda en revisión en lugar de emitirse sin el recargo.
 
 Fuera de alcance: líneas de servicio (fletes, comisiones), que conservan su régimen, y VeriFactu.
+
+## 12 bis. Ajuste de valor: factura rectificativa por diferencias
+
+Caso: un contenedor se factura a 50.000 € con precio provisional y la liquidación del cliente (o el precio de mercado) fija un valor mayor o menor.
+
+| Punto | Criterio | Base legal |
+|---|---|---|
+| Documento | Factura rectificativa por diferencias, que remite a la factura original | art. 15.4 y 15.5 RD 1619/2012; art. 219 Directiva 2006/112/CE |
+| Serie | Específica: `RTB` (parámetro `serie_rectificativas`), tipo de documento UNTDID 1001 `384` | art. 6.1.a RD 1619/2012 |
+| Causa | Precio no conocido en el devengo y fijado provisionalmente, o alteración posterior del precio | art. 80.Seis y 80.Dos LIVA |
+| Tratamiento | El mismo de la factura original: operación, emisor, identificación fiscal y textos | — |
+| Tipo de IVA | El vigente en el devengo de la original, no el de hoy | art. 90.Dos LIVA |
+| Declaración del IVA | La diferencia va en el 303 del periodo de la rectificativa | art. 89.Cinco LIVA |
+| 349 / ICP | Apartado de rectificaciones / correcciones, con el periodo de la operación original | Instrucciones modelo 349; toelichting opgaaf ICP |
+| Plazo | Cuatro años desde el devengo de la original | art. 15.3 RD 1619/2012 |
+| Prueba | Se añade la liquidación o el acuerdo de precio a los documentos a archivar | — |
+
+**Flujo en Ventas:**
+
+1. Botón «Ajuste de valor» (pestaña o fila de una factura emitida).
+2. Se busca por factura, contenedor o cliente. Si hay una liquidación aceptada enlazada (`erp_liquidacion`), propone la diferencia: neto liquidado − base de mercancía facturada − ajustes previos.
+3. La diferencia se indica como importe o en €/kg; puede ser positiva (aumento) o negativa (reducción).
+4. «Comprobar IVA» calcula cada rectificativa con la matriz antes de crearla. Si alguna no se podría emitir, no se crea ninguna.
+5. Se crea una rectificativa en borrador por factura original (`erp_fiscal_crear_ajuste_valor`) y se abre en el editor. Al pulsar Emitir pasa el mismo control de IVA y se numera en RTB.
+6. La factura original anota el ajuste en su historial (`erp_documento_cambio`).
+
+Bloqueos: factura en borrador o anulada, ajuste sobre otra rectificativa, importe cero, motivo vacío, reducción mayor que lo facturado, más de cuatro años, o identificación fiscal distinta de la original (por ejemplo, Exonero ya no operativo).
+
+**Instalación:** ejecutar `16_matriz_fiscal.sql` en Supabase (una vez; es repetible) y subir a la web `fiscal.html`, `facturacion_v22.html`, `facturacion_v21.html`, `tb_fiscal_engine.js`, `nav.js`, `index.html`, `tb.html`, `cuadro_mando.html` y `facturas.html`. Opcional: desplegar la función `vies-check`.
 
 ## 13. Cuando cambie la ley o el registro
 
@@ -298,8 +354,11 @@ Fuera de alcance: líneas de servicio (fletes, comisiones), que conservan su ré
 ## 15. Pendiente de validar
 
 1. **Fecha de alta en ROI** (`roi_desde`). Hoy el ROI se da por vigente en cualquier fecha.
+1 bis. **Stock existente:** los pallets que ya están en almacén reciben país y, si su contenedor llegó nacionalizado, libre práctica y vía de entrada. Revisar en Fiscal IVA → Stock fiscal los que queden con aviso (sobre todo la mercancía en depósito en Cool Control).
 2. **OSS**: sin alta, las ventas a particulares de otros países con IVA de destino quedan NO HABILITADAS. Solo relevante si se vende B2C.
 3. **Criterios marcados para el asesor**: umbral de 10.000 € en expediciones desde NL (se aplica IVA de destino); 9% a compradores no establecidos en NL; ausencia de art. 23 en el registro directo.
 4. **Textos legales y reglas**: todos en PROPUESTO.
 5. **EXW Cool Control**: el 0% depende del CMR firmado y la declaración del comprador.
 6. **Casillas del 303**: se consultan en el diseño vigente; no están en el código.
+7. **Numeración de la serie RTB:** la migración crea la serie copiando la configuración de la serie TB. Comprobar con la primera rectificativa que el número sale `RTB-001`.
+8. **Recargo de equivalencia en la factura impresa:** pendiente de añadir la columna; hasta entonces esas ventas quedan en revisión.
