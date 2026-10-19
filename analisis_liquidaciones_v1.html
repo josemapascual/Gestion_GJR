@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<script src="acceso.js?v=1"></script>
 <meta name="theme-color" content="#1B5E20">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -541,7 +542,7 @@ async function cargarTodo() {
     sb.from('erp_cirad').select('*').order('anio', { ascending: false }).order('semana', { ascending: false }).order('calibre'),
     sb.from('v_liq_anomalia').select('*'),
     sb.from('erp_analisis_param').select('*').order('clave'),
-    sb.from('erp_pmg').select('*, erp_cliente(razon_social)').order('created_at', { ascending: false, nullsFirst: false }),
+    sb.from('erp_pmg').select('*, erp_cliente(razon_social)').order('creado_en', { ascending: false, nullsFirst: false }),
     sb.from('erp_coste_categoria').select('*').order('orden'),
     sb.from('v_liq_coste_categoria').select('*')
   ]);

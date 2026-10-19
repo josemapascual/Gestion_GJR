@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<script src="acceso.js?v=1"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>Grupo Juan Ruiz · Tropical Báez</title>
@@ -97,6 +98,12 @@ main{max-width:1180px;margin:0 auto;padding:24px 20px 50px}
 #acceso .err{background:var(--rojo-pale);color:var(--rojo);border-radius:4px;
   padding:8px 10px;font-size:12px;margin-bottom:11px;display:none}
 
+#acceso .ok{background:var(--verde-pale);color:var(--verde);border-radius:4px;
+  padding:8px 10px;font-size:12px;margin-bottom:11px;display:none}
+#acceso .enlace{display:block;text-align:center;margin-top:12px;font-size:12px;color:var(--suave)}
+#acceso .sub{margin:0 0 14px;text-align:center;font-size:12px;letter-spacing:0;text-transform:none;font-weight:500;color:var(--suave)}
+#acceso button:disabled{opacity:.6;cursor:wait}
+.barra .clave{background:none;border:0;color:rgba(255,255,255,.6);font-size:11.5px;text-decoration:underline;padding:0}
 @media(max-width:860px){.cols{grid-template-columns:1fr}.intro .acc{display:none}}
 </style>
 <link rel="stylesheet" href="estilo.css?v=4">
@@ -110,19 +117,30 @@ main{max-width:1180px;margin:0 auto;padding:24px 20px 50px}
     <h2>Grupo Juan Ruiz</h2>
     <p>Tropical Báez</p>
     <div class="err" id="err"></div>
-    <label for="u">Usuario</label>
-    <select id="u">
-      <option value="">— Seleccionar —</option>
-      <option value="jose">José María Pascual</option>
-      <option value="renato">Renato</option>
-      <option value="diana">Diana</option>
-      <option value="reynaldo">Reynaldo</option>
-      <option value="paola">Paola</option>
-      <option value="toshiro">Toshiro</option>
-    </select>
-    <label for="p">Contraseña</label>
-    <input id="p" type="password" autocomplete="current-password">
-    <button onclick="entrar()">Entrar</button>
+    <div class="ok" id="okmsg"></div>
+    <div id="f-entrar">
+      <label for="correo">Correo</label>
+      <input id="correo" type="email" autocomplete="username" placeholder="nombre@jruizgrupo.com">
+      <label for="p">Contraseña</label>
+      <input id="p" type="password" autocomplete="current-password">
+      <button id="b-entrar" onclick="entrar()">Entrar</button>
+      <a class="enlace" href="#" onclick="verPanel('f-olvido');return false">¿Has olvidado la contraseña?</a>
+    </div>
+    <div id="f-olvido" style="display:none">
+      <label for="correo2">Correo</label>
+      <input id="correo2" type="email" autocomplete="username">
+      <button onclick="recuperar()">Enviarme un enlace</button>
+      <a class="enlace" href="#" onclick="verPanel('f-entrar');return false">Volver</a>
+    </div>
+    <div id="f-clave" style="display:none">
+      <p class="sub" id="clave-txt">Elige tu contraseña</p>
+      <label for="c1">Nueva contraseña</label>
+      <input id="c1" type="password" autocomplete="new-password">
+      <label for="c2">Repítela</label>
+      <input id="c2" type="password" autocomplete="new-password">
+      <button onclick="guardarClave()">Guardar contraseña</button>
+      <a class="enlace" href="#" id="clave-cancelar" onclick="cancelarClave();return false">Cancelar</a>
+    </div>
   </div>
 </div>
 
@@ -131,6 +149,7 @@ main{max-width:1180px;margin:0 auto;padding:24px 20px 50px}
   <span class="marca">Grupo Juan Ruiz · Tropical Báez</span>
   <div class="der">
     <div class="quien">Usuario<b id="quien">—</b></div>
+    <button class="clave" onclick="pedirCambio()">Cambiar contraseña</button>
     <button class="salir" onclick="salir()">Cerrar sesión</button>
   </div>
 </div>
@@ -168,9 +187,9 @@ main{max-width:1180px;margin:0 auto;padding:24px 20px 50px}
     <span class="ir">→</span></a>
 
   <div class="nota">
-    <b>Dos sistemas distintos.</b> Tropical Báez trabaja sobre las tablas <code>erp_</code>
-    con acceso por usuario y contraseña propios de cada módulo.
-    Grupo Juan Ruiz guarda sus datos en <code>gjr_kv</code> y sus pantallas se abren sin contraseña.
+    <b>Acceso con usuario.</b> Todas las pantallas piden iniciar sesión, y los datos de las
+    dos empresas solo se leen con un usuario activo de la plataforma. Las altas, bajas y
+    permisos de usuario los gestiona Gerencia.
   </div>
 </main>
 
@@ -203,48 +222,103 @@ const GRUPO = [
   ['manual_rep','Manual del reporte',        'Cómo llenar la plantilla, generar el PDF y guardarlo',           'manual_reporte.html']
 ];
 
-/* ══ USUARIOS ══ */
-const USUARIOS = {
-  jose:     {pass:'gjr2025',     nombre:'José María', rol:'Administrador', acceso:'*'},
-  renato:   {pass:'renato123',   nombre:'Renato',     rol:'Operaciones',   acceso:'*'},
-  diana:    {pass:'diana123',    nombre:'Diana',      rol:'Administración',acceso:'*'},
-  paola:    {pass:'paola123',    nombre:'Paola',      rol:'Comercial',     acceso:'*'},
-  toshiro:  {pass:'toshiro123',  nombre:'Toshiro',    rol:'Controller',    acceso:'*'},
-  reynaldo: {pass:'reynaldo123', nombre:'Reynaldo',   rol:'Calidad',
-             acceso:['partidas','almacen','calidad','facturas','traza','defectos','descarte']}
-};
-
-
-
+/* ══ ACCESO: usuarios de Supabase (sin contraseñas en el código) ══ */
 const TODOS = [...TB, ...GJR, ...GRUPO].map(m => m[0]);
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
                   .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const ROLES = {GERENCIA:'Gerencia', CONTROLLER:'Controller', OPERACIONES:'Operaciones',
+               COMERCIAL:'Comercial', ADMIN:'Administración'};
+const MOTIVOS = {
+  sin_permiso: 'No tienes acceso a ese módulo.',
+  sin_alta: 'Tu usuario no está activo en la plataforma. Habla con Gerencia.',
+  cambiar_clave: 'Antes de seguir, elige tu propia contraseña.'
+};
+const params = new URLSearchParams(location.search);
+let perfil = null;
+let recuperando = false;
 
-let usuario = null;
-
-function entrar(){
-  const k = $('u').value, p = $('p').value;
-  $('err').style.display = 'none';
-  if (!k || !p){
-    $('err').textContent = 'Elige el usuario y escribe la contraseña.';
-    $('err').style.display = 'block'; return;
-  }
-  const u = USUARIOS[k];
-  if (!u || u.pass !== p){
-    $('err').textContent = 'Usuario o contraseña incorrectos.';
-    $('err').style.display = 'block'; $('p').value = ''; return;
-  }
-  try{ sessionStorage.setItem('gjr_user', k); }catch(e){}
-  abrir(k);
+function aviso(txt, bien){
+  $('err').style.display = 'none'; $('okmsg').style.display = 'none';
+  if (!txt) return;
+  const el = bien ? $('okmsg') : $('err');
+  el.textContent = txt; el.style.display = 'block';
+}
+function verPanel(id){
+  ['f-entrar','f-olvido','f-clave'].forEach(x => $(x).style.display = (x === id ? 'block' : 'none'));
+  aviso('');
+  if (id === 'f-olvido') $('correo2').value = $('correo').value;
+}
+async function cliente(){
+  const c = await GJRAcceso.listo;
+  if (!c) throw new Error('No se pudo conectar. Revisa la conexión a internet.');
+  return c;
+}
+function textoError(e){
+  const m = (e && e.message) || String(e);
+  if (/Invalid login credentials/i.test(m)) return 'Correo o contraseña incorrectos.';
+  if (/Email not confirmed/i.test(m)) return 'El correo aún no está confirmado.';
+  if (/rate limit|too many/i.test(m)) return 'Demasiados intentos. Espera unos minutos.';
+  if (/Password should be|weak/i.test(m)) return 'La contraseña es demasiado débil: al menos 10 caracteres, mezclando letras y números.';
+  if (/same.*password|different from the old/i.test(m)) return 'La nueva contraseña tiene que ser distinta de la anterior.';
+  return m;
 }
 
-function salir(){
-  try{ sessionStorage.removeItem('gjr_user'); }catch(e){}
-  location.reload();
+async function entrar(){
+  const correo = $('correo').value.trim().toLowerCase(), p = $('p').value;
+  if (!correo || !p){ aviso('Escribe tu correo y tu contraseña.'); return; }
+  $('b-entrar').disabled = true; aviso('');
+  try{
+    const c = await cliente();
+    const { error } = await c.auth.signInWithPassword({ email: correo, password: p });
+    if (error) throw error;
+    $('p').value = '';
+    await cargarPerfil(true);
+  }catch(e){ aviso(textoError(e)); $('p').value = ''; }
+  finally{ $('b-entrar').disabled = false; }
 }
 
-$('p').addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
+async function recuperar(){
+  const correo = $('correo2').value.trim().toLowerCase();
+  if (!correo){ aviso('Escribe tu correo.'); return; }
+  try{
+    const c = await cliente();
+    const destino = location.origin + location.pathname;
+    const { error } = await c.auth.resetPasswordForEmail(correo, { redirectTo: destino });
+    if (error) throw error;
+    aviso('Si el correo está dado de alta, te llegará un enlace para elegir contraseña. Si no llega, pide a Gerencia una contraseña provisional.', true);
+  }catch(e){ aviso(textoError(e)); }
+}
+
+function pedirCambio(){
+  $('acceso').style.display = 'flex';
+  $('clave-txt').textContent = 'Elige una contraseña nueva';
+  $('clave-cancelar').style.display = 'block';
+  verPanel('f-clave');
+}
+function cancelarClave(){
+  if (perfil && !perfil.cambiar_clave && !recuperando){ $('acceso').style.display = 'none'; return; }
+  salir();
+}
+async function guardarClave(){
+  const a = $('c1').value, b = $('c2').value;
+  if (a.length < 10 || !/[A-Za-z]/.test(a) || !/[0-9]/.test(a)){
+    aviso('Mínimo 10 caracteres, con letras y números.'); return;
+  }
+  if (a !== b){ aviso('Las dos contraseñas no coinciden.'); return; }
+  try{
+    const c = await cliente();
+    const { error } = await c.auth.updateUser({ password: a });
+    if (error) throw error;
+    await c.rpc('erp_clave_cambiada');
+    $('c1').value = ''; $('c2').value = '';
+    recuperando = false;
+    aviso('Contraseña guardada.', true);
+    await cargarPerfil(true);
+  }catch(e){ aviso(textoError(e)); }
+}
+
+async function salir(){ GJRAcceso.salir(); }
 
 function fila(m, permitido){
   const [clave, nombre, desc, href] = m;
@@ -259,13 +333,13 @@ function fila(m, permitido){
       + '<span class="ir">Sin acceso</span></span>';
 }
 
-function abrir(k){
-  usuario = USUARIOS[k];
-  $('acceso').style.display = 'none';
-  $('quien').textContent = usuario.nombre + ' · ' + usuario.rol;
-  $('saludo').textContent = 'Buenas, ' + usuario.nombre;
+function puede(c){ return !perfil || !perfil.modulos || perfil.modulos.includes(c); }
 
-  const puede = c => usuario.acceso === '*' || usuario.acceso.includes(c);
+function abrir(){
+  $('acceso').style.display = 'none';
+  const nombre = perfil.nombre || perfil.email;
+  $('quien').textContent = nombre + ' · ' + (ROLES[perfil.rol] || perfil.rol || '');
+  $('saludo').textContent = 'Buenas, ' + nombre.split(' ')[0];
 
   $('lista-tb').innerHTML  = TB.map(m => fila(m, puede(m[0]))).join('');
   $('lista-gjr').innerHTML = GJR.map(m => fila(m, puede(m[0]))).join('');
@@ -277,16 +351,68 @@ function abrir(k){
   $('c-tb').textContent  = nTb  + ' de ' + TB.length;
   $('c-gjr').textContent = nGjr + ' de ' + GJR.length;
   $('c-grupo').textContent = nGrupo + ' de ' + GRUPO.length;
-  $('acc').textContent = (usuario.acceso === '*')
+  $('acc').textContent = (!perfil.modulos)
     ? 'Acceso completo · ' + TODOS.length + ' módulos'
     : (nTb + nGjr + nGrupo) + ' de ' + TODOS.length + ' módulos habilitados';
 }
 
-(function inicio(){
-  let k = null;
-  try{ k = sessionStorage.getItem('gjr_user'); }catch(e){}
-  if (k && USUARIOS[k]) abrir(k); else $('u').focus();
+/* Tras entrar: perfil, cambio obligatorio de contraseña y vuelta a la pantalla pedida */
+async function cargarPerfil(recienEntrado){
+  const c = await cliente();
+  let { data, error } = await c.rpc('erp_mi_perfil');
+  if (error && GJRAcceso.sinFuncion(error)){
+    const { data: u } = await c.auth.getUser();
+    data = { email: u && u.user && u.user.email, nombre: u && u.user && u.user.email, rol: null, modulos: null, cambiar_clave: false };
+    error = null;
+  }
+  if (error || !data){
+    await c.auth.signOut();
+    $('acceso').style.display = 'flex'; verPanel('f-entrar');
+    aviso(MOTIVOS.sin_alta);
+    return;
+  }
+  perfil = data;
+  try{
+    sessionStorage.setItem('gjr_nombre', perfil.nombre || perfil.email);
+    sessionStorage.setItem('gjr_user', (perfil.email || '').split('@')[0]);
+  }catch(e){}
+  if (perfil.cambiar_clave || recuperando){
+    $('acceso').style.display = 'flex';
+    $('clave-txt').textContent = recuperando ? 'Elige tu nueva contraseña'
+                                             : 'Primera entrada: elige tu propia contraseña';
+    $('clave-cancelar').style.display = 'block';
+    verPanel('f-clave');
+    return;
+  }
+  const volver = params.get('volver');
+  if (volver && /^[a-z0-9_]+\.html/i.test(volver)){
+    const pag = volver.split(/[?#]/)[0].toLowerCase();
+    const mod = GJRAcceso.modulo(pag);
+    if (!mod || puede(mod)){ location.replace(volver); return; }
+  }
+  abrir();
+  if (!recienEntrado && params.get('motivo') && MOTIVOS[params.get('motivo')]){
+    $('acc').textContent = MOTIVOS[params.get('motivo')];
+  }
+}
+
+(async function inicio(){
+  const motivo = params.get('motivo');
+  try{
+    const c = await cliente();
+    c.auth.onAuthStateChange((ev) => {
+      if (ev === 'PASSWORD_RECOVERY'){ recuperando = true; cargarPerfil(true); }
+    });
+    if (/type=recovery/.test(location.hash)) recuperando = true;
+    const { data } = await c.auth.getSession();
+    if (data && data.session){ await cargarPerfil(false); return; }
+  }catch(e){ aviso(textoError(e)); }
+  $('acceso').style.display = 'flex'; verPanel('f-entrar');
+  if (motivo === 'sin_alta') aviso(MOTIVOS.sin_alta);
+  $('correo').focus();
 })();
+$('p').addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
+$('c2').addEventListener('keydown', e => { if (e.key === 'Enter') guardarClave(); });
 </script>
 <script src="nav.js?v=6"></script>
 </body>

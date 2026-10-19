@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<script src="acceso.js?v=1"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Grupo Juan Ruiz</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -410,36 +411,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--gris-bg);color:var(--gris
 </div>
 
 
-<!-- ══ LOGIN ══ -->
-<div id="login-screen">
-  <div class="login-card">
-    <div class="login-icon">🔐</div>
-    <div class="login-title">Acceso al Sistema</div>
-    <div class="login-sub">GRUPO JUAN RUIZ · ÁREA OPERATIVA</div>
-
-    <div class="login-field">
-      <label>Usuario</label>
-      <select id="sel-user">
-        <option value="">— Seleccionar usuario —</option>
-        <option value="jose">José María Pascual</option>
-        <option value="renato">Renato</option>
-        <option value="diana">Diana</option>
-        <option value="reynaldo">Reynaldo</option>
-        <option value="paola">Paola</option>
-      </select>
-    </div>
-
-    <div class="login-field">
-      <label>Contraseña</label>
-      <input type="password" id="inp-pass" placeholder="Ingresa tu contraseña"
-             onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-
-    <button class="login-btn" onclick="doLogin()">Entrar al Sistema</button>
-    <div class="login-error" id="login-error">Usuario o contraseña incorrectos</div>
-  </div>
-</div>
-
 <!-- ══ DASHBOARD ══ -->
 <div id="dashboard-screen">
 
@@ -524,90 +495,34 @@ body{font-family:'DM Sans',sans-serif;background:var(--gris-bg);color:var(--gris
 
 <script>
 // ══════════════════════════════════════════════
-//  USUARIOS Y PERMISOS
-//  Para cambiar contraseñas: edita el campo "pass"
+//  USUARIO: viene del acceso único (Supabase), sin contraseñas aquí.
+//  Permisos: columna "modulos" de erp_usuario (vacía = todos).
 // ══════════════════════════════════════════════
-const USUARIOS = {
-  jose: {
-    pass: 'gjr2025',
-    nombre: 'José María',
-    avatar: 'J',
-    rol: 'Administrador',
-    acceso: ['liquidaciones','facturacion','almacen','trazabilidad','defectos','descarte','divisas','crm']
-  },
-  renato: {
-    pass: 'renato123',
-    nombre: 'Renato',
-    avatar: 'R',
-    rol: 'Operaciones',
-    acceso: ['liquidaciones','facturacion','almacen','trazabilidad','defectos','descarte','divisas','crm']
-  },
-  diana: {
-    pass: 'diana123',
-    nombre: 'Diana',
-    avatar: 'D',
-    rol: 'Liquidaciones',
-    acceso: ['liquidaciones']
-  },
-  reynaldo: {
-    pass: 'reynaldo123',
-    nombre: 'Reynaldo',
-    avatar: 'Ry',
-    rol: 'Calidad',
-    acceso: ['trazabilidad','defectos','descarte']
-  },
-  paola: {
-    pass: 'paola123',
-    nombre: 'Paola',
-    avatar: 'P',
-    rol: 'Facturación',
-    acceso: ['facturacion','almacen','crm']
-  }
-};
+const MOD_GJR = {traza:'trazabilidad', defectos:'defectos', descarte:'descarte',
+                 liqui_gjr:'liquidaciones', crm:'crm', divisas:'divisas'};
+const ROLES = {GERENCIA:'Gerencia', CONTROLLER:'Controller', OPERACIONES:'Operaciones',
+               COMERCIAL:'Comercial', ADMIN:'Administración'};
+function usuarioDesdePerfil(p){
+  const nombre = p.nombre || p.email || 'Usuario';
+  const acceso = !p.modulos ? Object.values(MOD_GJR)
+    : Object.keys(MOD_GJR).filter(k => p.modulos.includes(k)).map(k => MOD_GJR[k]);
+  return {nombre: nombre, avatar: nombre.trim().charAt(0).toUpperCase(),
+          rol: ROLES[p.rol] || p.rol || '', acceso: acceso};
+}
 
 // Mapeo módulo → card id
+// (facturación y almacén son de Tropical Báez: ya no tienen tarjeta aquí)
 const MODULO_CARD = {
-  liquidaciones: 'card-liquidaciones',
-  facturacion:   'card-facturacion',
-  trazabilidad:  'card-trazabilidad',
+  liquidaciones: 'card-liquid',
+  trazabilidad:  'card-traza',
   defectos:      'card-defectos',
   descarte:      'card-descarte',
   divisas:       'card-divisas',
-  almacen:       'card-almacen',
   crm:           'card-crm'
 };
 
-// ══ LOGIN ══
-function doLogin(){
-  const user = document.getElementById('sel-user').value;
-  const pass = document.getElementById('inp-pass').value;
-  const err  = document.getElementById('login-error');
-
-  err.style.display = 'none';
-
-  if(!user){ err.textContent='Selecciona un usuario.'; err.style.display='block'; return; }
-
-  const u = USUARIOS[user];
-  if(!u || pass !== u.pass){
-    err.textContent = 'Contraseña incorrecta. Inténtalo de nuevo.';
-    err.style.display = 'block';
-    document.getElementById('inp-pass').value = '';
-    return;
-  }
-
-  // Guardar sesión
-  sessionStorage.setItem('gjr_user', user);
-  sessionStorage.setItem('gjr_nombre', u.nombre);
-  sessionStorage.setItem('gjr_rol', u.rol);
-  sessionStorage.setItem('gjr_acceso', JSON.stringify(u.acceso));
-  sessionStorage.setItem('gjr_avatar', u.avatar);
-
-  mostrarDashboard(u);
-}
-
 // ══ DASHBOARD ══
 function mostrarDashboard(u){
-  document.getElementById('login-screen').style.display  = 'none';
   document.getElementById('dashboard-screen').style.display = 'block';
 
   document.getElementById('dash-avatar').textContent  = u.avatar;
@@ -619,11 +534,14 @@ function mostrarDashboard(u){
   const todosModulos = Object.keys(MODULO_CARD);
   todosModulos.forEach(mod => {
     const card = document.getElementById(MODULO_CARD[mod]);
+    if(!card) return;
+    if(card.dataset.href === undefined) card.dataset.href = card.getAttribute('href') || '';
     if(!u.acceso.includes(mod)){
       card.classList.add('locked');
       card.removeAttribute('href');
     } else {
       card.classList.remove('locked');
+      if(card.dataset.href) card.setAttribute('href', card.dataset.href);
     }
   });
 
@@ -639,28 +557,18 @@ function mostrarDashboard(u){
     crm:           'CRM Comercial'
   };
   const lista = u.acceso.map(m => nombres[m]).join(', ');
-  const esAdmin = u.acceso.length === 4;
+  const esAdmin = Object.keys(MODULO_CARD).every(m => u.acceso.includes(m));
   document.getElementById('access-text').innerHTML = esAdmin
     ? 'Tienes <strong>acceso completo</strong> a todos los módulos.'
     : `Tu acceso está habilitado para: <strong>${lista}</strong>.`;
 }
 
-// ══ LOGOUT ══
-function doLogout(){
-  sessionStorage.clear();
-  document.getElementById('dashboard-screen').style.display = 'none';
-  document.getElementById('login-screen').style.display    = 'flex';
-  document.getElementById('sel-user').value = '';
-  document.getElementById('inp-pass').value = '';
-}
+// ══ SALIR ══
+function doLogout(){ GJRAcceso.salir(); }
+function cerrarSesion(){ GJRAcceso.salir(); }
 
-// ══ RESTAURAR SESIÓN si ya había entrado ══
-window.addEventListener('DOMContentLoaded', () => {
-  const user = sessionStorage.getItem('gjr_user');
-  if(user && USUARIOS[user]){
-    mostrarDashboard(USUARIOS[user]);
-  }
-});
+// ══ ENTRADA: con la sesión ya comprobada por acceso.js ══
+GJRAcceso.comprobado.then(function(p){ if(p) mostrarDashboard(usuarioDesdePerfil(p)); });
 </script>
 <script src="nav.js?v=6"></script>
 <script src="marco.js?v=3"></script>
