@@ -155,7 +155,9 @@ tbody tr:hover{background:#FAFCF9}
   font-family:'DM Serif Display',serif;font-size:20px;color:var(--verde)}
 
 /* ── VISTA PREVIA / IMPRESIÓN ───────────────────────────────── */
-#prev{position:fixed;inset:0;background:#4A4A4A;z-index:180;display:none;overflow:auto}
+/* Por encima de la barra de módulos (nav.js, z-index 99999): si no, la barra tapa
+   los botones «Imprimir o guardar en PDF» y «Cerrar». */
+#prev{position:fixed;inset:0;background:#4A4A4A;z-index:100000;display:none;overflow:auto}
 #prev.on{display:block}
 .prev-bar{position:sticky;top:0;background:var(--verde);padding:10px 16px;
   display:flex;gap:8px;align-items:center;z-index:5}
@@ -1120,7 +1122,7 @@ const LOGO_APP = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQQAAABcCAYAAACI
   if (el) el.src = LOGO_APP;
 });
 
-const BUILD = '2026-10-20-A';
+const BUILD = '2026-10-20-B';
 
 const SB_URL = 'https://riidmxztyxldnojjkncx.supabase.co';
 const SB_KEY = 'sb_publishable_ZbMZbTdBcYnGceF_woayjQ_CCCEHRYS';
