@@ -25,6 +25,7 @@
         ['Fiscal IVA',       'fiscal.html'],
         ['Facturas',         'facturas.html'],
         ['Liquidaciones',    'analisis_liquidaciones_v1.html'],
+        ['Cuentas de venta', 'cuentas_venta.html'],
         ['Gestión',          'gestion.html'],
         ['Manual',           'manual.html'],
         ['Facturar',         'manual_paola.html'],

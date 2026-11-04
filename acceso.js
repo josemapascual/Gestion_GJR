@@ -28,7 +28,7 @@
   var MODULO = {
     'tb.html': 'partidas', 'cuadro_mando.html': 'cuadro', 'compras.html': 'compras',
     'almacen_v7.html': 'almacen', 'calidad.html': 'calidad', 'facturacion_v22.html': 'ventas',
-    'fiscal.html': 'fiscal', 'facturas.html': 'facturas', 'analisis_liquidaciones_v1.html': 'liqui_tb',
+    'fiscal.html': 'fiscal', 'facturas.html': 'facturas', 'analisis_liquidaciones_v1.html': 'liqui_tb', 'cuentas_venta.html': 'cventa',
     'gestion.html': 'gestion',
     'sistema_trazabilidad_grupo_juan_ruiz.html': 'traza', 'dashboard_defectos_criticos.html': 'defectos',
     'descarte.html': 'descarte', 'liquidaciones_app_v6.html': 'liqui_gjr', 'crm.html': 'crm',
