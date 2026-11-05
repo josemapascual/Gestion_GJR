@@ -14,7 +14,7 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  const MOTOR_VERSION = '2.2.0';
+  const MOTOR_VERSION = '2.2.1';
   const REVISION = 'REVISIÓN FISCAL NECESARIA';
   const NO_HABILITADA = 'OPERACIÓN NO HABILITADA CON LAS IDENTIFICACIONES ACTUALES';
   const ESTADOS_ADUANEROS = ['LIBRE_PRACTICA', 'DEPOSITO_ADUANERO', 'NO_DESPACHADA', 'EN_ORIGEN'];
@@ -63,7 +63,7 @@
     if (i.estado !== 'ACTIVA') m.push(`estado ${i.estado}`);
     if (fecha && !vigente(i, fecha)) m.push('fuera de vigencia');
     if (!i.vat || /PENDIENTE/.test(i.vat)) m.push('sin NIF-IVA para la factura');
-    if (i.modalidad === 'REP_LIMITADA' && !i.numero_representacion) m.push('sin subnúmero de representación');
+    // Subnúmero de representación: dato opcional, no bloquea la emisión.
     if (i.representante_codigo) {
       if (!rep || rep.activo === false) m.push(`representante ${i.representante_codigo} inexistente o inactivo`);
       else {
