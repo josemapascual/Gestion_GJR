@@ -442,8 +442,8 @@ async function cargarMaestros(){
   const res = await Promise.all([
     sb.from('erp_contenedor').select('id,codigo,matricula,proveedor_id,modalidad,canal,estado,fecha_descarga,fecha_eta,origen_pais')
       .order('codigo', {ascending:false}).limit(1000),
-    sb.from('erp_proveedor').select('id,codigo,razon_social,identificacion,pais,ciudad,moneda_habitual').order('razon_social'),
-    sb.from('erp_compra').select('id,codigo,contenedor_id,proveedor_id,modalidad_precio,precio_minimo,moneda,tipo_cambio,incoterm,lugar_incoterm,notas,importe,fecha')
+    sb.from('erp_proveedor').select('id,codigo,razon_social,identificacion,pais,ciudad,direccion,moneda_habitual').order('razon_social'),
+    sb.from('erp_compra').select('id,codigo,contenedor_id,proveedor_id,modalidad_precio,precio_minimo,moneda,tipo_cambio,incoterm,lugar_incoterm,notas,importe,peso_neto_kg,fecha')
       .order('fecha'),
     sb.from('erp_empresa').select('*').eq('codigo', 'TB').maybeSingle(),
     sb.from('erp_cuenta_bancaria').select('empresa_id,etiqueta,banco,moneda,iban,swift,predeterminada,activa,orden')
@@ -734,15 +734,21 @@ function lineasDesdeSistema(s){
 
   /* Anticipos: pagos ejecutados al proveedor y facturas suyas ya pagadas */
   const provId = cv.proveedor_id;
+  const co = compras.find(x => x.id === cv.compra_id) || null;
+  const porKilo = imp => {          // «0,86 EUR/kg × 20.800 kg» si el anticipo es el importe del pedido
+    if (!co || !(Number(co.peso_neto_kg) > 0) || !(Number(co.importe) > 0)) return '';
+    if (Math.abs(Number(imp) - Number(co.importe)) > 0.01) return '';
+    return ' ' + fmtP(Number(co.importe) / Number(co.peso_neto_kg)) + ' ' + (co.moneda || 'EUR') + '/kg × ' + fmtKg(co.peso_neto_kg) + ' kg';
+  };
   const pagos = s.pagos.filter(p => p.proveedor_id === provId && ['EJECUTADO','CONCILIADO'].includes(p.estado));
   const conPago = new Set(pagos.map(p => p.factura_compra_id).filter(Boolean));
   pagos.forEach(p => out.ANTICIPO.push({tipo:'ANTICIPO', fuente:'PAGO', fuente_ref:p.codigo || '',
-    concepto:'Anticipo a cuenta · pago ' + (p.codigo || ''), fecha: p.fecha_ejecucion || p.fecha_prevista,
+    concepto:'Anticipo a cuenta' + porKilo(p.importe) + ' · pago ' + (p.codigo || ''), fecha: p.fecha_ejecucion || p.fecha_prevista,
     moneda_origen: p.moneda, importe_origen: Number(p.importe) || 0,
     tipo_cambio_origen: p.moneda === 'EUR' ? 1 : (Number(p.tipo_cambio) || (p.importe ? Number(p.importe_eur) / Number(p.importe) : 0))}));
   const fcProv = s.fcs.filter(f => f.proveedor_id === provId && f.estado !== 'ANULADA');
   fcProv.filter(f => f.estado === 'PAGADA' && !conPago.has(f.id)).forEach(f => out.ANTICIPO.push({tipo:'ANTICIPO',
-    fuente:'FACTURA_COMPRA', fuente_ref:f.numero, concepto:'Anticipo a cuenta · factura ' + f.numero, fecha:f.fecha,
+    fuente:'FACTURA_COMPRA', fuente_ref:f.numero, concepto:'Anticipo a cuenta' + porKilo(f.total) + ' · factura ' + f.numero, fecha:f.fecha,
     moneda_origen:f.moneda, importe_origen:Number(f.total) || 0,
     tipo_cambio_origen: f.moneda === 'EUR' ? 1 : (Number(f.tipo_cambio) || 0)}));
   const pend = fcProv.filter(f => f.estado !== 'PAGADA' && !conPago.has(f.id));
@@ -833,7 +839,7 @@ async function nuevaCuenta(contId){
   try { s = await leerSistema(contId); }
   catch (e){ avisosSistema = [['error', 'No se pudieron leer los datos del contenedor: ' + (e.message || e)]]; pintarAvisos(); return; }
   const previa = cuentas.find(x => x.proveedor_id === cv.proveedor_id && x.datos && x.datos.proveedor && x.datos.proveedor.direccion);
-  cv.datos = construirDatos(s, prov, co, {direccion: previa ? previa.datos.proveedor.direccion : ''});
+  cv.datos = construirDatos(s, prov, co, {direccion: (prov && prov.direccion) || (previa ? previa.datos.proveedor.direccion : '')});
   lin = lineasDesdeSistema(s);
   if (co && co.modalidad_precio === 'FIJO')
     avisosSistema.unshift(['ambar', 'El pedido ' + (co.codigo || '') + ' está registrado a precio fijo. Si este contenedor se vende en consignación o con PMG, la liquidación es correcta igualmente; revisa la modalidad.']);
@@ -1307,7 +1313,7 @@ async function actualizarDesdeSistema(){
     const nuevas = lineasDesdeSistema(s);
     TIPOS.forEach(t => { lin[t] = nuevas[t].concat(lin[t].filter(l => l.fuente === 'MANUAL')); });
     cv.datos = construirDatos(s, prov, co, {
-      direccion: cv.datos.proveedor && cv.datos.proveedor.direccion,
+      direccion: (cv.datos.proveedor && cv.datos.proveedor.direccion) || (prov && prov.direccion) || '',
       buque: cv.datos.contenedor && cv.datos.contenedor.buque
     });
     sucio = true;
