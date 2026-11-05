@@ -1122,7 +1122,7 @@ const LOGO_APP = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQQAAABcCAYAAACI
   if (el) el.src = LOGO_APP;
 });
 
-const BUILD = '2026-11-05-A';
+const BUILD = '2026-11-05-B';
 
 const SB_URL = 'https://riidmxztyxldnojjkncx.supabase.co';
 const SB_KEY = 'sb_publishable_ZbMZbTdBcYnGceF_woayjQ_CCCEHRYS';
@@ -2127,7 +2127,34 @@ function fxFusionar(h, x){
   if(x.destino) h.destino = x.destino;
   return h;
 }
+/* VIES al día: si el cliente tiene NIF-IVA de la UE y no hay una consulta válida
+   reciente con número de consulta, se hace sola antes del control fiscal.
+   Si VIES no responde, todo sigue como antes (la matriz la pedirá). */
+const PREFIJOS_VIES = ['AT','BE','BG','CY','CZ','DE','DK','EE','EL','ES','FI','FR','HR','HU','IE','IT','LT','LU','LV','MT','NL','PL','PT','RO','SE','SI','SK','XI'];
+async function viesAlDia(docId){
+  try{
+    const d = documentos.find(x => x.id === docId) || (docActual && docActual.id === docId ? docActual : null);
+    const c = d && clientes.find(x => x.id === d.cliente_id);
+    if(!c || !c.cif_vat) return;
+    let vat = String(c.cif_vat).toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const pais = String(c.pais || '').toUpperCase().trim();
+    if(!/^[A-Z]{2}/.test(vat) && pais) vat = (pais === 'GR' ? 'EL' : pais) + vat;
+    const pref = vat.slice(0, 2);
+    if(!PREFIJOS_VIES.includes(pref)) return;
+    const {data} = await sb.from('erp_fiscal_vies_consulta').select('valido,consultado_en,request_identifier')
+      .eq('pais', pref).eq('numero', vat.slice(2)).order('consultado_en', {ascending:false}).limit(1);
+    const u = data && data[0];
+    const maxDias = Number((FISCAL && FISCAL.config && FISCAL.config.vies_max_dias) ?? 7);
+    const edad = u ? (Date.now() - Date.parse(u.consultado_en)) / 86400000 : Infinity;
+    const conNumero = !!(u && u.request_identifier
+      && u.request_identifier.toUpperCase().replace(/[^A-Z0-9]/g, '') !== vat);
+    if(u && u.valido && conNumero && edad < maxDias) return;
+    const es = ((FISCAL && FISCAL.identificaciones) || []).find(i => i.jurisdiccion === 'ES' && i.estado === 'ACTIVA');
+    await sb.functions.invoke('vies-check', {body:{vat, requester: es ? es.vat : ''}});
+  }catch(e){ /* sin consulta automática: la matriz la pedirá como hasta ahora */ }
+}
 async function controlFiscal(id, registrar){
+  await viesAlDia(id);
   const {data: h0, error} = await sb.rpc('erp_fiscal_hechos', {p_documento_id: id});
   if(error) return {ok:false, msg:'No se pudo comprobar el IVA: ' + error.message};
   const h = fxFusionar(h0, fiscalExtra[id]);
@@ -2149,6 +2176,7 @@ async function controlFiscal(id, registrar){
 async function comprobarIva(){
   if(!FISCAL){ aviso(FISCAL === false ? 'La matriz fiscal no está instalada en la base de datos.' : 'Cargando la matriz fiscal…', true); return; }
   if(!docActual){ aviso('Guarda el borrador para comprobar el IVA con los albaranes o el contenedor enlazados.', true); return; }
+  await viesAlDia(docActual.id);
   const {data: h0, error} = await sb.rpc('erp_fiscal_hechos', {p_documento_id: docActual.id});
   if(error){ aviso('No se pudo comprobar el IVA: ' + error.message, true); return; }
   const h = fxFusionar(h0, fiscalExtra[docActual.id]);
@@ -2281,6 +2309,7 @@ async function previsualizarAjuste(){
   if(!motivo){ aviso2('aj-msg', 'Indica el motivo del ajuste.', true); return false; }
   ajPrevia = [];
   for(const x of sel){
+    await viesAlDia(x.a.id);
     const {data: h, error} = await sb.rpc('erp_fiscal_hechos_ajuste', {p_original: x.a.id, p_importe: x.importe,
       p_motivo: motivo, p_referencia: val('aj-ref') || null, p_fecha: val('aj-fecha') || hoy()});
     if(error){ aviso2('aj-msg', x.a.codigo + ': ' + error.message, true); return false; }

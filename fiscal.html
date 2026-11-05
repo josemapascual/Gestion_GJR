@@ -599,7 +599,7 @@ async function comprobarDocumento(id){
     const d = docs.find((x) => x.id === id) || {};
     const acc = '<div class="btn-row" style="margin-top:12px">'
       + (r.estado !== 'NO_APLICA' ? '<button class="btn btn-primary" onclick="registrarDocumento()">Registrar en el documento</button>' : '')
-      + (r.faltantes && r.faltantes.some((f) => /vies|VIES/.test(f.motivo)) ? '<button class="btn btn-outline" onclick="consultarVies(\'' + esc((h.cliente || {}).vat || '') + '\')">Consultar VIES</button>' : '')
+      + (esVatUE((h.cliente || {}).vat) ? '<button class="btn btn-outline" onclick="consultarVies(\'' + esc(h.cliente.vat) + '\')">Consultar VIES</button>' : '')
       + '</div>' + formularioDatos(h, r) + '<div id="doc-msg"></div>';
     $('doc-panel').innerHTML = pintarResultado(r, (d.codigo || 'Borrador') + ' · ' + (d.cliente || '') + ' · origen de los datos: ' + (h._fuente || ''), acc);
   } catch (e) { $('doc-panel').innerHTML = ''; aviso('msg-global', e.message, true); }
@@ -657,18 +657,36 @@ async function registrarDocumento(){
     cargarDocumentos();
   } catch (e) { aviso('doc-msg', 'No se pudo registrar: ' + e.message, true); }
 }
+/* VIES: comprobación oficial (Comisión Europea) de que el NIF-IVA de un cliente de la UE es válido.
+   La función vies-check consulta con TB como solicitante y guarda el número de consulta, que es el justificante. */
+const PREFIJOS_VIES = ['AT','BE','BG','CY','CZ','DE','DK','EE','EL','ES','FI','FR','HR','HU','IE','IT','LT','LU','LV','MT','NL','PL','PT','RO','SE','SI','SK','XI'];
+function esVatUE(v){ return PREFIJOS_VIES.includes(String(v || '').toUpperCase().slice(0, 2)); }
 async function consultarVies(vat){
   const emp = ctx.identificaciones.find((i) => i.jurisdiccion === 'ES');
   try {
     const { data, error } = await sb.functions.invoke('vies-check', {body:{vat, requester: emp ? emp.vat : ''}});
-    if (error) throw error;
-    aviso('doc-msg', 'VIES: ' + data.estado + (data.consulta_id ? ' · consulta ' + data.consulta_id : '') + (data.nombre ? ' · ' + data.nombre : ''), data.estado !== 'VALIDO');
+    if (error){
+      let m = error.message;
+      try { const b = await error.context.json(); if (b && b.error) m = b.error; } catch (_) {}
+      throw new Error(m);
+    }
+    aviso('doc-msg', 'VIES: ' + (data.estado === 'VALIDO' ? 'NIF-IVA válido' : 'NIF-IVA NO válido') + (data.consulta_id ? ' · número de consulta ' + data.consulta_id : '') + (data.nombre ? ' · ' + data.nombre : ''), data.estado !== 'VALIDO');
     if (data.estado === 'VALIDO') setTimeout(() => comprobarDocumento(ultimo.doc.id), 600);
   } catch (e) {
-    const num = prompt('La consulta automática a VIES no está disponible (' + (e.message || e) + ').\n\nConsulta ' + vat
-      + ' en https://ec.europa.eu/taxation_customs/vies/ y escribe aquí el número de consulta si es VÁLIDO:');
-    if (!num) return;
-    const ins = await sb.from('erp_fiscal_vies_consulta').insert({pais: vat.slice(0,2), numero: vat.slice(2), valido: true, request_identifier: num.trim()});
+    const sol = emp && emp.vat ? emp.vat : 'el NIF-IVA de TB';
+    const num = prompt('La consulta automática a VIES no ha funcionado (' + (e.message || e) + ').\n\n'
+      + 'Hazla a mano en https://ec.europa.eu/taxation_customs/vies/\n'
+      + '1. NIF-IVA a comprobar: ' + vat + '\n'
+      + '2. En «Solicitante» pon ' + sol + '\n'
+      + '3. Si sale VÁLIDO, copia aquí el «Número de consulta» del resultado (no el NIF):');
+    const n = (num || '').trim();
+    if (!n) return;
+    const limpio = (s) => String(s).toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (limpio(n) === limpio(vat) || limpio(n) === limpio(vat).slice(2) || n.length < 8){
+      aviso('doc-msg', 'Eso no es un número de consulta de VIES (parece el NIF-IVA del cliente). No se ha guardado nada.', true);
+      return;
+    }
+    const ins = await sb.from('erp_fiscal_vies_consulta').insert({pais: vat.slice(0,2), numero: vat.slice(2), valido: true, request_identifier: n});
     if (ins.error){ aviso('doc-msg', ins.error.message, true); return; }
     comprobarDocumento(ultimo.doc.id);
   }
