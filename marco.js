@@ -18,6 +18,7 @@
       ['Trazabilidad',  'sistema_trazabilidad_grupo_juan_ruiz.html'],
       ['Defectos',      'dashboard_defectos_criticos.html'],
       ['Descarte',      'descarte.html'],
+      ['Evaluación',    'evaluacion_productores.html'],
       ['Liquidaciones', 'liquidaciones_app_v6.html']
     ]],
     ['Comercial', [
@@ -35,7 +36,7 @@
 
   var actual = (location.pathname.split('/').pop() || '').toLowerCase();
   var PROPIAS = ['sistema_trazabilidad_grupo_juan_ruiz.html','dashboard_defectos_criticos.html',
-                 'descarte.html','liquidaciones_app_v6.html','crm.html',
+                 'descarte.html','evaluacion_productores.html','liquidaciones_app_v6.html','crm.html',
                  'control_divisas.html','viaticos.html','gjr.html'];
   if (PROPIAS.indexOf(actual) === -1) return;   // fuera de GJR no se toca nada
 

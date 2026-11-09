@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<script src="acceso.js?v=1"></script>
+<script src="acceso.js?v=2"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Grupo Juan Ruiz</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -481,6 +481,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--gris-bg);color:var(--gris
         <div class="mod-desc">Fruta no exportable y canales de salida.</div>
         <div class="mod-link">Abrir módulo <span class="mod-arrow">→</span></div>
       </a>
+      <a class="module-card calidad" id="card-evaluacion" href="evaluacion_productores.html">
+        <div class="mod-icon dorado"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1B5E20" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div>
+        <div class="mod-title">Evaluación de productores</div>
+        <div class="mod-desc">Kilos, curva de calibres, descarte y daños por agricultor, con resumen de una hoja.</div>
+        <div class="mod-link">Abrir módulo <span class="mod-arrow">→</span></div>
+      </a>
 
     </div>
 
@@ -499,13 +505,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--gris-bg);color:var(--gris
 //  Permisos: columna "modulos" de erp_usuario (vacía = todos).
 // ══════════════════════════════════════════════
 const MOD_GJR = {traza:'trazabilidad', defectos:'defectos', descarte:'descarte',
-                 liqui_gjr:'liquidaciones', crm:'crm', divisas:'divisas'};
+                 evaluacion:'evaluacion', liqui_gjr:'liquidaciones', crm:'crm', divisas:'divisas'};
 const ROLES = {GERENCIA:'Gerencia', CONTROLLER:'Controller', OPERACIONES:'Operaciones',
                COMERCIAL:'Comercial', ADMIN:'Administración'};
 function usuarioDesdePerfil(p){
   const nombre = p.nombre || p.email || 'Usuario';
-  const acceso = !p.modulos ? Object.values(MOD_GJR)
-    : Object.keys(MOD_GJR).filter(k => p.modulos.includes(k)).map(k => MOD_GJR[k]);
+  const puede = k => GJRAcceso.puede ? GJRAcceso.puede(k, p) : (!p.modulos || p.modulos.includes(k));
+  const acceso = Object.keys(MOD_GJR).filter(puede).map(k => MOD_GJR[k]);
   return {nombre: nombre, avatar: nombre.trim().charAt(0).toUpperCase(),
           rol: ROLES[p.rol] || p.rol || '', acceso: acceso};
 }
@@ -517,6 +523,7 @@ const MODULO_CARD = {
   trazabilidad:  'card-traza',
   defectos:      'card-defectos',
   descarte:      'card-descarte',
+  evaluacion:    'card-evaluacion',
   divisas:       'card-divisas',
   crm:           'card-crm'
 };
@@ -552,6 +559,7 @@ function mostrarDashboard(u){
     trazabilidad:  'Trazabilidad',
     defectos:      'Defectos Críticos',
     descarte:      'Descarte',
+    evaluacion:    'Evaluación de productores',
     divisas:       'Control de Divisas',
     almacen:       'Almacén',
     crm:           'CRM Comercial'

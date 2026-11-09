@@ -33,8 +33,22 @@
     'sistema_trazabilidad_grupo_juan_ruiz.html': 'traza', 'dashboard_defectos_criticos.html': 'defectos',
     'descarte.html': 'descarte', 'liquidaciones_app_v6.html': 'liqui_gjr', 'crm.html': 'crm',
     'control_divisas.html': 'divisas', 'viaticos.html': 'viaticos',
-    'reporte_gerencial.html': 'reporte', 'manual_reporte.html': 'manual_rep'
+    'reporte_gerencial.html': 'reporte', 'manual_reporte.html': 'manual_rep',
+    'evaluacion_productores.html': 'evaluacion'
   };
+
+  /* Módulos reservados a ciertos roles, además de la lista de módulos del
+     usuario. Evaluación de productores: Gerencia y Operaciones (José María,
+     Renato y Reynaldo). La base de datos aplica la misma regla. */
+  var ROL_MODULO = { 'evaluacion': ['GERENCIA', 'OPERACIONES'] };
+
+  function puede(mod, p) {
+    p = p || perfil;
+    if (!mod || !p) return true;
+    if (p.modulos && p.modulos.indexOf(mod) < 0) return false;
+    if (ROL_MODULO[mod] && ROL_MODULO[mod].indexOf(p.rol) < 0) return false;
+    return true;
+  }
 
   function irAlAcceso(motivo) {
     var q = '?volver=' + encodeURIComponent(pagina + location.search + location.hash);
@@ -161,7 +175,7 @@
           if (!ES_ACCESO) {
             if (perfil.cambiar_clave) { irAlAcceso('cambiar_clave'); return perfil; }
             var mod = MODULO[pagina];
-            if (mod && perfil.modulos && perfil.modulos.indexOf(mod) < 0) { irAlAcceso('sin_permiso'); return perfil; }
+            if (mod && !puede(mod, perfil)) { irAlAcceso('sin_permiso'); return perfil; }
             mostrar();
           }
           try { document.dispatchEvent(new CustomEvent('gjr:acceso', { detail: perfil })); } catch (e) {}
@@ -200,6 +214,6 @@
   window.GJRAcceso = {
     listo: listo, comprobado: comprobado, salir: salir, token: token, leerNube: leerNube,
     perfil: function () { return perfil; }, modulo: function (p) { return MODULO[p || pagina]; },
-    MODULO: MODULO, sinFuncion: sinFuncion
+    puede: puede, MODULO: MODULO, ROL_MODULO: ROL_MODULO, sinFuncion: sinFuncion
   };
 })();

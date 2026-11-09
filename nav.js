@@ -39,6 +39,7 @@
         ['Trazabilidad',  'sistema_trazabilidad_grupo_juan_ruiz.html'],
         ['Defectos',      'dashboard_defectos_criticos.html'],
         ['Descarte',      'descarte.html'],
+        ['Evaluación',    'evaluacion_productores.html'],
         ['Liquidaciones', 'liquidaciones_app_v6.html'],
         ['CRM',           'crm.html'],
         ['Divisas',       'control_divisas.html'],

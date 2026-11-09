@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<script src="acceso.js?v=1"></script>
+<script src="acceso.js?v=2"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>Grupo Juan Ruiz · Tropical Báez</title>
@@ -212,6 +212,7 @@ const GJR = [
   ['traza',     'Trazabilidad',  'Productores, lotes y seguimiento de campo',       'sistema_trazabilidad_grupo_juan_ruiz.html'],
   ['defectos',  'Defectos',      'Panel de defectos críticos de calidad',           'dashboard_defectos_criticos.html'],
   ['descarte',  'Descarte',      'Fruta no exportable y destino del descarte',      'descarte.html'],
+  ['evaluacion','Evaluación de productores', 'Kilos, curva de calibres, descarte y daños por agricultor', 'evaluacion_productores.html'],
   ['liqui_gjr', 'Liquidaciones', 'Liquidaciones de campaña',                        'liquidaciones_app_v6.html'],
   ['crm',       'CRM',           'Clientes, contactos y seguimiento comercial',     'crm.html'],
   ['divisas',   'Divisas',       'Control de tipo de cambio y operaciones',         'control_divisas.html'],
@@ -334,7 +335,10 @@ function fila(m, permitido){
       + '<span class="ir">Sin acceso</span></span>';
 }
 
-function puede(c){ return !perfil || !perfil.modulos || perfil.modulos.includes(c); }
+function puede(c){
+  if (GJRAcceso.puede) return GJRAcceso.puede(c, perfil);
+  return !perfil || !perfil.modulos || perfil.modulos.includes(c);
+}
 
 function abrir(){
   $('acceso').style.display = 'none';
@@ -352,7 +356,7 @@ function abrir(){
   $('c-tb').textContent  = nTb  + ' de ' + TB.length;
   $('c-gjr').textContent = nGjr + ' de ' + GJR.length;
   $('c-grupo').textContent = nGrupo + ' de ' + GRUPO.length;
-  $('acc').textContent = (!perfil.modulos)
+  $('acc').textContent = (nTb + nGjr + nGrupo === TODOS.length)
     ? 'Acceso completo · ' + TODOS.length + ' módulos'
     : (nTb + nGjr + nGrupo) + ' de ' + TODOS.length + ' módulos habilitados';
 }
